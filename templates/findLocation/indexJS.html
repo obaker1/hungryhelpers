@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Map</title>
+    <style type="text/css">
+      #sidebar {
+        flex-basis: 5rem;
+        flex-grow: 1;
+        padding: 1rem;
+        max-width: 30rem;
+        height: 100%;
+        box-sizing: border-box;
+        display: flex;
+      }
+      /* Set the size of the div element that contains the map */
+      #map {
+        height: 450px;
+        width: 50%
+      }
+      #sidebar {
+        display: flex;
+        flex-direction: column;
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin: 0 0 5px 0;
+        flex-grow: 0;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        overflow-y: scroll;
+        flex-grow: 1;
+      }
+    </style>
+    <script>
+      function initMap() {
+        const baltimore = { lat: 39.32745569632114, lng: -76.65242791920926 };
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: baltimore,
+            zoom: 11,
+        });
+        // The marker, positioned at baltimore
+        const marker = new google.maps.Marker({
+            position: baltimore,
+            map: map,
+            label: "S",
+        });
+        const marker2 = new google.maps.Marker({
+            position: { lat: 39.404567, lng: -76.603045 },
+            map: map,
+            label: "B",
+        });
+ /*       map.addListener("center_changed", () => {
+          // 3 seconds after the center of the map has changed, pan back to the marker.
+          window.setTimeout(() => {
+            map.panTo(marker.getPosition());
+          }, 3000);
+        });
+        marker.addListener("click", () => {
+          map.setZoom(13);
+          map.setCenter(marker.getPosition());
+        });*/
+        attachSecretMessage(marker, "school");
+        attachSecretMessage(marker2, "bus");
+      }
+      function attachSecretMessage(marker, secretMessage) {
+          const infowindow = new google.maps.InfoWindow({
+            content: secretMessage,
+          });
+          marker.addListener("click", () => {
+            infowindow.open(marker.get("map"), marker);
+          });
+      }
+    </script>
+  </head>
+  <body>
+    <h3>Pickup locations in Baltimore</h3>
+    <div id="map"></div>
+    <div id="sidebar">
+        <h2>Places</h2>
+        <ul>Bus Stop</ul>
+        <ul>School</ul>
+    </div>
+    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=***REMOVED***&callback=initMap&libraries=&v=weekly"
+      async
+    ></script>
+  </body>
+</html>

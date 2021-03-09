@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>"Hello, Student"</title>
+    <div class = "container">
+
+
+        <form action="{% url 'add' %}" method="post">
+            {% csrf_token %}
+            <!-- <p> Allows user to enter additional student info </p> -->
+            Enter additional student: <br/>
+            <input type = "text" name = "first" > <br/>
+            Enter student middle name: <br/>
+            <input type = "text" name = "middle" > <br/>
+            Enter student last name: <br/>
+            <input type = "text" name = "last" >
+            <input type = "submit" >
+        </form>
+    </div>
+</head>
+<body>
+    <div id = "header" align = "center" >
+        <h1> Student Details</h1>
+         <p>
+            <!-- <p> Prints out the list of students </p> -->
+            List of Students:
+            <ol>
+            {% for student in students %}
+            <li> {{ student.firstName}}
+                {{ student.middleName}}
+                {{ student.lastName}}</li>
+            {% endfor %}
+    </ol>
+        </p>
+    </div>
+</body>
+</html>

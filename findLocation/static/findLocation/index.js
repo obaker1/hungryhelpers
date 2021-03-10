@@ -4,12 +4,6 @@ function initMap() {
     const origin = "1000 Hilltop Circle Catonsville, Maryland";
     const destinationA = "Towson, Maryland";
     const destinationB = "Columbia, Maryland";
-  const destinationIcon =
-    "https://chart.googleapis.com/chart?" +
-    "chst=d_map_pin_letter&chld=D|FF0000|000000";
-  const originIcon =
-    "https://chart.googleapis.com/chart?" +
-    "chst=d_map_pin_letter&chld=O|FFFF00|000000";
   const map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 55.53, lng: 9.4 },
     zoom: 10,
@@ -35,19 +29,29 @@ function initMap() {
         outputDiv.innerHTML = "";
         deleteMarkers(markersArray);
 
-        const showGeocodedAddressOnMap = function (asDestination) {
-          const icon = asDestination ? destinationIcon : originIcon;
-
+        const showGeocodedAddressOnMap = function (asDestination) { //add markers on map
+          const icon = asDestination ? "D" : "O";
+          const popup = asDestination ? "Destination" : "Origin";
           return function (results, status) {
             if (status === "OK") {
               map.fitBounds(bounds.extend(results[0].geometry.location));
-              markersArray.push(
-                new google.maps.Marker({
+              const marker = new google.maps.Marker({
                   map,
                   position: results[0].geometry.location,
-                  icon: icon,
-                })
-              );
+                  label: icon,
+              })
+              markersArray.push(marker);
+              attachSecretMessage(marker, popup);
+              /*map.addListener("center_changed", () => { //testing map center change
+                // 3 seconds after the center of the map has changed, pan back to the marker.
+                window.setTimeout(() => {
+                map.panTo(marker.getPosition());
+                }, 3000);
+              });
+              marker.addListener("click", () => { //testing map zoom on click
+                map.setZoom(13);
+                map.setCenter(marker.getPosition());
+              });*/
             } else {
               alert("Geocode was not successful due to: " + status);
             }
@@ -81,7 +85,14 @@ function initMap() {
     }
   );
 }
-
+function attachSecretMessage(marker, secretMessage) { //add popups when marker is clicked
+   const infowindow = new google.maps.InfoWindow({
+     content: secretMessage,
+   });
+   marker.addListener("click", () => {
+     infowindow.open(marker.get("map"), marker);
+   });
+}
 function deleteMarkers(markersArray) {
   for (let i = 0; i < markersArray.length; i++) {
     markersArray[i].setMap(null);

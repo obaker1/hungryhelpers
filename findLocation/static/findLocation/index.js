@@ -1,10 +1,9 @@
 function initMap() {
   const bounds = new google.maps.LatLngBounds();
   const markersArray = [];
-  const origin1 = { lat: 55.93, lng: -3.118 };
-  const origin2 = "Greenwich, England";
-  const destinationA = "Stockholm, Sweden";
-  const destinationB = { lat: 50.087, lng: 14.421 };
+    const origin = "1000 Hilltop Circle Catonsville, Maryland";
+    const destinationA = "Towson, Maryland";
+    const destinationB = "Columbia, Maryland";
   const destinationIcon =
     "https://chart.googleapis.com/chart?" +
     "chst=d_map_pin_letter&chld=D|FF0000|000000";
@@ -19,7 +18,7 @@ function initMap() {
   const service = new google.maps.DistanceMatrixService();
   service.getDistanceMatrix(
     {
-      origins: [origin1, origin2],
+      origins: [origin],
       destinations: [destinationA, destinationB],
       travelMode: google.maps.TravelMode.DRIVING,
       unitSystem: google.maps.UnitSystem.METRIC,

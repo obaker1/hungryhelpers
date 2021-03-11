@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <h2>Find Your Location</h2>
+    {% load static %}
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css'%}">
+    <script type="text/javascript" src="{% static 'findLocation/index.js'%}"></script>
+</head>
+<body>
+    <p>The Distances</p>
+        <div id="right-panel">
+      <div id="inputs">
+        <pre>
+var origin1 = 1000 Hilltop Circle Catonsville, Maryland
+        const destinationA = "Towson, Maryland";
+        const destinationB = "Columbia, Maryland";
+        </pre>
+      </div>
+      <div>
+        <strong>Results</strong>
+      </div>
+      <div id="output"></div>
+    </div>
+    <div id="map"></div>
+
+    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDE41t7LzAPR_yrfiqiJcCBEbw7YzUYJ5I&callback=initMap&libraries=&v=weekly"
+      async
+    ></script>
+  </body>
+</html>
+
+<!--clickable places-->
+<!--<iframe-->
+<!--  width="450"-->
+<!--  height="250"-->
+<!--  frameborder="0" style="border:0"-->
+<!--  src="https://www.google.com/maps/embed/v1/search?key=AIzaSyDE41t7LzAPR_yrfiqiJcCBEbw7YzUYJ5I&q=schools+in+Baltimore" allowfullscreen>-->
+<!--</iframe>-->
+
+<!--<img width="450" src="https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=AIzaSyDE41t7LzAPR_yrfiqiJcCBEbw7YzUYJ5I" alt="Google Map of Albany, NY">-->

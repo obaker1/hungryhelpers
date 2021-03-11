@@ -30,3 +30,10 @@ Features:
 			1. Using a command line interpreter, navigate to the 'accounts' folder of the project
 			2. python manage.py test accounts
 			3. Details about each test can be found inside the /accounts/tests.py file.
+	- Dashboard
+		- Description:
+			The dashboard allows for convenient navigation between pages and presents the user the most important information from the notifications, map/scheduler pages, and ticket submission pages
+		- Testing:
+			1. To view dashboard, after cloning repo, navigate to the folder the project is saved in on your local machine
+			2. Open index.html in your browser of choice
+			3. Navigation will be possible to other pages, pages currently contain placeholder content

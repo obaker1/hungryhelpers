@@ -37,3 +37,9 @@ Features:
 			1. To view dashboard, after cloning repo, navigate to the folder the project is saved in on your local machine
 			2. Open index.html in your browser of choice
 			3. Navigation will be possible to other pages by clicking on them, pages currently contain placeholder content
+
+	- Parse Data:
+		- Description: Created a parser for a CSV file. Parses the student information with sample student data. 
+		- Testing:
+			1. Go to hungryhelpers/parseTest.py
+			2. Press "Run"

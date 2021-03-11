@@ -1,11 +1,11 @@
 # hungryhelpers
 
-Software you need to install:
+<h4>Software you need to install:</h4>
 - python
 
-How to run:
-python manage.py runserver
+</br><h4>How to run:</h4>
+<p>python manage.py runserver</p>
 
-Pages:
-admin can be found on 127.0.0.1:8000/admin/
-findLocation can be found on 127.0.0.1:8000/findLocation/
+</br><h4>Pages:<h4/>
+admin can be found on **127.0.0.1:8000/admin/** <br />
+findLocation can be found on **127.0.0.1:8000/findLocation/**

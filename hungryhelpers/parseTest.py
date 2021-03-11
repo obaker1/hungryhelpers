@@ -1,5 +1,5 @@
 import unittest
-from parser import read_data
+from parserStudent import read_data
 
 
 class ParseCSVTest(unittest.TestCase):

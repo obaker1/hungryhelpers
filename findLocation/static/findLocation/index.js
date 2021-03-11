@@ -1,15 +1,18 @@
 function initMap() {
   const bounds = new google.maps.LatLngBounds();
   const markersArray = [];
+    // locations and distances, hard coded for now
     const origin = "1000 Hilltop Circle Catonsville, Maryland";
     const destinationA = "Towson, Maryland";
     const destinationB = "Columbia, Maryland";
+
   const map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 55.53, lng: 9.4 },
     zoom: 10,
   });
   const geocoder = new google.maps.Geocoder();
   const service = new google.maps.DistanceMatrixService();
+  // creates distance matrix
   service.getDistanceMatrix(
     {
       origins: [origin],
@@ -19,7 +22,7 @@ function initMap() {
       avoidHighways: false,
       avoidTolls: false,
     },
-    (response, status) => {
+    (response, status) => { // makes sure that the google maps distance matrix loaded correctly
       if (status !== "OK") {
         alert("Error was: " + status);
       } else {
@@ -33,7 +36,7 @@ function initMap() {
           const icon = asDestination ? "D" : "O";
           const popup = asDestination ? "Destination" : "Origin";
           return function (results, status) {
-            if (status === "OK") {
+            if (status === "OK") { // makes sure that the google maps geoencoder loaded correctly
               map.fitBounds(bounds.extend(results[0].geometry.location));
               const marker = new google.maps.Marker({
                   map,

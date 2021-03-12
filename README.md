@@ -34,9 +34,9 @@ Features:
 	- Description:
 		The dashboard allows for convenient navigation between pages and presents the user the most important information from the notifications, map/scheduler pages, and ticket submission pages
 	- Testing:
-		1. To view dashboard, after cloning repo, navigate to the folder the project is saved in on your local machine
+		1. To view dashboard, after cloning repo, navigate to the folder the project is saved in on your local machine using the file explorer
 		2. Open index.html in your browser of choice
-		3. Navigation will be possible to other pages, pages currently contain placeholder content
+		3. Navigation will be possible to other pages by clicking on them, pages currently contain placeholder content
 - Parse Data:
 	- Description: Created a parser for a CSV file. Parses the student information with sample student data. 
 	- Testing:

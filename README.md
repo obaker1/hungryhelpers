@@ -16,8 +16,8 @@ Features:
 	- URLs: 
 		http://127.0.0.1:8000/findLocation/ 
 	- Test suite execution instructions:
-		1. Using a command line interpreter, navigate to the 'findLocation' folder of the project
-		2. python manage.py test findLocation
+		1. Using a command line interpreter, navigate to the root directory of the project
+		2. Run 'python manage.py test findLocation'
 		3. Details about each test can be found inside the /findLocation/tests.py file.
 - Account management:
 	- Description:
@@ -27,8 +27,8 @@ Features:
 		- http://127.0.0.1:8000/accounts/signup/ 
 		- http://127.0.0.1:8000/accounts/logout/ 
 	- Test suite execution instructions:
-		1. Using a command line interpreter, navigate to the 'accounts' folder of the project
-		2. python manage.py test accounts
+		1. Using a command line interpreter, navigate to the root directory of the project
+		2. Run 'python manage.py test accounts'
 		3. Details about each test can be found inside the /accounts/tests.py file.
 - Dashboard
 	- Description:
@@ -40,5 +40,6 @@ Features:
 - Parse Data:
 	- Description: Created a parser for a CSV file. Parses the student information with sample student data. 
 	- Testing:
-		1. Go to hungryhelpers/parseTest.py
-		2. Press "Run"
+		1. Using a command line interpreter, navigate to the root directory of the project and cd into the hungryhelpers directory
+		2. Run 'python parseTest.py'
+		3. Details about each test can be found inside the parseTest.py file

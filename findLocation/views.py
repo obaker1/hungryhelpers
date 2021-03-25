@@ -6,6 +6,11 @@ from urllib.parse import urlencode
 
 API_KEY = '***REMOVED***'
 
+from findLocation.models import Destinations
 
 def index(request):
+    destinations = Destinations.objects.filter()
+    context = {
+        'destinations' : destinations
+    }
     return render(request, 'findLocation/index.html', context={})

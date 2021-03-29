@@ -9,23 +9,23 @@
 </head>
 <body>
     <p>The Distances</p>
-
-        <div id="right-panel">
-      <div id="inputs">
-      </div>
-      <div>
-        <strong>Results</strong>
-      </div>
-      <div id="output"></div>
+    <div id="right-panel">
+        <div id="inputs"></div>
+        <div>
+            <strong>Results</strong>
+        </div>
+        <div id="output"></div>
     </div>
     <div id="map"></div>
-
     <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=***REMOVED***&callback=initMap&libraries=&v=weekly"
-      async
-    ></script>
-  </body>
+    {{ api_key|json_script:"api_key" }}
+    <script async type="text/javascript">
+            const api_key = JSON.parse(document.getElementById('api_key').textContent);
+            const google_api_script = document.createElement('script');
+            google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');
+            document.head.appendChild(google_api_script);
+    </script><!--            src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap&libraries=&v=weekly" type="text/javascript"-->
+</body>
 </html>
 
 <!--clickable places-->

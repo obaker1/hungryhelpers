@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <h2>Find Your Location</h2>
     {% load static %}
@@ -9,8 +9,23 @@
 </head>
 <body>
     <p>The Distances</p>
+    <form action="{% url 'add' %}" method="post"}>
+        {% csrf_token %}
+        Enter a new destination:
+        <input type="text" name="destination"> <br>
+        <input type="submit">
+    </form>
+    </br>
     <div id="right-panel">
-        <div id="inputs"></div>
+        <div>
+            <strong>Origin: </strong> {{ origin }} <br>
+            <strong>Destinations</strong>
+            <ol>
+                {% for destination in destinations %}
+                <li>{{ destination.text }}</li>
+                {% endfor %}
+            </ol>
+        </div>
         <div>
             <strong>Results</strong>
         </div>

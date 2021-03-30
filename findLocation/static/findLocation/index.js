@@ -1,7 +1,7 @@
 function initMap() {
   const bounds = new google.maps.LatLngBounds();
   const markersArray = [];
-    // locations and distances, hard coded for now
+    // origin hard coded for now
     const origin = "1000 Hilltop Circle Catonsville, Maryland";
     const destinationA = "Towson, Maryland";
     const destinationB = "Columbia, Maryland";

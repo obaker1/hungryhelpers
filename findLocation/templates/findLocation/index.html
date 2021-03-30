@@ -3,7 +3,7 @@
 <head>
     <h2>Find Your Location</h2>
     {% load static %}
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/style.css'%}">
     <script type="text/javascript" src="{% static 'findLocation/index.js'%}"></script>
 </head>
@@ -26,10 +26,10 @@
                 {% endfor %}
             </ol>
         </div>
-        <div>
-            <strong>Results</strong>
-        </div>
-        <div id="output"></div>
+        <strong>Results</strong>
+        <ol>
+            <div id="output"></div>
+        </ol>
     </div>
     <div id="map"></div>
     <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
@@ -39,7 +39,7 @@
             const google_api_script = document.createElement('script');
             google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');
             document.head.appendChild(google_api_script);
-    </script><!--            src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap&libraries=&v=weekly" type="text/javascript"-->
+    </script>
 </body>
 </html>
 

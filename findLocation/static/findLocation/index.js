@@ -16,7 +16,7 @@ function initMap() {
   service.getDistanceMatrix(
     {
       origins: [origin],
-      destinations: [destinationA, destinationB],
+      destinations: ["Rockville, Maryland", destinationA, destinationB],
       travelMode: google.maps.TravelMode.DRIVING,
       unitSystem: google.maps.UnitSystem.METRIC,
       avoidHighways: false,
@@ -60,30 +60,50 @@ function initMap() {
             }
           };
         };
-
-        for (let i = 0; i < originList.length; i++) {
-          const results = response.rows[i].elements;
+          // get the origin
+          const orderedDestinations = [];
+          orderedDestinations.push(0)
+          const results = response.rows[0].elements;
           geocoder.geocode(
-            { address: originList[i] },
-            showGeocodedAddressOnMap(false)
-          );
+            { address: originList[0] },
+            showGeocodedAddressOnMap(false));
 
+          // order the distances
+          for (let i = 1; i < results.length; i++){
+            const distanceNum = parseInt(results[i].distance.text);
+            let found = false;
+
+            for(let k = 0; k < orderedDestinations.length && found==false; k++){
+                const currDistanceNum = parseInt(results[orderedDestinations[k]].distance.text);
+                if(distanceNum <= currDistanceNum){
+                    orderedDestinations.splice(k, 0, i);
+                    found = true;
+                }
+                else if(k == orderedDestinations.length -1){
+                    orderedDestinations.push(i);
+                    found = true;
+                }
+            }
+          }
+
+          // output the distances in the correct order
           for (let j = 0; j < results.length; j++) {
+          const currIndex = orderedDestinations[j];
             geocoder.geocode(
-              { address: destinationList[j] },
+              { address: destinationList[currIndex] },
               showGeocodedAddressOnMap(true)
             );
+
             outputDiv.innerHTML +=
-              originList[i] +
-              " to " +
-              destinationList[j] +
+              j+1 + ". " +
+              destinationList[currIndex] +
               ": " +
-              results[j].distance.text +
+              results[currIndex].distance.text +
               " in " +
-              results[j].duration.text +
+              results[currIndex].duration.text +
               "<br>";
           }
-        }
+
       }
     }
   );

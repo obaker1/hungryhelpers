@@ -15,17 +15,18 @@ import requests
 def index(request):
     destinations = Destinations.objects.filter()
     origin = '1000 Hilltop Cir, Baltimore, MD 21250, USA'
-    callgooglematrix(origin)
+    destinationList = callgooglematrix(origin)
     googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'location')
     context = {
         'destinations': destinations,
         'api_key': settings.GOOGLE_MAPS_API_KEY,
         'origin': origin,
         'googlemapsresult': googlemaps,
+        'destinationList': destinationList
     }
     return render(request, 'findLocation/index.html', context)
 
-
+# finds the distances for each destination from the desinations in the database
 def callgooglematrix(origin):
     if Destinations.objects.count() > 0:
         destinationList = []
@@ -38,6 +39,7 @@ def callgooglematrix(origin):
             'origins': origin,
             'destinations': destinationAppended
         }
+        # calls distance matrix API
         url = 'https://maps.googleapis.com/maps/api/distancematrix/json?callback=initMap&libraries=&v=weekly&units=imperial'
         response = requests.get(url, params)
 
@@ -46,6 +48,7 @@ def callgooglematrix(origin):
         except json.decoder.JSONDecodeError:
             result = "String could not be converted to JSON"
 
+        # parses the JSON returned from the distance matrix API and inputs the data into the database
         results = result['rows'][0]['elements'];
         destinationList = result['destination_addresses']
         for i in range(len(destinationList)):
@@ -56,7 +59,9 @@ def callgooglematrix(origin):
             if not GoogleMapsResponse.objects.filter(location=location, distance=distance).exists():
                 newResponse = GoogleMapsResponse(location=location, distance=distance, time=time)
                 newResponse.save()
-        return result
+
+        # returns the string of destinations to be parsed in the html file
+        return destinationAppended
 
 
 def add(request):

@@ -4,6 +4,7 @@ import requests
 from django.conf import settings
 
 from .models import Destinations
+from .models import GoogleMapsResponse
 
 
 # Create your tests here.
@@ -30,17 +31,29 @@ class DestinationIndexViewTest(TestCase):
         """
         Make sure that a destination inputted is in the database.
         """
-        create_destination(destination_text="Elkridge, Maryland")
+        create_destination(destination_text="Towson, Maryland")
         response = self.client.get(reverse('index'))
-        self.assertContains(response, "Elkridge, Maryland")
+        self.assertContains(response, "Towson,")
 
-    def test_order_of_locations(self):
-        """
-        makes sure that all locations in the database are ordered
-        correctly my distance (not by time)
-        """
+    # def test_order_of_locations(self):
+    #     """
+    #     makes sure that all locations in the database are ordered
+    #     correctly by distance (not by time)
+    #     """
 
     def test_google_matrix_api(self):
+        """
+        makes sure that distance matrix API is working
+        """
         url = 'https://maps.googleapis.com/maps/api/distancematrix/json?callback=initMap&libraries=&v=weekly&units=imperial'
         response = requests.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_google_geocode_api(self):
+        """
+        makes sure that geocode API is working
+        """
+        url = 'https://maps.googleapis.com/maps/api/js?'
+        response = requests.get(url)
+        self.assertEqual(response.status_code, 200)
+

@@ -18,6 +18,7 @@
     </br>
     <div id="right-panel">
         <div>
+            <!-- displays the origins and destinations from closest for furthest !-->
             <strong>Origin: </strong> {{ origin }} <br>
             <strong>Destinations</strong>
             <ol>
@@ -26,15 +27,19 @@
                 {% endfor %}
             </ol>
         </div>
-        <strong>Results</strong>
-        <ol>
-            <div id="output"></div>
-        </ol>
     </div>
     <div id="map"></div>
     <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
     {{ api_key|json_script:"api_key" }}
+    <!-- sets origin and destination values and calls the google maps api that will display the map !-->
     <script async type="text/javascript">
+            var origin = "{{origin}}";
+            var destinationString = "{{destinationList}}";
+            var destinationList = []
+            if( destinationString != "None"){
+                destinationList = destinationString.split("|");
+            }
+            setParameters(origin, destinationList);
             const api_key = JSON.parse(document.getElementById('api_key').textContent);
             const google_api_script = document.createElement('script');
             google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');

@@ -16,9 +16,9 @@ function initMap() {
   service.getDistanceMatrix(
     {
       origins: [origin],
-      destinations: ["Rockville, Maryland", destinationA, destinationB],
+      destinations: [destinationA, destinationB],
       travelMode: google.maps.TravelMode.DRIVING,
-      unitSystem: google.maps.UnitSystem.METRIC,
+      unitSystem: google.maps.UnitSystem.IMPERIAL,
       avoidHighways: false,
       avoidTolls: false,
     },
@@ -26,6 +26,7 @@ function initMap() {
       if (status !== "OK") {
         alert("Error was: " + status);
       } else {
+        //console.log(response);
         const originList = response.originAddresses;
         const destinationList = response.destinationAddresses;
         const outputDiv = document.getElementById("output");
@@ -61,47 +62,46 @@ function initMap() {
           };
         };
           // get the origin
-          const orderedDestinations = [];
-          orderedDestinations.push(0)
+//          const orderedDestinations = [];
+//          orderedDestinations.push(0)
           const results = response.rows[0].elements;
           geocoder.geocode(
             { address: originList[0] },
             showGeocodedAddressOnMap(false));
-
-          // order the distances
-          for (let i = 1; i < results.length; i++){
-            const distanceNum = parseInt(results[i].distance.text);
-            let found = false;
-
-            for(let k = 0; k < orderedDestinations.length && found==false; k++){
-                const currDistanceNum = parseInt(results[orderedDestinations[k]].distance.text);
-                if(distanceNum <= currDistanceNum){
-                    orderedDestinations.splice(k, 0, i);
-                    found = true;
-                }
-                else if(k == orderedDestinations.length -1){
-                    orderedDestinations.push(i);
-                    found = true;
-                }
-            }
-          }
+//
+//          // order the distances
+//          for (let i = 1; i < results.length; i++){
+//            const distanceNum = parseInt(results[i].distance.text);
+//            let found = false;
+//
+//            for(let k = 0; k < orderedDestinations.length && found==false; k++){
+//                const currDistanceNum = parseInt(results[orderedDestinations[k]].distance.text);
+//                if(distanceNum <= currDistanceNum){
+//                    orderedDestinations.splice(k, 0, i);
+//                    found = true;
+//                }
+//                else if(k == orderedDestinations.length -1){
+//                    orderedDestinations.push(i);
+//                    found = true;
+//                }
+//            }
+//          }
 
           // output the distances in the correct order
           for (let j = 0; j < results.length; j++) {
-          const currIndex = orderedDestinations[j];
             geocoder.geocode(
-              { address: destinationList[currIndex] },
+              { address: destinationList[j] },
               showGeocodedAddressOnMap(true)
             );
 
-            outputDiv.innerHTML +=
-              j+1 + ". " +
-              destinationList[currIndex] +
-              ": " +
-              results[currIndex].distance.text +
-              " in " +
-              results[currIndex].duration.text +
-              "<br>";
+//            outputDiv.innerHTML +=
+//              j+1 + ". " +
+//              destinationList[currIndex] +
+//              ": " +
+//              results[currIndex].distance.text +
+//              " in " +
+//              results[currIndex].duration.text +
+//              "<br>";
           }
 
       }

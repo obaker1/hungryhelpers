@@ -1,19 +1,79 @@
-<!-- templates/registration/signup.html -->
-{% extends 'base.html' %}
+<!DOCTYPE html>
+{% load static %}
+<html>
 
-{% block title %}Sign Up{% endblock %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Register - Brand</title>
+    <link rel="stylesheet" href="{% static 'hungryhelpers/assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="{% static 'hungryhelpers/assets/fonts/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'hungryhelpers/assets/fonts/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'hungryhelpers/assets/fonts/fontawesome5-overrides.min.css' %}">
+    <link rel="stylesheet" href="{% static 'hungryhelpers/assets/css/Contact-Form-Clean.css' %}">
+    <link rel="stylesheet" href="{% static 'hungryhelpers/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css' %}">
+    <link rel="stylesheet" href="{% static 'hungryhelpers/assets/css/Map-Clean.css' %}">
+</head>
 
-{% block content %}
-<h2>Sign up</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Sign Up</button>
-</form>
-<br />
-<form method="form" action={% url 'home' %}>
-  <button type="submit">Go back</button>
-</form>
+<body class="bg-gradient-primary">
+    <div class="container">
+        <div class="card shadow-lg o-hidden border-0 my-5">
+            <div class="card-body p-0">
+                <div class="row">
+                    <div class="col-lg-5 d-none d-lg-flex">
+                        <div class="flex-grow-1 bg-register-image" style="background-image: url({% static 'hungryhelpers/assets/img/bgs/burger.webp' %});"></div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h4 class="text-dark mb-4">Create an Account!</h4>
+                            </div>
+
+                            <!--<form class="user">
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="text" id="exampleFirstName" placeholder="First Name" name="first_name"></div>
+                                    <div class="col-sm-6"><input class="form-control form-control-user" type="text" id="exampleFirstName" placeholder="Last Name" name="last_name"></div>
+                                </div>
+                                <div class="form-group"><input class="form-control form-control-user" type="email" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email Address" name="email"></div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="password" id="examplePasswordInput" placeholder="Password" name="password"></div>
+                                    <div class="col-sm-6"><input class="form-control form-control-user" type="password" id="exampleRepeatPasswordInput" placeholder="Repeat Password" name="password_repeat"></div>
+                                </div><button class="btn btn-primary btn-block text-white btn-user" type="submit">Register Account</button>-->
+                                <!--<hr><a class="btn btn-primary btn-block text-white btn-google btn-user" role="button"><i class="fab fa-google"></i>&nbsp; Register with Google</a><a class="btn btn-primary btn-block text-white btn-facebook btn-user" role="button"><i class="fab fa-facebook-f"></i>&nbsp; Register with Facebook</a>-->
+                                <!--<hr>
+                            </form>-->
+                            <form method="post">
+                              {% csrf_token %}
+                              {{ form.as_p }}
+                              <button type="submit" class="btn btn-primary btn-block text-white btn-user" >Register</button>
+                            </form>
+                            <hr>
+                            <form method="form" action={% url 'login' %}>
+                                <button class="btn btn-primary btn-block" type="submit">Already have an account? Login!</button>
+                            </form>
+                            <br><br><br><br>
+                            <form method="form" action={% url 'home' %}>
+                                <button class="btn btn-primary btn-block" type="submit">Back to Home</button>
+                            </form>
 
 
-{% endblock %}
+                            <!--<form method="form" action={% url 'home' %}>
+                                <div class="text-center"><a class="small" href="forgot-password.html">Back to Home</a></div>
+                            </form>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'hungryhelpers/assets/bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'hungryhelpers/assets/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'hungryhelpers/assets/js/chart.min.js' %}"></script>
+    <script src="{% static 'hungryhelpers/assets/js/bs-init.js' %}"></script>
+    <script src="{% static 'hungryhelpers/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js' %}"></script>
+    <script src="{% static 'hungryhelpers/assets/js/theme.js"></script>
+</body>
+
+</html>

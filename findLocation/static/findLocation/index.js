@@ -32,13 +32,15 @@ var filter_markers = function() {
   // for each marker, check to see if all required options are set
   for (i = 0; i < markersArray.length; i++) {
     marker = markersArray[i];
-    keep=true; // start the filter check assuming the marker will be displayed
-    for (opt=0; opt<set_filters.length; opt++) {
-      if (!marker.properties[set_filters[opt]]) {
-        keep = false; // if missing required feature
-      }
+    if (marker.label == 'D') { // if the marker is a destination
+        keep=true; // start the filter check assuming the marker will be displayed
+        for (opt=0; opt<set_filters.length; opt++) {
+          if (!marker.properties[set_filters[opt]]) { // if a property is not selected
+            keep = false;
+          }
+        }
+        marker.setVisible(keep);
     }
-    marker.setVisible(keep);
   }
 }
 
@@ -64,7 +66,6 @@ function loadMarkers() {
           properties: val['properties'],
           label: "D"
         });
-        //attachSecretMessage(marker, "Destination");
         var markerInfo = "<div><h3>" + titleText + "</h3>Amenities: " + descriptionText + "</div>";
 
         // show info windows when a marker is clicked

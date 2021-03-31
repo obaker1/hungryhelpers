@@ -3,7 +3,7 @@
 <head>
     <h2>Find Your Location</h2>
     {% load static %}
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/style.css'%}">
     <script type="text/javascript" src="{% static 'findLocation/index.js'%}"></script>
 </head>
@@ -12,9 +12,10 @@
         <div id="right-panel">
       <div id="inputs">
         <pre>
-var origin1 = 1000 Hilltop Circle Catonsville, Maryland
+        var origin1 = 1000 Hilltop Circle Catonsville, Maryland
         const destinationA = "Towson, Maryland";
         const destinationB = "Columbia, Maryland";
+        const destinationC = "Frederick Douglass High School";
         </pre>
       </div>
       <div>
@@ -22,11 +23,21 @@ var origin1 = 1000 Hilltop Circle Catonsville, Maryland
       </div>
       <div id="output"></div>
     </div>
-    <div id="map"></div>
+    <div id="buttons">
+        <input type="checkbox" name="filter" id="school" class='chk-btn'>
+        <label for='school'>school</label>
 
+        <input type="checkbox" name="filter" id="bus" class='chk-btn'>
+        <label for='bus'>bus stop</label>
+        <br>
+    </div>
+    <br>
+    <div id="map"></div>
+    <br>
+    <div id="places_info"></div>
     <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=***REMOVED***&callback=initMap&libraries=&v=weekly"
+      src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY&callback=initMap&libraries=&v=weekly"
       async
     ></script>
   </body>

@@ -6,7 +6,7 @@ Software required:
 
 Additional modules required:
 - crispy_forms
-- django_notification-hq
+- django_notification_hq
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project

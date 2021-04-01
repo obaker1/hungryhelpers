@@ -3,6 +3,7 @@
 Software required:
 - Python 3.7 or above
 - Django 3.1.7
+- django-environ 0.4.5 (pip install django-environ)
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project

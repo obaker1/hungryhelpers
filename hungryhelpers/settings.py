@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'findLocation',
     'accounts',
+    'menu',
 ]
 
 AUTH_PROFILE_MODULE = "accounts.UserProfile"

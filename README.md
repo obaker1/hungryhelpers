@@ -4,6 +4,10 @@ Software required:
 - Python 3.7 or above
 - Django 3.1.7
 
+Additional modules required:
+- crispy_forms
+- django_notification_hq
+
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
 2. Run the command 'python manage.py runserver'
@@ -43,3 +47,21 @@ Features:
 		1. Using a command line interpreter, navigate to the root directory of the project and cd into the hungryhelpers directory
 		2. Run 'python parseTest.py'
 		3. Details about each test can be found inside the parseTest.py file
+
+- Notification:
+	- Description:
+		Allows admin users to send notifcations to individual regular users
+	- URLs: 
+		http://127.0.0.1:8000/notifs/ 
+	- Test suite execution instructions:
+		1. Using a command line interpreter, navigate to the root directory of the project
+		2. Run 'python manage.py test notifs'
+		3. Details about each test can be found inside the /notifs/tests.py file.
+	- Manual demonstration:
+		1. From a browser, navigate to http://127.0.0.1:8000/ and create an account
+		2. From a different browser, navigate to http://127.0.0.1:8000/ and create another account
+		3. From the first browser, navigate to http://127.0.0.1:8000/notifs/ 
+		4. Enter a message to be sent to the other user and click send
+		5. In the second browser, refreshing the page and clicking on the bell icon will show the notifcation that has been sent
+
+

@@ -1,14 +1,26 @@
 from django.test import TestCase, Client
 from django.urls import reverse
+from .models import User
+from notifications.signals import notify
 
 
-# Create your tests here.
+
+
+# test if page is reachable
 class PageLoad(TestCase):
-    # test findLocation page works
     def test_page_load(self):
-        # access findLocation page
-        response = self.client.get('/findLocation/')
-        # verify site status code (HTTP 200 OK)
+        response = self.client.get('/notifs/')
         self.assertEqual(response.status_code, 200)
-        # verify index.html is being used
-        self.assertTemplateUsed(response, template_name='findLocation/index.html')
+
+# send notification and check if received by user
+class NotifyTest(TestCase):
+    def test_check_notif(self):
+        # create new user and login
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        # specify user to send notif to
+        user = User.objects.get(username='testuser')
+        notify.send(user, recipient=user, verb='your order is ready for pickup!')
+        # check if notif received
+        response = self.client.get('/notifs/inbox/notifications/api/unread_list/?max=5 HTTP/1.1')
+        self.assertEqual(response.status_code, 200)

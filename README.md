@@ -6,7 +6,7 @@ Software required:
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
-2. Run the command 'python manage.py runserver'
+2. Run the command 'pythong manage.py makemigrations' then 'python manage.py migrate' and 'python manage.py runserver'
 3. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
 
 Features:

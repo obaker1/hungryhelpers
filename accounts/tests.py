@@ -111,3 +111,56 @@ class LogOutTest(TestCase):
         self.assertFalse(response.context['user'].is_active)
         # check user is shown "You are not logged in" message
         self.assertTrue('You are not logged in' in str(response.content))
+
+class EditSettingsTest(TestCase):
+    def setUp(self):
+        # valid credentials
+        self.credentials = {
+            'username': 'test',
+            'password': '>pve_hm*N*&x<qbP8u'}
+        User.objects.create_user(**self.credentials)
+
+        # information for settings page
+        self.username = 'test'
+        self.email = 'tester@tset.com'
+        self.first_name = 'testing'
+        self.last_name = 'mctest'
+
+    def test_settings_page_while_logged_out(self):
+        # access settings page
+        response = self.client.get('/accounts/settings/', follow=True)
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify a redirect was issued to take user to the login page
+        self.assertTemplateUsed(response, template_name='registration/login.html')
+
+    def test_settings_page_while_logged_in(self):
+        # send login data
+        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        # check site redirection destination returns status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # check that the user successfully logged in
+        self.assertTrue(response.context['user'].is_active)
+        # check that the user has been redirected to home
+        self.assertTemplateUsed(response, template_name='home.html')
+        # access settings page
+        response = self.client.get('/accounts/settings/', follow=True)
+        self.assertEqual(response.status_code, 200)
+        # verify edit_settings.html is being used
+        self.assertTemplateUsed(response, template_name='registration/edit_settings.html')
+        # send and save information to settings page
+        response = self.client.post('/accounts/settings/', data={
+            'username': self.username,
+            'email': self.email,
+            'first_name': self.first_name,
+            'last_name' : self.last_name
+        }, follow=True)
+        # check that the user has been redirected to home after updating settings
+        self.assertTemplateUsed(response, template_name='home.html')
+        # reaccess settings page
+        response = self.client.get('/accounts/settings/')
+        # verifies that the information has been successfully updated (username, email, fn, and ln)
+        self.assertContains(response, self.username)
+        self.assertContains(response, self.email)
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.last_name)

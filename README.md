@@ -12,7 +12,7 @@ Software execution instructions:
 Features:
 - Find Location:
 	- Description:
-		Allows the user to pick a location to pick up their food
+		Allows the user to pick a location to pick up their food. In order to run the google maps API you must create a file called .env in hungerhelpers/. So the path of the file should be hungryhelpers/.env. In this file add a variable GOOGLE_MAPS_LOCATION = _API_KEY_ (where _API_KEY_ is replaced by the google maps API key given
 	- URLs: 
 		http://127.0.0.1:8000/findLocation/ 
 	- Test suite execution instructions:

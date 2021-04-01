@@ -24,3 +24,4 @@ class NotifyTest(TestCase):
         # check if notif received
         response = self.client.get('/notifs/inbox/notifications/api/unread_list/?max=5 HTTP/1.1')
         self.assertEqual(response.status_code, 200)
+

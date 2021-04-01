@@ -47,7 +47,7 @@ var filter_markers = function() {
 // loads the markers onto the map
 function loadMarkers() {
   var infoWindow = new google.maps.InfoWindow();
-  geojson_url = 'https://raw.githubusercontent.com/obaker1/hungryhelpers/feature/filterMap/map.geojson';
+  geojson_url = 'https://raw.githubusercontent.com/obaker1/hungryhelpers/main/map.geojson';
   // load the geoJSON file
   $.getJSON(geojson_url, function(result) {
       // Post select to url

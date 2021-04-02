@@ -3,17 +3,18 @@
 Software required:
 - Python 3.7 or above
 - Django 3.1.7
-- django-localflavor (install by running 'pip install django-localflavor' on a command line interpreter)
+- django-localflavor (install by running 'pip install django-localflavor')
+- django-environ 0.4.5 (install by running 'pip install django-environ')
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
-2. Run the command 'python manage.py runserver'
+2. Run the commands 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
 3. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
 
 Features:
 - Find Location:
 	- Description:
-		Allows the user to pick a location to pick up their food
+		Allows the user to pick a location to pick up their food. In order to run the google maps API you must create a file called .env in hungerhelpers/. So the path of the file should be hungryhelpers/.env. In this file add a variable GOOGLE_MAPS_LOCATION = _API_KEY_ (where _API_KEY_ is replaced by the google maps). API key given
 	- URLs: 
 		http://127.0.0.1:8000/findLocation/ 
 	- Test suite execution instructions:

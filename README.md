@@ -6,10 +6,8 @@ Software required:
 - django-localflavor (install by running 'pip install django-localflavor')
 - django-environ 0.4.5 (install by running 'pip install django-environ')
 - requests 2.25.1 (install by running 'pip install requests')
-
-Additional modules required:
-- crispy_forms
-- django_notification_hq
+- django-cripsy-forms (install by running 'pip install django-crispy-forms')
+- django_notification_hq (install by running 'pip install django_notification_hq')
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
@@ -56,9 +54,13 @@ Features:
 		2. Run 'python parseTest.py'
 		3. Details about each test can be found inside the parseTest.py file
 
-- Notification:
+- Notifications:
 	- Description:
 		Allows admin users to send notifcations to individual regular users
+	- Notes before testing and demonstration: 
+		1. Ensure that 'python manage.py migrate notifications' has been run
+		2. Rename 'templates/base.html' to something else and 'templates/base_notifs.html' to 'base.html'
+		3. Change both files back to their orignal names before executing other tests
 	- URLs: 
 		http://127.0.0.1:8000/notifs/ 
 	- Test suite execution instructions:

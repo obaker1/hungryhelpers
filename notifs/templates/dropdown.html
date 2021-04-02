@@ -1,9 +1,0 @@
-<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-    {% for notification in  user.notifications.unread %}
-    <div>
-        Message from <b>{{ notification.actor }}</b>
-        <button class="dropdown-item" type="button">{{ notification.description }}</button>
-    </div>
-    <div class="dropdown-divider"></div>
-    {% endfor %}
-</div>

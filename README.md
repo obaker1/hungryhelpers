@@ -16,6 +16,8 @@ Software execution instructions:
 4. Return to the root directory and run following commands: 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
 5. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
 
+<b><u> NOTE:</u></b> When creating an account, please be sure to <b> enable pop-ups and redirects </b> on the browser that will be accessing the website for the best experience. If a blank page is encountered upon registration, have the browser be in focus and press “TAB” on the keyboard to reveal the hidden button on the page and press it. 
+
 Features:
 - Find Location:
 	- Description:

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <h2>Find Your Location</h2>
     {% load static %}
@@ -9,19 +9,24 @@
 </head>
 <body>
     <p>The Distances</p>
-        <div id="right-panel">
-      <div id="inputs">
-        <pre>
-        var origin1 = 1000 Hilltop Circle Catonsville, Maryland
-        const destinationA = "Towson, Maryland";
-        const destinationB = "Columbia, Maryland";
-        const destinationC = "Frederick Douglass High School";
-        </pre>
-      </div>
-      <div>
-        <strong>Results</strong>
-      </div>
-      <div id="output"></div>
+    <form action="{% url 'add' %}" method="post"}>
+        {% csrf_token %}
+        Enter a new destination:
+        <input type="text" name="destination"> <br>
+        <input type="submit">
+    </form>
+    </br>
+    <div id="right-panel">
+        <div>
+            <!-- displays the origins and destinations from closest for furthest !-->
+            <strong>Origin: </strong> {{ origin }} <br>
+            <strong>Destinations</strong>
+            <ol>
+                {% for locations in googlemapsresult %}
+                <li>{{ locations.location }}: {{locations.distance}} miles in {{locations.time}}</li>
+                {% endfor %}
+            </ol>
+        </div>
     </div>
     <div id="buttons">
         <input type="checkbox" name="filter" id="school" class='chk-btn'>
@@ -36,19 +41,20 @@
     <br>
     <div id="places_info"></div>
     <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY&callback=initMap&libraries=&v=weekly"
-      async
-    ></script>
-  </body>
+    {{ api_key|json_script:"api_key" }}
+    <!-- sets origin and destination values and calls the google maps api that will display the map !-->
+    <script async type="text/javascript">
+            var origin = "{{origin}}";
+            var destinationString = "{{destinationList}}";
+            var destinationList = []
+            if( destinationString != "None"){
+                destinationList = destinationString.split("|");
+            }
+            setParameters(origin, destinationList);
+            const api_key = JSON.parse(document.getElementById('api_key').textContent);
+            const google_api_script = document.createElement('script');
+            google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');
+            document.head.appendChild(google_api_script);
+    </script>
+</body>
 </html>
-
-<!--clickable places-->
-<!--<iframe-->
-<!--  width="450"-->
-<!--  height="250"-->
-<!--  frameborder="0" style="border:0"-->
-<!--  src="https://www.google.com/maps/embed/v1/search?key=***REMOVED***&q=schools+in+Baltimore" allowfullscreen>-->
-<!--</iframe>-->
-
-<!--<img width="450" src="https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=***REMOVED***" alt="Google Map of Albany, NY">-->

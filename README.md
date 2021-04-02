@@ -7,17 +7,19 @@ Software required:
 - django-environ 0.4.5 (install by running 'pip install django-environ')
 - requests 2.25.1 (install by running 'pip install requests')
 - django-cripsy-forms (install by running 'pip install django-crispy-forms')
-- django_notification_hq (install by running 'pip install django_notification_hq')
+- django_notifications_hq (install by running 'pip install django_notifications_hq')
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
-2. Run the commands 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
-3. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
+2. Navigate into the 'hungryhelpers' folder (hungryhelpers/hungryhelpers) and make a new file named ".env"
+3. In ".env", enter "GOOGLE_MAPS_API_KEY=<b>API_KEY</b>", where <b>API_KEY</b> is the key given at the bottom of the group retrospective.
+4. Return to the root directory and run following commands: 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
+5. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
 
 Features:
 - Find Location:
 	- Description:
-		Allows the user to pick a location to pick up their food. In order to run the google maps API you must create a file called .env in hungerhelpers/. So the path of the file should be hungryhelpers/.env. In this file add a variable GOOGLE_MAPS_API_KEY=_API_KEY_ (where _API_KEY_ is replaced by the google maps API_KEY given).
+		Allows the user to pick a location to pick up their food.
 	- URLs: 
 		http://127.0.0.1:8000/findLocation/ 
 	- Test suite execution instructions:

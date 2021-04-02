@@ -28,7 +28,18 @@
             </ol>
         </div>
     </div>
+    <div id="buttons">
+        <input type="checkbox" name="filter" id="school" class='chk-btn'>
+        <label for='school'>school</label>
+
+        <input type="checkbox" name="filter" id="bus" class='chk-btn'>
+        <label for='bus'>bus stop</label>
+        <br>
+    </div>
+    <br>
     <div id="map"></div>
+    <br>
+    <div id="places_info"></div>
     <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
     {{ api_key|json_script:"api_key" }}
     <!-- sets origin and destination values and calls the google maps api that will display the map !-->

@@ -3,12 +3,13 @@
 Software required:
 - Python 3.7 or above
 - Django 3.1.7
-- django-environ 0.4.5 (pip install django-environ)
-- requests 2.25.1 (pip install requests)
+- django-localflavor (install by running 'pip install django-localflavor')
+- django-environ 0.4.5 (install by running 'pip install django-environ')
+- requests 2.25.1 (install by running 'pip install requests')
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
-2. Run the command 'python manage.py makemigrations' then 'python manage.py migrate' and 'python manage.py runserver'
+2. Run the commands 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
 3. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
 
 Features:
@@ -23,14 +24,19 @@ Features:
 		3. Details about each test can be found inside the /findLocation/tests.py file.
 - Account management:
 	- Description:
-		Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one.
+		Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one. Allows users to edit personal settings such as their username, email, first name, and last name. Users may also edit their profile to add students (children) as well as indicate the names and contact information of trusted caretakers. Student profile information includes name, age, address, city, state, zip, school, grade, and student id. 
 	- URLs: 
 		- http://127.0.0.1:8000/accounts/login/
-		- http://127.0.0.1:8000/accounts/signup/ 
+		- http://127.0.0.1:8000/accounts/signup/
 		- http://127.0.0.1:8000/accounts/logout/ 
+		- http://127.0.0.1:8000/accounts/<int:pk>/create_profile/
+		- http://127.0.0.1:8000/accounts/<int:pk>/profile/ 
+		- http://127.0.0.1:8000/accounts/<int:pk>/edit_profile/ 
+		- http://127.0.0.1:8000/accounts/settings/ 
 	- Test suite execution instructions:
 		1. Using a command line interpreter, navigate to the root directory of the project
-		2. Run 'python manage.py test accounts'
+		2. If django-localflavor is not installed, run 'pip install django-localflavor'
+		3. Run 'python manage.py test accounts'
 		3. Details about each test can be found inside the /accounts/tests.py file.
 - Dashboard
 	- Description:

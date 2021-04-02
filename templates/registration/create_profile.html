@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <form name='pk_val' id='pk_val' target="_pk_val" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="color: transparent; background-color: transparent; border-color: transparent; cursor: default;"></button>
+    </form>
+
+    <script type="text/javascript">
+        window.onload=function() {
+            document.getElementById("pk_val").submit();
+        }
+    </script>
+</html>

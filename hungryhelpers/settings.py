@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+AUTH_PROFILE_MODULE = "accounts.UserProfile"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

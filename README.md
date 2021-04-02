@@ -6,7 +6,6 @@ Software required:
 - django-localflavor (install by running 'pip install django-localflavor')
 - django-environ 0.4.5 (install by running 'pip install django-environ')
 - requests 2.25.1 (install by running 'pip install requests')
-- django-localflavor 3.0.1 (install by running 'pip install django-localflavor')
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project

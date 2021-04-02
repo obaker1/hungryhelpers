@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse, Http404, HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import DetailView, CreateView
@@ -8,6 +8,8 @@ from .forms import EditSettingsForm, CreateProfileForm, EditProfileForm, Student
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Profile, Student
 from django.shortcuts import render, get_object_or_404
+
+
 
 class SignUpView(generic.CreateView):
     # Utilizes the built-in UserCreationForm
@@ -77,7 +79,74 @@ class AddStudentView(CreateView):
         form.instance.user_account_id = self.kwargs['pk']
         return super().form_valid(form)
 
-    #def get_success_url(self):
-    #    return reverse_lazy('profile', kwargs={'pk': self.kwargs['pk']})
+
+#
+#     #def get_success_url(self):
+#     #    return reverse_lazy('profile', kwargs={'pk': self.kwargs['pk']})
+#
+#     # Get the id from endpoint request
+#     def StudentView(request, nm):
+#         # If the item exists then get object information from DB and save it in a variable item.
+#         try:
+#             item = Student.objects.get(student_id=nm)
+#         except Student.DoesNotExist:
+#             raise Http404('Not found')
+#         # Convert item variable into JSON(serializer), then show the JSON data
+#         if request.method == 'GET':
+#             serializer = StudentSerializer(item)
+#             return JsonResponse(serializer.data)
+#         # Parse the request to separate JSON data. Convert to Python format. update the data regarding the item in the DB
+#         if request.method == 'PUT':
+#             data = JSONParser().parse(request)
+#             serializer = StudentSerializer(item, data=data)
+#
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 return JsonResponse(serializer.data)
+#             return JsonResponse(serializer.errors, status=400)
+#         # Delete the item from the Database
+#         if request.method == "DELETE":
+#             item.delete()
+#             return HttpResponse(status=204)
+
+# class APIView(object):
+#     pass
+#
+#
+# class AddStudentView(APIView):
+#     model = Student
+#     template_name = "registration/add_student.html"
+#     form_class = StudentForm
+#
+#     def get_objects(self, nm):
+#         try:
+#             return Student.objects.get(student_id=nm)
+#         except Student.DoesNotExist:
+#             raise Http404('Not found')
+#
+#     def get(self, request, nm, format=None):
+#         item = self.get_objects(nm)
+#         serializer = StudentSerializer(item)
+#         return JsonResponse(serializer.data)
+#
+#     def put(self, request, nm, format=None):
+#         item = self.get_objects(nm)
+#         data = JSONParser().parse(request)
+#         serializer = StudentSerializer(item, data=data)
+#
+#         if serializer.is_valid():
+#             serializer.save()
+#             return JsonResponse(serializer.data)
+#         return JsonResponse(serializer.errors, status =400)
+#
+#     def delete(self, request, nm, format=None):
+#         item = self.get_objects(nm)
+#         item.delete()
+#         return HttpResponse(status= 204)
 
     success_url = reverse_lazy('home')
+
+
+class JSONParser(object):
+    pass
+

@@ -26,9 +26,11 @@ class Student(models.Model):
     ]
 
     user_account = models.ForeignKey(Profile, related_name="students", on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, blank=True)
+    firstName = models.CharField(max_length=255, blank=True)
+    lastName = models.CharField(max_length=255, blank=True)
     age = models.IntegerField(choices=AGE_CHOICES)
-    address = models.CharField(max_length=255, blank=True)
+    address = models.CharField(max_length=225, blank = True)
+    country = models.CharField(max_length=225, blank = True)
     city = models.CharField(max_length=255, blank=True)
     state = models.CharField(max_length=2, choices=STATE_CHOICES, null=True, blank=True)
     zip = models.CharField(max_length=33, blank=True)

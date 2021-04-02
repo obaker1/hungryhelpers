@@ -39,7 +39,7 @@ class EditProfileForm(forms.ModelForm):
             'caretaker_names': forms.Textarea(attrs={'class': 'form-control'}),
         }
 
-class StudentForm(forms.ModelForm):
+class StudentForm(forms.Form):
 
     class Meta:
         AGE_CHOICES = [(i, i) for i in range(11, 19)]
@@ -53,7 +53,7 @@ class StudentForm(forms.ModelForm):
         ]
 
         model = Student
-        fields = ('name', 'age', 'address', 'city', 'state', 'zip', 'school', 'grade', 'student_id')
+        fields = ('firstName', 'lastName', 'age', 'address', 'city', 'state', 'zip', 'school', 'grade', 'student_id')
 
         #name = forms.TextInput(attrs={'class': 'form-control'}),
         #age = forms.ChoiceField(label='', choices=AGE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))

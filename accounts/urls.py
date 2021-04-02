@@ -8,4 +8,7 @@ urlpatterns = [
     path('<int:pk>/profile/', ShowProfileView.as_view(), name='show_profile'),
     path('<int:pk>/edit_profile/', EditProfileView.as_view(), name='edit_profile'),
     path('<int:pk>/add_student/', AddStudentView.as_view(), name='add_student'),
+    #path('add_student/<id>', AddStudentView, name='add_student')
+
+
 ]

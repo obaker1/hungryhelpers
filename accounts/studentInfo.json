@@ -1,0 +1,28 @@
+[
+  {
+    "student_id": "F2345",
+    "name": "Rajesh",
+    "age": 24,
+    "address": {
+        "streetAddress": "126 Udhna",
+        "city": "Surat",
+        "state": "GJ",
+        "zip": "394221"
+    },
+    "school": "Clarksville Middle School",
+    "grade": "8"
+  },
+  {
+    "student_id": "5343",
+    "name": "Bob",
+    "age": 16,
+    "address": {
+        "streetAddress": "123 Drive",
+        "city": "Cool",
+        "state": "MD",
+        "zip": "4532"
+    },
+    "school": "Howard Middle School",
+    "grade": "8"
+  }
+]

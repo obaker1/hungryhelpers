@@ -44,7 +44,12 @@ INSTALLED_APPS = [
     'localflavor',
     'findLocation',
     'accounts',
+    'crispy_forms',
+    'notifications',
+    'notifs',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 AUTH_PROFILE_MODULE = "accounts.UserProfile"
 

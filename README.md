@@ -6,16 +6,22 @@ Software required:
 - django-localflavor (install by running 'pip install django-localflavor')
 - django-environ 0.4.5 (install by running 'pip install django-environ')
 - requests 2.25.1 (install by running 'pip install requests')
+- django-cripsy-forms (install by running 'pip install django-crispy-forms')
+- django_notifications_hq (install by running 'pip install django_notifications_hq')
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
-2. Run the commands 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
-3. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
+2. Navigate into the 'hungryhelpers' folder (hungryhelpers/hungryhelpers) and make a new file named ".env"
+3. In ".env", enter "GOOGLE_MAPS_API_KEY=<b>API_KEY</b>", where <b>API_KEY</b> is the key given at the bottom of the group retrospective.
+4. Return to the root directory and run following commands: 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
+5. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
+
+<b><u> NOTE:</u></b> When creating an account, please be sure to <b> enable pop-ups and redirects </b> on the browser that will be accessing the website for the best experience. If a blank page is encountered upon registration, have the browser be in focus and press “TAB” on the keyboard to reveal the hidden button on the page and press it. 
 
 Features:
 - Find Location:
 	- Description:
-		Allows the user to pick a location to pick up their food. In order to run the google maps API you must create a file called .env in hungerhelpers/. So the path of the file should be hungryhelpers/.env. In this file add a variable GOOGLE_MAPS_API_KEY=_API_KEY_ (where _API_KEY_ is replaced by the google maps API_KEY given).
+		Allows the user to pick a location to pick up their food.
 	- URLs: 
 		http://127.0.0.1:8000/findLocation/ 
 	- Test suite execution instructions:
@@ -38,6 +44,9 @@ Features:
 		2. If django-localflavor is not installed, run 'pip install django-localflavor'
 		3. Run 'python manage.py test accounts'
 		3. Details about each test can be found inside the /accounts/tests.py file.
+- Student Database:
+	  - Stores all students data information such as id, first name, last name, age, school location, school district, address, city, state, zip, and grade 
+  - To see database, after cloning repo, navigate to the folder of where the project is saved on your local machine and open "db.sqlite3"
 - Dashboard
 	- Description:
 		The dashboard allows for convenient navigation between pages and presents the user the most important information from the notifications, map/scheduler pages, and ticket submission pages
@@ -51,3 +60,25 @@ Features:
 		1. Using a command line interpreter, navigate to the root directory of the project and cd into the hungryhelpers directory
 		2. Run 'python parseTest.py'
 		3. Details about each test can be found inside the parseTest.py file
+
+- Notifications:
+	- Description:
+		Allows admin users to send notifcations to individual regular users
+	- Notes before testing and demonstration: 
+		1. Ensure that 'python manage.py migrate notifications' has been run
+		2. Rename 'templates/base.html' to something else and 'templates/base_notifs.html' to 'base.html'
+		3. Change both files back to their orignal names before executing other tests
+	- URLs: 
+		http://127.0.0.1:8000/notifs/ 
+	- Test suite execution instructions:
+		1. Using a command line interpreter, navigate to the root directory of the project
+		2. Run 'python manage.py test notifs'
+		3. Details about each test can be found inside the /notifs/tests.py file.
+	- Manual demonstration:
+		1. From a browser, navigate to http://127.0.0.1:8000/ and create an account
+		2. From a different browser, navigate to http://127.0.0.1:8000/ and create another account
+		3. From the first browser, navigate to http://127.0.0.1:8000/notifs/ 
+		4. Enter a message to be sent to the other user and click send
+		5. In the second browser, refreshing the page and clicking on the bell icon will show the notifcation that has been sent
+
+

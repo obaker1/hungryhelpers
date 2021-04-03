@@ -3,20 +3,25 @@
 Software required:
 - Python 3.7 or above
 - Django 3.1.7
-
-Additional modules required:
-- crispy_forms
-- django_notification_hq
+- django-localflavor (install by running 'pip install django-localflavor')
+- django-environ 0.4.5 (install by running 'pip install django-environ')
+- requests 2.25.1 (install by running 'pip install requests')
+- django-cripsy-forms (install by running 'pip install django-crispy-forms')
+- django_notifications_hq (install by running 'pip install django_notifications_hq')
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
-2. Run the command 'python manage.py runserver'
-3. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
+2. Navigate into the 'hungryhelpers' folder (hungryhelpers/hungryhelpers) and make a new file named ".env"
+3. In ".env", enter "GOOGLE_MAPS_API_KEY=<b>API_KEY</b>", where <b>API_KEY</b> is the key given at the bottom of the group retrospective.
+4. Return to the root directory and run following commands: 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
+5. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
+
+<b><u> NOTE:</u></b> When creating an account, please be sure to <b> enable pop-ups and redirects </b> on the browser that will be accessing the website for the best experience. If a blank page is encountered upon registration, have the browser be in focus and press “TAB” on the keyboard to reveal the hidden button on the page and press it. 
 
 Features:
 - Find Location:
 	- Description:
-		Allows the user to pick a location to pick up their food
+		Allows the user to pick a location to pick up their food.
 	- URLs: 
 		http://127.0.0.1:8000/findLocation/ 
 	- Test suite execution instructions:
@@ -25,15 +30,23 @@ Features:
 		3. Details about each test can be found inside the /findLocation/tests.py file.
 - Account management:
 	- Description:
-		Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one.
+		Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one. Allows users to edit personal settings such as their username, email, first name, and last name. Users may also edit their profile to add students (children) as well as indicate the names and contact information of trusted caretakers. Student profile information includes name, age, address, city, state, zip, school, grade, and student id. 
 	- URLs: 
 		- http://127.0.0.1:8000/accounts/login/
-		- http://127.0.0.1:8000/accounts/signup/ 
+		- http://127.0.0.1:8000/accounts/signup/
 		- http://127.0.0.1:8000/accounts/logout/ 
+		- http://127.0.0.1:8000/accounts/<int:pk>/create_profile/
+		- http://127.0.0.1:8000/accounts/<int:pk>/profile/ 
+		- http://127.0.0.1:8000/accounts/<int:pk>/edit_profile/ 
+		- http://127.0.0.1:8000/accounts/settings/ 
 	- Test suite execution instructions:
 		1. Using a command line interpreter, navigate to the root directory of the project
-		2. Run 'python manage.py test accounts'
+		2. If django-localflavor is not installed, run 'pip install django-localflavor'
+		3. Run 'python manage.py test accounts'
 		3. Details about each test can be found inside the /accounts/tests.py file.
+- Student Database:
+	  - Stores all students data information such as id, first name, last name, age, school location, school district, address, city, state, zip, and grade 
+  - To see database, after cloning repo, navigate to the folder of where the project is saved on your local machine and open "db.sqlite3"
 - Dashboard
 	- Description:
 		The dashboard allows for convenient navigation between pages and presents the user the most important information from the notifications, map/scheduler pages, and ticket submission pages
@@ -48,9 +61,13 @@ Features:
 		2. Run 'python parseTest.py'
 		3. Details about each test can be found inside the parseTest.py file
 
-- Notification:
+- Notifications:
 	- Description:
 		Allows admin users to send notifcations to individual regular users
+	- Notes before testing and demonstration: 
+		1. Ensure that 'python manage.py migrate notifications' has been run
+		2. Rename 'templates/base.html' to something else and 'templates/base_notifs.html' to 'base.html'
+		3. Change both files back to their orignal names before executing other tests
 	- URLs: 
 		http://127.0.0.1:8000/notifs/ 
 	- Test suite execution instructions:

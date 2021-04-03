@@ -44,6 +44,9 @@ Features:
 		2. If django-localflavor is not installed, run 'pip install django-localflavor'
 		3. Run 'python manage.py test accounts'
 		3. Details about each test can be found inside the /accounts/tests.py file.
+- Student Database:
+	  - Stores all students data information such as id, first name, last name, age, school location, school district, address, city, state, zip, and grade 
+  - To see database, after cloning repo, navigate to the folder of where the project is saved on your local machine and open "db.sqlite3"
 - Dashboard
 	- Description:
 		The dashboard allows for convenient navigation between pages and presents the user the most important information from the notifications, map/scheduler pages, and ticket submission pages

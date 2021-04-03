@@ -53,7 +53,7 @@ class StudentForm(forms.ModelForm):
         ]
 
         model = Student
-        fields = ('name', 'age', 'address', 'city', 'state', 'zip', 'school', 'grade', 'student_id')
+        fields = ('firstName', 'lastName', 'age', 'address', 'city', 'state', 'country', 'zip', 'school', 'grade', 'student_id')
 
         #name = forms.TextInput(attrs={'class': 'form-control'}),
         #age = forms.ChoiceField(label='', choices=AGE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))

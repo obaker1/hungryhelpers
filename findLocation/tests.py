@@ -35,13 +35,15 @@ class DestinationIndexViewTest(TestCase):
         correctly by distance (not by time)
         """
         c = Client()
-        destinationList = ['Elkridge, MD', 'Columbia, MD', 'Towson, MD']
+        destinationList = ['Elkridge, MD', 'Towson, MD', 'Columbia, MD' ]
+        destinationListCorrect = ['Elkridge, MD', 'Columbia, MD', 'Towson, MD']
         for i in destinationList:
             c.post('/findLocation/addLocation/', {'destination': i})
-        response = self.client.get(reverse('findlocation'))
+            response = self.client.get(reverse('findlocation'))
         counter = 0
-        for destinations in GoogleMapsResponse.objects.filter():
-            self.assertIn(destinationList[counter], destinations.location)
+        googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'location')
+        for destinations in googlemaps:
+            self.assertIn(destinationListCorrect[counter], destinations.location)
             counter += 1
 
         self.assertEqual(response.status_code, 200)

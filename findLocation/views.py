@@ -15,12 +15,11 @@ ORIGIN = '1000 Hilltop Cir, Baltimore, MD 21250, USA'
 
 def findlocation(request):
     destinationList = []
-    googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'location')
     for destinations in GoogleMapsResponse.objects.filter():
         destinationList.append(destinations.location)
 
     destinationAppended = '|'.join(destinationList) if destinationList else "None"
-
+    googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'location')
     context = {
         'api_key': settings.GOOGLE_MAPS_API_KEY,
         'origin': ORIGIN,

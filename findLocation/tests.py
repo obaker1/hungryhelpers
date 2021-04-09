@@ -3,7 +3,6 @@ from django.urls import reverse
 import requests
 from django.conf import settings
 
-from .models import Destinations
 from .models import GoogleMapsResponse
 
 
@@ -19,20 +18,14 @@ class PageLoad(TestCase):
         self.assertTemplateUsed(response, template_name='findLocation/index.html')
 
 
-def create_destination(destination_text):
-    """
-    Create a destination with the given `destination_text`.
-    """
-    return Destinations.objects.create(text=destination_text)
-
-
 class DestinationIndexViewTest(TestCase):
     def test_adding_destination(self):
         """
         Make sure that a destination inputted is in the database.
         """
-        create_destination(destination_text="Towson, Maryland")
-        response = self.client.get(reverse('index'))
+        c = Client()
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland'})
+        response = self.client.get(reverse('findlocation'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Towson,")
 
@@ -41,13 +34,16 @@ class DestinationIndexViewTest(TestCase):
         makes sure that all locations in the database are ordered
         correctly by distance (not by time)
         """
-        destinationList = ["Elkridge, MD", "Columbia, MD", "Towson, MD"]
-        for i in range(len(destinationList)):
-            create_destination(destination_text=destinationList[i])
-        response = self.client.get(reverse('index'))
+        c = Client()
+        destinationList = ['Elkridge, MD', 'Towson, MD', 'Columbia, MD' ]
+        destinationListCorrect = ['Elkridge, MD', 'Columbia, MD', 'Towson, MD']
+        for i in destinationList:
+            c.post('/findLocation/addLocation/', {'destination': i})
+            response = self.client.get(reverse('findlocation'))
         counter = 0
-        for destinations in GoogleMapsResponse.objects.filter():
-            self.assertIn(destinationList[counter], destinations.location )
+        googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'location')
+        for destinations in googlemaps:
+            self.assertIn(destinationListCorrect[counter], destinations.location)
             counter += 1
 
         self.assertEqual(response.status_code, 200)

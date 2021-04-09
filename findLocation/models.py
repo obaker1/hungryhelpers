@@ -1,9 +1,6 @@
 from django.db import models
 
 
-class Destinations(models.Model):
-    text = models.TextField()
-
 
 class GoogleMapsResponse(models.Model):
     location = models.TextField()

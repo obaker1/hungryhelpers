@@ -9,7 +9,7 @@
 </head>
 <body>
     <p>The Distances</p>
-    <form action="{% url 'add' %}" method="post"}>
+    <form action="{% url 'addLocation' %}" method="post"}>
         {% csrf_token %}
         Enter a new destination:
         <input type="text" name="destination"> <br>

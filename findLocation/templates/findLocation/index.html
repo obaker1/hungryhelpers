@@ -13,6 +13,10 @@
         {% csrf_token %}
         Enter a new destination:
         <input type="text" name="destination"> <br>
+        Is the destination a school (y/n)?
+        <input type="text" name="school"> <br>
+        Is the destination a bus stop (y/n)?
+        <input type="text" name="bus"> <br>
         <input type="submit">
     </form>
     </br>
@@ -46,11 +50,15 @@
     <script async type="text/javascript">
             var origin = "{{origin}}";
             var destinationString = "{{destinationList}}";
+            var filterString = "{{filter}}";
             var destinationList = []
             if( destinationString != "None"){
                 destinationList = destinationString.split("|");
             }
-            setParameters(origin, destinationList);
+            if( filterString != "None"){
+                filterString = filterString.split("|");
+            }
+            setParameters(origin, destinationList, filterString);
             const api_key = JSON.parse(document.getElementById('api_key').textContent);
             const google_api_script = document.createElement('script');
             google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');

@@ -8,11 +8,22 @@
     <script type="text/javascript" src="{% static 'findLocation/index.js'%}"></script>
 </head>
 <body>
-    <p>The Distances</p>
+    <form action="{% url 'addOrigin' %}" method="post"}>
+        {% csrf_token %}
+        Enter your location:
+        <input type="text" name="origin"> <br>
+        <input type="submit">
+    </form>
     <form action="{% url 'addLocation' %}" method="post"}>
         {% csrf_token %}
-        Enter a new destination:
+        Enter a destination:
         <input type="text" name="destination"> <br>
+        Is the destination a school (y/n)?
+        <input type="text" name="school"> <br>
+        Is the destination a bus stop (y/n)?
+        <input type="text" name="bus"> <br>
+        Do you want to add or remove this destination (a/r)?
+        <input type="text" name="remove"> <br>
         <input type="submit">
     </form>
     </br>
@@ -46,11 +57,15 @@
     <script async type="text/javascript">
             var origin = "{{origin}}";
             var destinationString = "{{destinationList}}";
+            var filterString = "{{filter}}";
             var destinationList = []
             if( destinationString != "None"){
                 destinationList = destinationString.split("|");
             }
-            setParameters(origin, destinationList);
+            if( filterString != "None"){
+                filterString = filterString.split("|");
+            }
+            setParameters(origin, destinationList, filterString);
             const api_key = JSON.parse(document.getElementById('api_key').textContent);
             const google_api_script = document.createElement('script');
             google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');

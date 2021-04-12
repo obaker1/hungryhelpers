@@ -17,6 +17,13 @@ class PageLoad(TestCase):
         # verify index.html is being used
         self.assertTemplateUsed(response, template_name='findLocation/index.html')
 
+class OriginIndexViewTest(TestCase):
+    # test adding origin
+    def test_adding_origin(self):
+        c = Client()
+        c.post('/findLocation/addOrigin/', {'origin': 'baltimore, MD'})
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
 
 class DestinationIndexViewTest(TestCase):
     def test_adding_destination(self):
@@ -24,10 +31,23 @@ class DestinationIndexViewTest(TestCase):
         Make sure that a destination inputted is in the database.
         """
         c = Client()
-        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland'})
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', "remove": 'a'})
         response = self.client.get(reverse('findlocation'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Towson,")
+
+    def test_removing_destination(self):
+        """
+        Make sure that a destination is removed from the database.
+        """
+        c = Client()
+        # adding a location
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', "remove": 'a'})
+        # removing a location
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', "remove": 'r'})
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Towson,")
 
     def test_order_of_locations(self):
         """
@@ -38,7 +58,7 @@ class DestinationIndexViewTest(TestCase):
         destinationList = ['Elkridge, MD', 'Towson, MD', 'Columbia, MD' ]
         destinationListCorrect = ['Elkridge, MD', 'Columbia, MD', 'Towson, MD']
         for i in destinationList:
-            c.post('/findLocation/addLocation/', {'destination': i})
+            c.post('/findLocation/addLocation/', {'destination': i, 'school': 'y', 'bus': 'n', "remove": 'a'})
             response = self.client.get(reverse('findlocation'))
         counter = 0
         googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'location')

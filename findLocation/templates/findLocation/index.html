@@ -56,16 +56,21 @@
     <!-- sets origin and destination values and calls the google maps api that will display the map !-->
     <script async type="text/javascript">
             var origin = "{{origin}}";
-            var destinationString = "{{destinationList}}";
+            var addressString = "{{addressList}}";
+            var locationString = "{{locationList}}";
             var filterString = "{{filter}}";
-            var destinationList = []
-            if( destinationString != "None"){
-                destinationList = destinationString.split("|");
+            var addressList = []
+            if( addressString != "None"){
+                addressList = addressString.split("|");
+            }
+            var locationList = []
+            if( locationString != "None"){
+                locationList = locationString.split("|");
             }
             if( filterString != "None"){
                 filterString = filterString.split("|");
             }
-            setParameters(origin, destinationList, filterString);
+            setParameters(origin, addressList, filterString, locationList);
             const api_key = JSON.parse(document.getElementById('api_key').textContent);
             const google_api_script = document.createElement('script');
             google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');

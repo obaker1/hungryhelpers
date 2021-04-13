@@ -76,6 +76,7 @@ def addOrigin(request):
 def addLocation(request):
     destination_text = request.POST['destination']
     remove = request.POST['remove']
+    timeframe = request.POST['timeframe']
     school_text = request.POST['school']
     school = "F"
     if (school_text == "y"):
@@ -112,11 +113,11 @@ def addLocation(request):
         time = results[i]['duration']['text']
         if not GoogleMapsResponse.objects.filter(address=address).exists():
             if (remove != 'r'):
-                newResponse = GoogleMapsResponse(location=location, distance=distance, time=time, school=school, bus=bus, address=address)
+                newResponse = GoogleMapsResponse(location=location, distance=distance, time=time, school=school, bus=bus, address=address, timeframe=timeframe)
                 newResponse.save()
         else:
             if (remove == 'r'):
                 GoogleMapsResponse.objects.filter(address=address).delete()
             else:
-                GoogleMapsResponse.objects.filter(address=address).update(location=location, school=school, bus=bus)
+                GoogleMapsResponse.objects.filter(address=address).update(location=location, school=school, bus=bus, timeframe=timeframe)
     return HttpResponseRedirect(reverse('findlocation'))

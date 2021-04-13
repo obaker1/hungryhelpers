@@ -7,4 +7,5 @@ class GoogleMapsResponse(models.Model):
     time = models.TextField(default=0)
     school = models.TextField()
     bus = models.TextField()
+    timeframe = models.TextField(default="M/W 11am-1pm") # distribution time for pickup
     address = models.TextField() # location address

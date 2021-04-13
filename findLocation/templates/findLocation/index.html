@@ -22,6 +22,8 @@
         <input type="text" name="school"> <br>
         Is the destination a bus stop (y/n)?
         <input type="text" name="bus"> <br>
+        What is the distribution window for pickup?
+        <input type="text" name="timeframe"> <br>
         Do you want to add or remove this destination (a/r)?
         <input type="text" name="remove"> <br>
         <input type="submit">
@@ -34,7 +36,7 @@
             <strong>Destinations</strong>
             <ol>
                 {% for locations in googlemapsresult %}
-                <li>{{ locations.location }}: {{locations.distance}} miles in {{locations.time}}</li>
+                <li>{{ locations.location }}: {{locations.distance}} miles in {{locations.time}} ({{locations.timeframe}})</li>
                 {% endfor %}
             </ol>
         </div>

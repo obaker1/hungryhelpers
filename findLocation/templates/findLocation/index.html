@@ -1,59 +1,14 @@
-<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
-<head>
-    <h2>Find Your Location</h2>
-    {% load static %}
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+
+{% if user.is_authenticated %}
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/style.css'%}">
     <script type="text/javascript" src="{% static 'findLocation/index.js'%}"></script>
-</head>
-<body>
-    <form action="{% url 'addOrigin' %}" method="post"}>
-        {% csrf_token %}
-        Enter your location:
-        <input type="text" name="origin"> <br>
-        <input type="submit">
-    </form>
-    <form action="{% url 'addLocation' %}" method="post"}>
-        {% csrf_token %}
-        Enter a destination:
-        <input type="text" name="destination"> <br>
-        Is the destination a school (y/n)?
-        <input type="text" name="school"> <br>
-        Is the destination a bus stop (y/n)?
-        <input type="text" name="bus"> <br>
-        Do you want to add or remove this destination (a/r)?
-        <input type="text" name="remove"> <br>
-        <input type="submit">
-    </form>
-    </br>
-    <div id="right-panel">
-        <div>
-            <!-- displays the origins and destinations from closest for furthest !-->
-            <strong>Origin: </strong> {{ origin }} <br>
-            <strong>Destinations</strong>
-            <ol>
-                {% for locations in googlemapsresult %}
-                <li>{{ locations.location }}: {{locations.distance}} miles in {{locations.time}}</li>
-                {% endfor %}
-            </ol>
-        </div>
-    </div>
-    <div id="buttons">
-        <input type="checkbox" name="filter" id="school" class='chk-btn'>
-        <label for='school'>school</label>
 
-        <input type="checkbox" name="filter" id="bus" class='chk-btn'>
-        <label for='bus'>bus stop</label>
-        <br>
-    </div>
-    <br>
-    <div id="map"></div>
-    <br>
-    <div id="places_info"></div>
-    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
     {{ api_key|json_script:"api_key" }}
-    <!-- sets origin and destination values and calls the google maps api that will display the map !-->
     <script async type="text/javascript">
             var origin = "{{origin}}";
             var destinationString = "{{destinationList}}";
@@ -71,5 +26,127 @@
             google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');
             document.head.appendChild(google_api_script);
     </script>
-</body>
-</html>
+
+    <div class="container-fluid">
+        <h3 class="text-dark mb-4">Find Your Location</h3>
+        <div class="row">
+            <div class="col">
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Map Configuration Panel</p>
+                    </div>
+                    <div class="card-body">
+                        <div class = "form-group">
+                            <form action="{% url 'addLocation' %}" method="post"}>
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <label class="col-sm-1.5 col-form-label"><b>Add Location:</b></label>
+                                    <input type="text" class="form-control col-sm-8" name="destination" />
+                                </div>
+                                <label class="col-sm-1.5 col-form-label"><b>Amenities:&nbsp;</b></label>
+                                <input type="hidden" name="school" value="n" />
+                                <input type="checkbox" id="amenity1" name="school" value="y">
+                                <label for="amenity1">School</label>&nbsp;&nbsp;
+                                <input type="hidden" name="bus" value="n" />
+                                <input type="checkbox" id="amenity2" name="bus" value="y">
+                                <label for="amenity2">Bus Stop</label>
+                                <br>
+                                <label class="col-sm-1.5 col-form-label"><b>Input Type:&nbsp;</b></label>
+                                <input type="radio" name="remove" value="a" checked="checked"> Add &nbsp;&nbsp;
+                                <input type="radio" name="remove" value="r"> Remove
+                                <br><br>
+                                <button class="btn btn-primary btn-block text-white btn-user">Add/Remove Location</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Set Your Location</p>
+                    </div>
+                    <div class="card-body">
+                        <div class = "form-group">
+                            <b>Current Origin: </b> {{ origin }}
+                            <form action="{% url 'addOrigin' %}" method="post"}>
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <label class="col-sm-1.5 col-form-label"><b>Set New Origin:</b></label>
+                                    <input type="text" class="form-control col-sm-8" name="origin" />
+                                </div>
+                                <br>
+                                <button class="btn btn-primary btn-block text-white btn-user">Set New Origin</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Destinations</p>
+                    </div>
+                    <div class="card-body">
+                        <strong>Destinations:</strong>
+                        <ol>
+                            {% for locations in googlemapsresult %}
+                                <li><span>{{ locations.location }}: {{locations.distance}} miles in {{locations.time}}</span></li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Map Filter</p>
+                    </div>
+                    <div class="card-body">
+                        <div id="buttons">
+                            <input type="checkbox" name="filter" id="school" class='chk-btn'>
+                            <label for='school'>School</label>
+
+                            <input type="checkbox" name="filter" id="bus" class='chk-btn'>
+                            <label for='bus'>Bus Stop</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body{
+        width: 100%;
+         overflow: hidden;
+
+
+        }
+
+        div #map {
+            border-radius: 5px;
+            transform:scale(.948);
+            border: 2px solid #e3e6f0;
+            resize: both;
+            width: 100%;
+            height: 50%;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            position: relative;
+            top: -20px; right: 0; bottom: 0; left: 0;
+        }
+    </style>
+    <div id="map"></div>
+    <br><br><br><br><br><br><br><br><br>
+{% else %}
+    You must be logged in to use this page!
+{% endif %}
+
+{% endblock %}
+
+

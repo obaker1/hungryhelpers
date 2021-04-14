@@ -16,7 +16,7 @@ def findlocation(request):
     locationList = []
     addressList = []
     filter = []
-    for destinations in GoogleMapsResponse.objects.filter():
+    for destinations in GoogleMapsResponse.objects.all():
         locationList.append(destinations.location)
         addressList.append(destinations.address)
         filter.append(destinations.school)
@@ -43,7 +43,7 @@ def addOrigin(request):
     if (origin_text != ''):
         ORIGIN = origin_text;
 
-    for destination in GoogleMapsResponse.objects.all():
+    for destination in GoogleMapsResponse.objects.all()[:10]:
         params = {
             'key': settings.GOOGLE_MAPS_API_KEY,
             'origins': ORIGIN,
@@ -57,18 +57,18 @@ def addOrigin(request):
             result = "String could not be converted to JSON"
 
         # if response is empty
-        if(result.get('status') != 'OK'):
+        if(result.get('status') != 'OK' or result['rows'][0]['elements'][0].get('status') != 'OK'):
             return HttpResponseRedirect(reverse('findlocation'))
 
         results = result['rows'][0]['elements'];
         addressList = result['destination_addresses']
 
-        address = addressList[0]
+        location = destination.location
         distanceString = results[0]['distance']['text']
-        distanceString = distanceString.replace(',','');
+        distanceString = distanceString.replace(',','')
         distance = float(distanceString[:-3])
         time = results[0]['duration']['text']
-        GoogleMapsResponse.objects.filter(address=address).update(distance=distance, time=time)
+        GoogleMapsResponse.objects.filter(location=location).update(distance=distance, time=time)
 
     return HttpResponseRedirect(reverse('findlocation'))
 

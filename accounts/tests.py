@@ -252,15 +252,6 @@ class ProfileTest(TestCase):
         # verify that user is met with a 404 site status code
         self.assertEqual(response.status_code, 404)
 
-def create_user():
-    email = 'bar@example.com'
-    password = 'pass'
-    username = 'foo'
-    model = get_user_model()
-    kwargs = {}
-    args = username, email, password
-    return get_user_model()._default_manager.create_user(*args, **kwargs)
-
 
 class PasswordResetTest(TestCase):
 

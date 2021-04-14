@@ -5,7 +5,7 @@
 
 {% if user.is_authenticated %}
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <link rel="stylesheet" href="{% static 'css/style.css'%}">
+    <!--<link rel="stylesheet" href="{% static 'css/style.css'%}">-->
     <script type="text/javascript" src="{% static 'findLocation/index.js'%}"></script>
 
     {{ api_key|json_script:"api_key" }}
@@ -120,8 +120,8 @@
 
     <style>
         body{
-        width: 100%;
-         overflow: hidden;
+            width: 100%;
+            overflow: visible;
 
 
         }
@@ -142,7 +142,6 @@
         }
     </style>
     <div id="map"></div>
-    <br><br><br><br><br><br><br><br><br>
 {% else %}
     You must be logged in to use this page!
 {% endif %}

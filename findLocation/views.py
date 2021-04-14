@@ -5,12 +5,14 @@ from django.shortcuts import render
 from urllib.parse import urlencode
 from django.conf import settings
 from django.urls import reverse
+from django.contrib.auth.decorators import permission_required
 
 from findLocation.models import GoogleMapsResponse
 import json
 import requests
 
 ORIGIN = '1000 Hilltop Cir, Baltimore, MD 21250, USA'
+
 
 def findlocation(request):
     destinationList = []
@@ -115,3 +117,4 @@ def addLocation(request):
             else:
                 GoogleMapsResponse.objects.filter(location=location).update(school=school, bus=bus)
     return HttpResponseRedirect(reverse('findlocation'))
+

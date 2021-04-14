@@ -1,9 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordResetForm
-from rest_framework.test import APITestCase
-from django.forms import PasswordInput
 
 
 class SignUpTest(TestCase):

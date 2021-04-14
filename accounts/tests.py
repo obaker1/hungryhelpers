@@ -1,6 +1,10 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordResetForm
+from rest_framework.test import APITestCase
+from django.forms import PasswordInput
+
 
 class SignUpTest(TestCase):
     def setUp(self):
@@ -247,3 +251,80 @@ class ProfileTest(TestCase):
         response = self.client.get('/accounts/300/profile/', follow=True)
         # verify that user is met with a 404 site status code
         self.assertEqual(response.status_code, 404)
+
+def create_user():
+    email = 'bar@example.com'
+    password = 'pass'
+    username = 'foo'
+    model = get_user_model()
+    kwargs = {}
+    args = username, email, password
+    return get_user_model()._default_manager.create_user(*args, **kwargs)
+
+
+class PasswordResetTest(TestCase):
+
+    def setUp(self):
+        # valid credentials
+        self.username = 'test'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
+        # information for forgot password
+        self.email = 'tester@tset.com'
+
+    def test_password_change_form(self):
+        # access password change page
+        response = self.client.post('/accounts/password_change/', data={
+            'password1': self.password,
+            'password2': self.password
+        }, follow=True)
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_change.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_change_form.html')
+
+    def test_password_change_done(self):
+        # access password change done page
+        response = self.client.get('/accounts/password_change/done/')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_change_done.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_change_done.html')
+
+
+    def test_password_reset_form(self):
+        # access password reset page and enter email
+        response = self.client.post('/accounts/password_reset/', data={
+            'email': self.email
+        }, follow=True)
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_reset_done.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_reset_done.html')
+
+    def test_password_reset_done(self):
+        # access password reset done page
+        response = self.client.get('/accounts/password_reset/done/')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_reset_done.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_reset_done.html')
+
+    def test_password_reset_confirm(self):
+        # access reset password page and allow user to enter new passwords
+        response = self.client.post('/accounts/reset/<uidb64>/<token>/', data={
+            'password1': self.password,
+            'password2': self.password
+        }, follow=True)
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_reset_confirm.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_reset_confirm.html')
+
+    def test_password_reset_complete(self):
+        # access password reset complete page
+        response = self.client.get('/accounts/reset/done/')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_reset_complete.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_reset_complete.html')

@@ -22,6 +22,8 @@ from django.utils.http import (
     url_has_allowed_host_and_scheme, urlsafe_base64_decode,
 )
 from django.shortcuts import resolve_url
+from django.core.exceptions import ValidationError
+
 
 
 UserModel = get_user_model()

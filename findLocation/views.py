@@ -77,6 +77,8 @@ def addLocation(request):
     destination_text = request.POST['destination']
     remove = request.POST['remove']
     timeframe = request.POST['timeframe']
+    if (timeframe == ""):
+        timeframe = "N/A"
     school_text = request.POST['school']
     school = "F"
     if (school_text == "y"):
@@ -98,7 +100,7 @@ def addLocation(request):
         result = "String could not be converted to JSON"
 
     # if response is empty
-    if(result.get('status') != 'OK'):
+    if(result.get('status') != 'OK' or result['rows'][0]['elements'][0].get('status') != 'OK'):
         return HttpResponseRedirect(reverse('findlocation'))
 
     results = result['rows'][0]['elements'];

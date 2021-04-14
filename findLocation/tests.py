@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 import requests
 from django.conf import settings
+from django.contrib.auth.models import User
 
 from .models import GoogleMapsResponse
 
@@ -26,10 +27,17 @@ class OriginIndexViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
 class DestinationIndexViewTest(TestCase):
+    def setUp(self):
+        self.credentials = {
+            'username': 'test',
+            'password': '>pve_hm*N*&x<qbP8u'}
+        User.objects.create_user(**self.credentials)
+
     def test_adding_destination(self):
         """
         Make sure that a destination inputted is in the database.
         """
+        self.client.post('/accounts/login/', self.credentials, follow=True)
         c = Client()
         c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', "remove": 'a'})
         response = self.client.get(reverse('findlocation'))

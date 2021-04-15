@@ -70,7 +70,7 @@ Features:
 - Forgot Password:
 	- Description: Allows users to change their password if they have an account. If the user forgets their password while logging on, they can click the "Forgot Password" button and an email will be sent to the user to allow them to rest their password.
 	- Testing Forgot Password email verification (currently only for development):
-		1. To view email, after cloning repo, navigate to the folder where the project is saved on your local machine using the file exporer
+		1. To view email, after cloning repo, navigate to the folder where the project is saved on your local machine using the file exporer (ex) /hungryhelpers/sent_emails)
 		2. Open 'send_emails' folder and click on the latest log file
 		3. Copy the link in that email onto the web browser
 		4. Follow instructions and reset password

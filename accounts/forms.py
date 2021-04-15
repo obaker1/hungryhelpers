@@ -3,6 +3,7 @@ from django.forms import HiddenInput
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import Profile, Student
+from localflavor.us.us_states import STATE_CHOICES
 
 class EditSettingsForm(UserChangeForm):
     # Custom form requests only relevant information provided by the form.as_p packaged form
@@ -53,13 +54,32 @@ class StudentForm(forms.ModelForm):
         ]
 
         model = Student
-        fields = ('firstName', 'lastName', 'age', 'address', 'city', 'state', 'country', 'zip', 'school', 'grade', 'student_id')
+        fields = ('first_name', 'last_name', 'age', 'address', 'city', 'state', 'zip', 'school', 'grade', 'student_id', 'district_choice',
+                  'allergic_celiac', 'allergic_shellfish', 'allergic_lactose', 'preference_halal', 'preference_kosher', 'preference_vegetarian', 'meal_breakfast', 'meal_lunch', 'meal_dinner')
 
-        #name = forms.TextInput(attrs={'class': 'form-control'}),
-        #age = forms.ChoiceField(label='', choices=AGE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'age': forms.Select(attrs={'class': 'form-control'}, choices=AGE_CHOICES),
+            'address': forms.TextInput(attrs={'class': 'form-control'}),
+            'city': forms.TextInput(attrs={'class': 'form-control'}),
+            'state': forms.Select(attrs={'class': 'form-control'}, choices=STATE_CHOICES),
+            'zip': forms.TextInput(attrs={'class': 'form-control'}),
+            'school': forms.Select(attrs={'class': 'form-control'}, choices=SCHOOL_DISTRICTS),
+            'grade': forms.Select(attrs={'class': 'form-control'}, choices=GRADE_CHOICES),
+            'student_id': forms.TextInput(attrs={'class': 'form-control'}),
+            'district_choice': forms.TextInput(attrs={'class': 'form-control'}),
 
-        #widgets = {
-            #'name': forms.TextInput(attrs={'class': 'form-control'}),
-            #'age': forms.ChoiceField(attrs={'class': 'form-control'}, choices=AGE_CHOICES),
+            'allergic_celiac': forms.TextInput(),
+            'allergic_shellfish': forms.TextInput(),
+            'allergic_lactose': forms.TextInput(),
 
-        #}
+            'preference_halal': forms.TextInput(),
+            'preference_kosher': forms.TextInput(),
+            'preference_vegetarian': forms.TextInput(),
+
+            'meal_breakfast': forms.TextInput(),
+            'meal_lunch': forms.TextInput(),
+            'meal_dinner': forms.TextInput(),
+
+        }

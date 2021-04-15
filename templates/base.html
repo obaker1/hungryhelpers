@@ -28,26 +28,21 @@
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
                     {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                         {% if user.profile.id %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                             <li class="nav-item"><a class="nav-link" href="{% url 'show_profile' user.profile.id %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
-                            <!--<li class="nav-item"><a class="nav-link" href="{% url 'edit_profile' user.profile.id %}"><i class="fas fa-user"></i><span>EDIT Profile</span></a></li>-->
+                            <li class="nav-item"><a class="nav-link" href="{% url 'inbox' %}"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
+                            <li class="nav-item"><a class="nav-link" href="#"><i class="fa fa-ticket"></i><span>Tickets</span></a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'findlocation' %}"><i class="fa fa-map"></i><span>Map</span></a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'edit_settings' %}"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-door-open"></i><span>Log Out</span></a></li>
                         {% else %}
                             <li class="nav-item"><a class="nav-link" href="{% url 'create_profile' %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
                         {% endif %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'inbox' %}"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
-                        <li class="nav-item"><a class="nav-link" href="tickets.html"><i class="fa fa-ticket"></i><span>Tickets</span></a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'findlocation' %}"><i class="fa fa-map"></i><span>Map</span></a></li>
-
                     {% else %}
                         <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}"><i class="fas fa-info-circle"></i><span>About Us</span></a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="far fa-user-circle"></i><span>Login</span></a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}"><i class="fas fa-user-circle"></i><span>Register</span></a></li>
-                    {% endif %}
-
-                    {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'edit_settings' %}"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-door-open"></i><span>Log Out</span></a></li>
                     {% endif %}
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
@@ -112,15 +107,23 @@
                             </li>-->
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                {% if user.is_authenticated %}
-                                    <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ user.username }}</span><img class="border rounded-circle img-profile" src="{% static 'hungryhelpers/assets/img/avatars/loggedin.jpg' %}"></a>
-                                        <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                          <a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a>
-                                          <a class="dropdown-item" href="{% url 'edit_settings' %}"><i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
-                                          <div class="dropdown-divider"></div>
-                                          <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a>
+                                {% if user.is_authenticated  %}
+                                    {% if user.profile.id %}
+                                        <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ user.username }}</span><img class="border rounded-circle img-profile" src="{% static 'hungryhelpers/assets/img/avatars/loggedin.jpg' %}"></a>
+                                            <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                              <a class="dropdown-item" href="{% url 'show_profile' user.profile.id %}"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a>
+                                              <a class="dropdown-item" href="{% url 'edit_settings' %}"><i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Settings</a>
+                                              <div class="dropdown-divider"></div>
+                                              <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    {% else %}
+                                         <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ user.username }}</span><img class="border rounded-circle img-profile" src="{% static 'hungryhelpers/assets/img/avatars/loggedin.jpg' %}"></a>
+                                            <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                            <a class="dropdown-item" href="{% url 'create_profile' %}"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 {% else %}
                                     <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">You are not logged in</span><img class="border rounded-circle img-profile" src="{% static 'hungryhelpers/assets/img/avatars/loggedout.jpg' %}"></a>
                                         <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">

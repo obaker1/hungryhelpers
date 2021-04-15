@@ -39,7 +39,7 @@ class DestinationIndexViewTest(TestCase):
         """
         self.client.post('/accounts/login/', self.credentials, follow=True)
         c = Client()
-        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', "remove": 'a'})
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', 'remove': 'a'})
         response = self.client.get(reverse('findlocation'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Towson,")
@@ -50,9 +50,9 @@ class DestinationIndexViewTest(TestCase):
         """
         c = Client()
         # adding a location
-        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', "remove": 'a'})
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', "remove": 'a'})
         # removing a location
-        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', "remove": 'r'})
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', "remove": 'r'})
         response = self.client.get(reverse('findlocation'))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Towson,")
@@ -66,7 +66,7 @@ class DestinationIndexViewTest(TestCase):
         destinationList = ['Elkridge, MD', 'Towson, MD', 'Columbia, MD' ]
         destinationListCorrect = ['Elkridge, MD', 'Columbia, MD', 'Towson, MD']
         for i in destinationList:
-            c.post('/findLocation/addLocation/', {'destination': i, 'school': 'y', 'bus': 'n', "remove": 'a'})
+            c.post('/findLocation/addLocation/', {'destination': i, 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', "remove": 'a'})
             response = self.client.get(reverse('findlocation'))
         counter = 0
         googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'location')

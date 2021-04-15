@@ -5,22 +5,26 @@
 
 {% if user.is_authenticated %}
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <!--<link rel="stylesheet" href="{% static 'css/style.css'%}">-->
     <script type="text/javascript" src="{% static 'findLocation/index.js'%}"></script>
 
     {{ api_key|json_script:"api_key" }}
     <script async type="text/javascript">
             var origin = "{{origin}}";
-            var destinationString = "{{destinationList}}";
+            var addressString = "{{addressList}}";
+            var locationString = "{{locationList}}";
             var filterString = "{{filter}}";
-            var destinationList = []
-            if( destinationString != "None"){
-                destinationList = destinationString.split("|");
+            var addressList = []
+            if( addressString != "None"){
+                addressList = addressString.split("|");
+            }
+            var locationList = []
+            if( locationString != "None"){
+                locationList = locationString.split("|");
             }
             if( filterString != "None"){
                 filterString = filterString.split("|");
             }
-            setParameters(origin, destinationList, filterString);
+            setParameters(origin, addressList, filterString, locationList);
             const api_key = JSON.parse(document.getElementById('api_key').textContent);
             const google_api_script = document.createElement('script');
             google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');
@@ -54,7 +58,11 @@
                                 <label class="col-sm-1.5 col-form-label"><b>Input Type:&nbsp;</b></label>
                                 <input type="radio" name="remove" value="a" checked="checked"> Add &nbsp;&nbsp;
                                 <input type="radio" name="remove" value="r"> Remove
-                                <br><br>
+                                <div class="form-row">
+                                    <label class="col-sm-1.5 col-form-label"><b>Distribution window for pickup:</b></label>
+                                    <input type="text" class="form-control col-sm-8" name="timeframe" />
+                                </div>
+                                <br>
                                 <button class="btn btn-primary btn-block text-white btn-user">Add/Remove Location</button>
                             </form>
                         </div>
@@ -87,7 +95,7 @@
                         <strong>Destinations:</strong>
                         <ol>
                             {% for locations in googlemapsresult %}
-                                <li><span>{{ locations.location }}: {{locations.distance}} miles in {{locations.time}}</span></li>
+                                <li><span>{{ locations.location }}: {{locations.distance}} miles in {{locations.time}} ({{locations.timeframe}})</span></li>
                             {% endfor %}
                         </ol>
                     </div>
@@ -169,5 +177,3 @@
 {% endif %}
 
 {% endblock %}
-
-

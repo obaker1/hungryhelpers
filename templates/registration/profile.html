@@ -4,6 +4,7 @@
 
 
 {% if user.is_authenticated and user.id == user.profile.id %}
+    {{ student.students.id }}
     <div class="container-fluid">
         <h3 class="text-dark mb-4">{{ user.username }}'s Profile</h3>
         <div class="row">
@@ -39,7 +40,7 @@
                                             <div class="text-secondary m-0 font-weight-bold">General Information</div>
                                         </div>
                                         <div class="card-body">
-                                            <b> Primary Key: </b> {{ student.pk }} <br>
+                                            <!--<b> Primary Key: </b> {{ student.pk }} <br>-->
                                             <!--<b> Parent Primary Key: </b> {{ student.user_account.pk }} <br>-->
                                             <b> Age: </b> {{ student.age }} <br>
                                             <b> Address: </b> {{ student.address }} <br>
@@ -49,6 +50,7 @@
                                             <b> School: </b> {{ student.school }} <br>
                                             <b> Grade: </b> {{ student.grade }} <br>
                                             <b> Student ID: </b> {{ student.student_id }} <br>
+                                            <b> District Choice:</b> {{ student.district_choice }} <br>
                                         </div>
                                     </div>
                                 </div>

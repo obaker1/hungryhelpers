@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import Profile, Student
 from localflavor.us.us_states import STATE_CHOICES
-import json
 
 class EditSettingsForm(UserChangeForm):
     # Custom form requests only relevant information provided by the form.as_p packaged form

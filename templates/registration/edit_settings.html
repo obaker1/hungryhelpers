@@ -19,9 +19,13 @@
                             <form method="Post">
                                 {% csrf_token %}
                                 {{ form.as_p }}
-
                                 <button class="btn btn-secondary">Update Settings</button>
                             </form>
+                            <hr>
+                            <form method="form" action={%url 'password_change' %}>
+                                <button class="btn btn-secondary">Change Password</button>
+                            </form>
+                            <hr>
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 
+
 class SignUpTest(TestCase):
     def setUp(self):
         self.username = 'test'
@@ -354,3 +355,115 @@ class ProfileTest(TestCase):
         response = self.client.get('/accounts/300/profile/', follow=True)
         # verify that user is met with a 404 site status code
         self.assertEqual(response.status_code, 404)
+
+
+class PasswordResetTest(TestCase):
+
+    def setUp(self):
+        # valid credentials
+        self.username = 'test'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
+        # information for forgot password
+        self.email = 'tester@tset.com'
+
+    def test_password_change_form(self):
+        # access password change page
+        response = self.client.post('/accounts/password_change/', data={
+            'password1': self.password,
+            'password2': self.password
+        }, follow=True)
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_change.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_change_form.html')
+
+    def test_password_change_done(self):
+        # access password change done page
+        response = self.client.get('/accounts/password_change/done/')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_change_done.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_change_done.html')
+
+
+    def test_password_reset_form(self):
+        # access password reset page and enter email
+        response = self.client.post('/accounts/password_reset/', data={
+            'email': self.email
+        }, follow=True)
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_reset_done.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_reset_done.html')
+
+    def test_password_reset_done(self):
+        # access password reset done page
+        response = self.client.get('/accounts/password_reset/done/')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_reset_done.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_reset_done.html')
+
+    def test_password_reset_confirm(self):
+        # access reset password page and allow user to enter new passwords
+        response = self.client.post('/accounts/reset/<uidb64>/<token>/', data={
+            'password1': self.password,
+            'password2': self.password
+        }, follow=True)
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_reset_confirm.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_reset_confirm.html')
+
+    def test_password_reset_complete(self):
+        # access password reset complete page
+        response = self.client.get('/accounts/reset/done/')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify password_reset_complete.html is being used
+        self.assertTemplateUsed(response, template_name='registration/password_reset_complete.html')
+
+class PermissionsTest(TestCase):
+
+    def test_admin_permissions(self):
+        # create admin user
+        password = 'admin'
+        my_admin = User.objects.create_superuser('admin', 'myemail@test.com', password)
+
+        # Login to correct user
+        self.client.login(username=my_admin.username, password=password)
+
+        # Open page and ensure that admin has access to add a location
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Map Configuration Panel")
+
+    def test_staff_permissions(self):
+        permission = Permission.objects.get(name='Can add google maps response')
+
+        # create staff user
+        password = 'staff'
+        my_staff = User.objects.create_user('staff', 'myemail@test.com', password)
+
+        # You'll need to log him in before you can send requests through the client
+        self.client.login(username=my_staff.username, password=password)
+        my_staff.user_permissions.add(permission)
+
+        # Open page and ensure that staff also has access to add a location
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Map Configuration Panel")
+
+    def test_parent_permissions(self):
+        # create parent user
+        password = 'parent'
+        my_parent = User.objects.create_user('parent', 'myemail@test.com', password)
+
+        # You'll need to log him in before you can send requests through the client
+        self.client.login(username=my_parent.username, password=password)
+
+        # Open page and ensure that staff also has access to add a location
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Map Configuration Panel")

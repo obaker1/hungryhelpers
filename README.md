@@ -29,8 +29,7 @@ Features:
 		2. Run 'python manage.py test findLocation'
 		3. Details about each test can be found inside the /findLocation/tests.py file.
 - Account management:
-	- Description:
-		Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one. Allows users to edit personal settings such as their username, email, first name, and last name. Users may also edit their profile to add, edit, or delete students (children) as well as indicate the names and contact information of trusted caretakers. Student profile information includes first & last names, age, address, city, state, zip, school, grade, student id, district choice, dietary restrictions and preferences. 
+	- Description: Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users can change password if they have an account. If users forgot their password, they will be emailed a link to be able to change their password. Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one. Allows users to edit personal settings such as their username, email, first name, and last name. Users may also edit their profile to add students (children) as well as indicate the names and contact information of trusted caretakers. Student profile information includes name, age, address, city, state, zip, school, grade, and student id. 
 	- URLs: 
 		- http://127.0.0.1:8000/accounts/login/
 		- http://127.0.0.1:8000/accounts/signup/
@@ -42,6 +41,12 @@ Features:
 		- http://127.0.0.1:8000/accounts/<int:pk>/edit_student/
 		- http://127.0.0.1:8000/accounts/<int:pk>/delete_student/
 		- http://127.0.0.1:8000/accounts/settings/ 
+		- http://127.0.0.1:8000/accounts/password_change/
+		- http://127.0.0.1:8000/accounts/password_change/done/
+		- http://127.0.0.1:8000/accounts/password_reset/
+		- http://127.0.0.1:8000/accounts/password_reset/done/
+		- http://127.0.0.1:8000/accounts/reset/MQ/set-password/
+		- http://127.0.0.1:8000/accounts/reset/done/
 	- Test suite execution instructions:
 		1. Using a command line interpreter, navigate to the root directory of the project
 		2. Run 'python manage.py test accounts'
@@ -62,6 +67,13 @@ Features:
 		1. Using a command line interpreter, navigate to the root directory of the project and cd into the hungryhelpers directory
 		2. Run 'python parseTest.py'
 		3. Details about each test can be found inside the parseTest.py file
+- Forgot Password:
+	- Description: Allows users to change their password if they have an account. If the user forgets their password while logging on, they can click the "Forgot Password" button and an email will be sent to the user to allow them to rest their password.
+	- Testing Forgot Password email verification (currently only for development):
+		1. To view email, after cloning repo, navigate to the folder where the project is saved on your local machine using the file exporer
+		2. Open 'send_emails' folder and click on the latest log file
+		3. Copy the link in that email onto the web browser
+		4. Follow instructions and reset password
 
 - Notifications:
 	- Description:

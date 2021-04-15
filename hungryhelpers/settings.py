@@ -50,6 +50,10 @@ INSTALLED_APPS = [
     'notifs',
 ]
 
+# For development-use only
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails'))
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 AUTH_PROFILE_MODULE = "accounts.UserProfile"

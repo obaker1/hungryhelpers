@@ -1,5 +1,5 @@
 var ORIGIN_LIST;
-var DESTINATION_LIST;
+var ADDRESS_LIST;
 var LOCATION_FILTER;
 var map;
 var markersArray = [];
@@ -8,7 +8,7 @@ var filters = {school:false, bus:false}; // start out with filter features set t
 function initMap() {
   const bounds = new google.maps.LatLngBounds();
   const origin = ORIGIN_LIST;
-  const destination = DESTINATION_LIST;
+  const destination = ADDRESS_LIST;
 
   // creates instaces for the map that is to be displayed
   map = new google.maps.Map(document.getElementById("map"), {
@@ -18,13 +18,14 @@ function initMap() {
   // calls geocoder to get the exact location and uses it to pin the correct location on the map
   const geocoder = new google.maps.Geocoder();
   deleteMarkers(markersArray);
-  const showGeocodedAddressOnMap = function (asDestination, school, bus) { //add markers on map
+  const showGeocodedAddressOnMap = function (asDestination, school, bus, location) { //add markers on map
     const icon = asDestination ? "D" : "O";
     return function (results, status) {
         if (status === "OK") { // makes sure that the google maps geoencoder loaded correctly
             map.fitBounds(bounds.extend(results[0].geometry.location));
             var marker;
             if (!asDestination) { // creates marker for origin
+                location = results[0].formatted_address;
                 marker = new google.maps.Marker({
                     map,
                     position: results[0].geometry.location,
@@ -42,7 +43,7 @@ function initMap() {
             }
             markersArray.push(marker);
             const popup = results[0].formatted_address;
-            attachSecretMessage(marker, popup);
+            attachSecretMessage(marker, location);
         } else {
             alert("Geocode was not successful due to: " + status);
         }
@@ -53,9 +54,9 @@ function initMap() {
     for( let j = 0; j< origin.length;j++){
       geocoder.geocode(
         { address: origin[j] },
-        showGeocodedAddressOnMap(false, false, false));
+        showGeocodedAddressOnMap(false, false, false, []));
     }
-    for (let j = 0; j < destination.length; j++) {
+    for (let j = 0; j < 10; j++) {
       school = false;
       bus = false;
       if (LOCATION_FILTER[j*2] == "T") {
@@ -66,7 +67,7 @@ function initMap() {
       }
       geocoder.geocode(
         { address: destination[j] },
-        showGeocodedAddressOnMap(true, school, bus));
+        showGeocodedAddressOnMap(true, school, bus, LOCATION_LIST[j]));
     }
 }
 
@@ -113,10 +114,11 @@ var filter_markers = function() {
 }
 
 // sets global variables for the origin and destinations
-function setParameters(origin, destinations, filter){
+function setParameters(origin, address, filter, location){
     ORIGIN_LIST = [origin];
-    DESTINATION_LIST = destinations;
+    ADDRESS_LIST = address;
     LOCATION_FILTER = filter;
+    LOCATION_LIST = location;
 }
 
 function attachSecretMessage(marker, secretMessage) { //add popups when marker is clicked

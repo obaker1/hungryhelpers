@@ -74,6 +74,18 @@ Features:
 		2. Open 'send_emails' folder and click on the latest log file
 		3. Copy the link in that email onto the web browser
 		4. Follow instructions and reset password
+- Permissions
+	- Description:
+		Creates different permissions for users depending who they are (staff, admin, or parent)
+	- Testing:
+		1. Using a command line interpreter, navigate to the root directory of the project and cd into the hungryhelpers directory
+		2. Run 'python manage.py test accounts.tests.PermissionsTest'
+	- Creating Users:
+		1. Create a superuser using 'python manage.py createsuperuser' and add username and password
+		2. Run the program ('python manage.py runserver')
+		3. Login as admin and go to http://127.0.0.1:8000/admin/ 
+		4. Add Groups and add specific permissions (such as 'Can add google maps response')
+		5. You can then add certain groups to users and once they log in, their account should adjust accordingly
 
 - Notifications:
 	- Description:

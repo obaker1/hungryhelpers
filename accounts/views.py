@@ -129,7 +129,7 @@ class PasswordContextMixin:
 class PasswordChangeView(PasswordContextMixin, FormView):
     form_class = PasswordChangeForm
     success_url = reverse_lazy('password_change_done')
-    template_name = 'registration/password_change_form.html'
+    template_name = 'registration/password_change.html'
     title = ('Password change')
 
 

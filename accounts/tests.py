@@ -396,7 +396,7 @@ class PasswordResetTest(TestCase):
         # verify site status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # verify password_change.html is being used
-        self.assertTemplateUsed(response, template_name='registration/password_change_done.html')
+        self.assertTemplateUsed(response, template_name='registration/password_change.html')
 
     def test_password_change_done(self):
         response = self.client.post('/accounts/login/', self.credentials, follow=True)

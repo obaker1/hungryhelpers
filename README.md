@@ -11,12 +11,13 @@ Software required:
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
-2. Navigate into the 'hungryhelpers' folder (hungryhelpers/hungryhelpers) and make a new file named ".env"
-3. In ".env", enter "GOOGLE_MAPS_API_KEY=<b>API_KEY</b>", where <b>API_KEY</b> is the key given at the bottom of the group retrospective.
-4. Return to the root directory and run following commands: 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
-5. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
+2. Delete the db.sqlite3 file (will be regenerated after running makemigrations later)
+3. Navigate into the 'hungryhelpers' folder (hungryhelpers/hungryhelpers) and make a new file named ".env"
+4. In ".env", enter "GOOGLE_MAPS_API_KEY=<b>API_KEY</b>", where <b>API_KEY</b> is the key given at the bottom of the group retrospective.
+5. Return to the root directory and run following commands: 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
+6. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
 
-<b><u> NOTE:</u></b> When creating an account, please be sure to <b> enable pop-ups and redirects </b> on the browser that will be accessing the website for the best experience. If a blank page is encountered upon registration, have the browser be in focus and press “TAB” on the keyboard to reveal the hidden button on the page and press it. 
+<b><u> NOTE:</u></b> When creating an account, please be sure to <b> enable pop-ups and redirects </b> on the browser that will be accessing the website for the best experience. Always use the most recently created browser tab in the event that a new tab was created.
 
 Features:
 - Find Location:

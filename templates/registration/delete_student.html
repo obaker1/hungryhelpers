@@ -3,35 +3,30 @@
 {% load static %}
 
 
-
-
-{% if user.is_authenticated %}
+{% if user.is_authenticated and user.id == user.profile.id and user.profile.id == student.user_account.pk %}
     <div class="container-fluid">
-        <h3 class="text-dark mb-4">User Settings</h3>
+        <h3 class="text-dark mb-4">Delete Student Profile</h3>
         <div class="row">
             <div class="col">
                 <div class="card shadow mb-3">
-                    <div class="card-header py-3">
-                        <p class="text-primary m-0 font-weight-bold">User Settings</p>
-                    </div>
                     <div class="card-body">
+                        <h5><p class="text-primary m-0 font-weight-bold">Are you sure you would like to delete {{ student.first_name }} {{ student.last_name }}'s profile?</p></h5>
                         <div class = "form-group">
                             <form method="Post">
                                 {% csrf_token %}
                                 {{ form.as_p }}
-                                <button class="btn btn-secondary">Update Settings</button>
+                                <br>
+                                <button class="btn btn-primary">&nbsp;Yes&nbsp;</button>
+                                <a class="btn btn-primary" href="{% url 'show_profile' user.profile.id %}" role="button" >&nbsp;&nbsp;No&nbsp;&nbsp;</a>
                             </form>
-                            <hr>
-                            <form method="form" action={%url 'password_change' %}>
-                                <button class="btn btn-secondary">Change Password</button>
-                            </form>
-                            <hr>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 {% endif %}
+
 
 {% endblock %}

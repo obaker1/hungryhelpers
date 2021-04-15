@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import User
 from notifications.signals import notify
+from django.views.generic import DetailView
 
 
 def index(request):
@@ -29,3 +30,6 @@ def message(request):
     except Exception as e:
         print(e)
         return HttpResponse("Please login from admin site for sending messages")
+
+def inbox(request):
+    return render(request, 'registration/inbox.html')

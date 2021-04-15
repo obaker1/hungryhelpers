@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+
+{% if user.is_authenticated and user.id == user.profile.id %}
+    <div class="container-fluid">
+        <h3 class="text-dark mb-4">Edit Student Profile</h3>
+        <div class="row">
+            <div class="col">
+                <div class="card shadow mb-3">
+                    <div class="card-body">
+                        <div class = "form-group">
+                            <form method="Post">
+                                {% csrf_token %}
+                                {% for field in form %}
+                                    {{ field.errors }}
+                                    {% if field.id_for_label == "id_allergic_celiac" %}
+                                        <b>Allergies:&nbsp;</b>
+                                        <input type="hidden" name="allergic_celiac" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="allergic_celiac" id="id_allergic_celiac" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="allergic_celiac" id="id_allergic_celiac" value="Yes">
+                                        {% endif %}
+                                        <label for="id_allergic_celiac">Celiac</label>&nbsp;&nbsp;
+                                    {% elif field.id_for_label == "id_allergic_shellfish" %}
+                                        <input type="hidden" name="allergic_shellfish" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="allergic_shellfish" id="id_allergic_shellfish" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="allergic_shellfish" id="id_allergic_shellfish" value="Yes">
+                                        {% endif %}
+                                        <label for="id_allergic_shellfish">Shellfish</label>&nbsp;&nbsp;
+                                    {% elif field.id_for_label == "id_allergic_lactose" %}
+                                        <input type="hidden" name="allergic_lactose" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="allergic_lactose" id="id_allergic_lactose" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="allergic_lactose" id="id_allergic_lactose" value="Yes">
+                                        {% endif %}
+                                        <label for="id_allergic_lactose">Lactose</label>&nbsp;&nbsp; <br>
+                                    {% elif field.id_for_label == "id_preference_halal" %}
+                                        <b>Food Preferences:&nbsp;</b>
+                                        <input type="hidden" name="preference_halal" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="preference_halal" id="id_preference_halal" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="preference_halal" id="id_preference_halal" value="Yes">
+                                        {% endif %}
+                                        <label for="id_preference_halal">Halal</label>&nbsp;&nbsp;
+                                    {% elif field.id_for_label == "id_preference_kosher" %}
+                                        <input type="hidden" name="preference_kosher" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="preference_kosher" id="id_preference_kosher" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="preference_kosher" id="id_preference_kosher" value="Yes">
+                                        {% endif %}
+                                        <label for="id_preference_kosher">Kosher</label>&nbsp;&nbsp;
+                                    {% elif field.id_for_label == "id_preference_vegetarian" %}
+                                        <input type="hidden" name="preference_vegetarian" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="preference_vegetarian" id="id_preference_vegetarian" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="preference_vegetarian" id="id_preference_vegetarian" value="Yes">
+                                        {% endif %}
+                                        <label for="id_preference_vegetarian">Vegetarian</label>&nbsp;&nbsp; <br>
+                                    {% elif field.id_for_label == "id_meal_breakfast" %}
+                                        <b>Meal Type:&nbsp;</b>
+                                        <input type="hidden" name="meal_breakfast" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="meal_breakfast" id="id_meal_breakfast" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="meal_breakfast" id="id_meal_breakfast" value="Yes">
+                                        {% endif %}
+                                        <label for="id_meal_breakfast">Breakfast</label>&nbsp;&nbsp;
+                                    {% elif field.id_for_label == "id_meal_lunch" %}
+                                        <input type="hidden" name="meal_lunch" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="meal_lunch" id="id_meal_lunch" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="meal_lunch" id="id_meal_lunch" value="Yes">
+                                        {% endif %}
+                                        <label for="id_meal_lunch">Lunch</label>&nbsp;&nbsp;
+                                    {% elif field.id_for_label == "id_meal_dinner" %}
+                                        <input type="hidden" name="meal_dinner" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="meal_dinner" id="id_meal_dinner" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="meal_dinner" id="id_meal_dinner" value="Yes">
+                                        {% endif %}
+                                        <label for="id_meal_dinner">Dinner</label>&nbsp;&nbsp; <br>
+                                    {% else %}
+                                        <b>{{ field.label_tag }}</b> {{ field }} <br>
+                                    {% endif %}
+                                {% endfor %}
+                                <br>
+                                <button class="btn btn-block btn-primary">Update</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <br><br><br>
+            </div>
+        </div>
+    </div>
+{% else %}
+    You do not have access to this page.
+{% endif %}
+
+
+{% endblock %}
+
+
+
+
+
+
+

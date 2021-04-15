@@ -2,8 +2,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 import requests
 from django.conf import settings
+from django.contrib.auth.models import User
 
-from .models import Destinations
 from .models import GoogleMapsResponse
 
 
@@ -18,36 +18,60 @@ class PageLoad(TestCase):
         # verify index.html is being used
         self.assertTemplateUsed(response, template_name='findLocation/index.html')
 
-
-def create_destination(destination_text):
-    """
-    Create a destination with the given `destination_text`.
-    """
-    return Destinations.objects.create(text=destination_text)
-
+class OriginIndexViewTest(TestCase):
+    # test adding origin
+    def test_adding_origin(self):
+        c = Client()
+        c.post('/findLocation/addOrigin/', {'origin': 'baltimore, MD'})
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
 
 class DestinationIndexViewTest(TestCase):
+    def setUp(self):
+        self.credentials = {
+            'username': 'test',
+            'password': '>pve_hm*N*&x<qbP8u'}
+        User.objects.create_user(**self.credentials)
+
     def test_adding_destination(self):
         """
         Make sure that a destination inputted is in the database.
         """
-        create_destination(destination_text="Towson, Maryland")
-        response = self.client.get(reverse('index'))
+        self.client.post('/accounts/login/', self.credentials, follow=True)
+        c = Client()
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', 'remove': 'a'})
+        response = self.client.get(reverse('findlocation'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Towson,")
+
+    def test_removing_destination(self):
+        """
+        Make sure that a destination is removed from the database.
+        """
+        c = Client()
+        # adding a location
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', "remove": 'a'})
+        # removing a location
+        c.post('/findLocation/addLocation/', {'destination': 'Towson, Maryland', 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', "remove": 'r'})
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Towson,")
 
     def test_order_of_locations(self):
         """
         makes sure that all locations in the database are ordered
         correctly by distance (not by time)
         """
-        destinationList = ["Elkridge, MD", "Columbia, MD", "Towson, MD"]
-        for i in range(len(destinationList)):
-            create_destination(destination_text=destinationList[i])
-        response = self.client.get(reverse('index'))
+        c = Client()
+        destinationList = ['Elkridge, MD', 'Towson, MD', 'Columbia, MD' ]
+        destinationListCorrect = ['Elkridge, MD', 'Columbia, MD', 'Towson, MD']
+        for i in destinationList:
+            c.post('/findLocation/addLocation/', {'destination': i, 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', "remove": 'a'})
+            response = self.client.get(reverse('findlocation'))
         counter = 0
-        for destinations in GoogleMapsResponse.objects.filter():
-            self.assertIn(destinationList[counter], destinations.location )
+        googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'location')
+        for destinations in googlemaps:
+            self.assertIn(destinationListCorrect[counter], destinations.location)
             counter += 1
 
         self.assertEqual(response.status_code, 200)

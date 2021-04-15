@@ -56,7 +56,16 @@ function initMap() {
         { address: origin[j] },
         showGeocodedAddressOnMap(false, false, false, []));
     }
-    for (let j = 0; j < 10; j++) {
+
+    var locs = 0;
+    if (destination.length <= 10) {
+        locs = destination.length
+    }
+    else {
+        locs = 10
+    }
+
+    for (let j = 0; j < locs; j++) {
       school = false;
       bus = false;
       if (LOCATION_FILTER[j*2] == "T") {

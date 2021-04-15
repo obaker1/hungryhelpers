@@ -274,7 +274,7 @@ class PasswordResetTest(TestCase):
         # verify site status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # verify password_change.html is being used
-        self.assertTemplateUsed(response, template_name='registration/password_change_form.html')
+        self.assertTemplateUsed(response, template_name='registration/password_change.html')
 
     def test_password_change_done(self):
         # access password change done page
@@ -321,7 +321,6 @@ class PasswordResetTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # verify password_reset_complete.html is being used
         self.assertTemplateUsed(response, template_name='registration/password_reset_complete.html')
-=======
 class PermissionsTest(TestCase):
 
     def test_admin_permissions(self):

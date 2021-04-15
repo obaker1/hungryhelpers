@@ -2,10 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
+{% load notifications_tags %}
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Dashboard - Brand</title>
+    <title>Hungry Helpers</title>
     <link rel="stylesheet" href="{% static 'hungryhelpers/assets/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet" href="{% static 'hungryhelpers/assets/fonts/fontawesome-all.min.css' %}">
@@ -26,20 +27,20 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                     {% if user.is_authenticated %}
-
+                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                         {% if user.profile.id %}
                             <li class="nav-item"><a class="nav-link" href="{% url 'show_profile' user.profile.id %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
                             <!--<li class="nav-item"><a class="nav-link" href="{% url 'edit_profile' user.profile.id %}"><i class="fas fa-user"></i><span>EDIT Profile</span></a></li>-->
                         {% else %}
                             <li class="nav-item"><a class="nav-link" href="{% url 'create_profile' %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
                         {% endif %}
-                        <li class="nav-item"><a class="nav-link" href="notifications.html"><i class="fas fa-bell"></i><span>Notifcations</span></a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'inbox' %}"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
                         <li class="nav-item"><a class="nav-link" href="tickets.html"><i class="fa fa-ticket"></i><span>Tickets</span></a></li>
-                        <li class="nav-item"><a class="nav-link" href="map.html"><i class="fa fa-map"></i><span>Map</span></a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'findlocation' %}"><i class="fa fa-map"></i><span>Map</span></a></li>
 
                     {% else %}
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}"><i class="fas fa-info-circle"></i><span>About Us</span></a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="far fa-user-circle"></i><span>Login</span></a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}"><i class="fas fa-user-circle"></i><span>Register</span></a></li>
                     {% endif %}
@@ -66,7 +67,8 @@
                         -->
                         <ul class="navbar-nav flex-nowrap ml-auto">
                           <!-- (Search Bar)
-                          <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
+                          <li class="nav-item dropdown d-sm-none no-arrow">
+                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
                                 <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" aria-labelledby="searchDropdown">
                                     <form class="form-inline mr-auto navbar-search w-100">
                                         <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
@@ -76,11 +78,28 @@
                                 </div>
                             </li>-->
                             {% if user.is_authenticated %}
-                                <li class="nav-item dropdown no-arrow mx-1">
-                                    <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="badge badge-danger badge-counter">0</span><i class="fas fa-bell fa-fw"></i></a>
-                                        <!-- Add notification functionality-->
+
+                                <div class="nav-item dropdown no-arrow mx-1">
+                                    <a href="#" class="notification dropdown-toggle nav-link" aria-expanded="false" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true">
+                                        <i class="fas fa-bell" style="font-size:24px"></i>
+                                        <span class="badge">{% live_notify_badge %}</span>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                        <div class="dropdown-divider"></div>
+                                        {% for notification in user.notifications.unread %}
+                                            <li class="dropdown-item"><a href="{% url 'inbox' %}"><span>Message from {{ notification.actor }}</span></a></li>
+                                            <div class="dropdown-divider"></div>
+                                        {% endfor %}
                                     </div>
-                                </li>
+                                </div>
+                                {% live_notify_list list_class="dropdown-menu" %}
+
+                                <!--<li class="nav-item dropdown no-arrow mx-1">
+                                    <div class="nav-item dropdown no-arrow">
+                                        <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="badge badge-danger badge-counter">0</span><i class="fas fa-bell fa-fw"></i></a>
+                                        Add notification functionality
+                                    </div>
+                                </li>-->
                             {% endif %}
                             <!--<li class="nav-item dropdown no-arrow mx-1">
                                  (Mail icon)
@@ -121,7 +140,7 @@
             </div>
         </div>
     </div>
-
+    <!--
     <footer class="bg-white sticky-footer">
         <div class="container my-auto">
             <div class="text-center my-auto copyright"><span>Copyright © Brand 2021</span></div>
@@ -129,8 +148,7 @@
     </footer>
 
     <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-
-
+    -->
     <script src="{% static 'hungryhelpers/assets/js/jquery.min.js' %}"></script>
     <script src="{% static 'hungryhelpers/assets/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'hungryhelpers/assets/js/chart.min.js' %}"></script>

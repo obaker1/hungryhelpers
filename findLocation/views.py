@@ -13,21 +13,25 @@ import requests
 ORIGIN = '1000 Hilltop Cir, Baltimore, MD 21250, USA'
 
 def findlocation(request):
-    destinationList = []
+    locationList = []
+    addressList = []
     filter = []
-    for destinations in GoogleMapsResponse.objects.filter():
-        destinationList.append(destinations.location)
+    for destinations in GoogleMapsResponse.objects.all():
+        locationList.append(destinations.location)
+        addressList.append(destinations.address)
         filter.append(destinations.school)
         filter.append(destinations.bus)
 
-    destinationAppended = '|'.join(destinationList) if destinationList else "None"
+    locationAppended = '|'.join(locationList) if locationList else "None"
+    addressAppended = '|'.join(addressList) if addressList else "None"
     filterAppended = '|'.join(filter) if filter else "None"
-    googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'location')
+    googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'address')
     context = {
         'api_key': settings.GOOGLE_MAPS_API_KEY,
         'origin': ORIGIN,
         'googlemapsresult': googlemaps,
-        'destinationList': destinationAppended,
+        'locationList': locationAppended,
+        'addressList': addressAppended,
         'filter': filterAppended
     }
     return render(request, 'findLocation/index.html', context)
@@ -39,11 +43,11 @@ def addOrigin(request):
     if (origin_text != ''):
         ORIGIN = origin_text;
 
-    for destination in GoogleMapsResponse.objects.all():
+    for destination in GoogleMapsResponse.objects.all()[:10]:
         params = {
             'key': settings.GOOGLE_MAPS_API_KEY,
             'origins': ORIGIN,
-            'destinations': destination.location
+            'destinations': destination.address
         }
         url = 'https://maps.googleapis.com/maps/api/distancematrix/json?callback=initMap&libraries=&v=weekly&units=imperial'
         response = requests.get(url, params)
@@ -53,15 +57,15 @@ def addOrigin(request):
             result = "String could not be converted to JSON"
 
         # if response is empty
-        if(result.get('status') != 'OK'):
+        if(result.get('status') != 'OK' or result['rows'][0]['elements'][0].get('status') != 'OK'):
             return HttpResponseRedirect(reverse('findlocation'))
 
         results = result['rows'][0]['elements'];
-        destinationList = result['destination_addresses']
+        addressList = result['destination_addresses']
 
-        location = destinationList[0]
+        location = destination.location
         distanceString = results[0]['distance']['text']
-        distanceString = distanceString.replace(',','');
+        distanceString = distanceString.replace(',','')
         distance = float(distanceString[:-3])
         time = results[0]['duration']['text']
         GoogleMapsResponse.objects.filter(location=location).update(distance=distance, time=time)
@@ -72,6 +76,9 @@ def addOrigin(request):
 def addLocation(request):
     destination_text = request.POST['destination']
     remove = request.POST['remove']
+    timeframe = request.POST['timeframe']
+    if (timeframe == ""):
+        timeframe = "N/A"
     school_text = request.POST['school']
     school = "F"
     if (school_text == "y"):
@@ -93,25 +100,26 @@ def addLocation(request):
         result = "String could not be converted to JSON"
 
     # if response is empty
-    if(result.get('status') != 'OK'):
+    if(result.get('status') != 'OK' or result['rows'][0]['elements'][0].get('status') != 'OK'):
         return HttpResponseRedirect(reverse('findlocation'))
 
     results = result['rows'][0]['elements'];
-    destinationList = result['destination_addresses']
+    addressList = result['destination_addresses']
+    location = destination_text
 
-    for i in range(len(destinationList)):
-        location = destinationList[i]
+    for i in range(len(addressList)):
+        address = addressList[i]
         distanceString = results[i]['distance']['text']
         distanceString = distanceString.replace(',','');
         distance = float(distanceString[:-3])
         time = results[i]['duration']['text']
-        if not GoogleMapsResponse.objects.filter(location=location).exists():
+        if not GoogleMapsResponse.objects.filter(address=address).exists():
             if (remove != 'r'):
-                newResponse = GoogleMapsResponse(location=location, distance=distance, time=time, school=school, bus=bus)
+                newResponse = GoogleMapsResponse(location=location, distance=distance, time=time, school=school, bus=bus, address=address, timeframe=timeframe)
                 newResponse.save()
         else:
             if (remove == 'r'):
-                GoogleMapsResponse.objects.filter(location=location).delete()
+                GoogleMapsResponse.objects.filter(address=address).delete()
             else:
-                GoogleMapsResponse.objects.filter(location=location).update(school=school, bus=bus)
+                GoogleMapsResponse.objects.filter(address=address).update(location=location, school=school, bus=bus, timeframe=timeframe)
     return HttpResponseRedirect(reverse('findlocation'))

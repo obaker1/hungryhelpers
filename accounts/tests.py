@@ -1,6 +1,9 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.urls import reverse
+from django.contrib.auth.models import Permission
+
 
 
 class SignUpTest(TestCase):
@@ -110,6 +113,7 @@ class LogOutTest(TestCase):
         # check user is shown "You are not logged in" message
         self.assertTrue('You are not logged in' in str(response.content))
 
+
 class EditSettingsTest(TestCase):
     def setUp(self):
         # valid credentials
@@ -151,7 +155,7 @@ class EditSettingsTest(TestCase):
             'username': self.username,
             'email': self.email,
             'first_name': self.first_name,
-            'last_name' : self.last_name
+            'last_name': self.last_name
         }, follow=True)
         # check that the user has been redirected to home after updating settings
         self.assertTemplateUsed(response, template_name='home.html')
@@ -162,6 +166,7 @@ class EditSettingsTest(TestCase):
         self.assertContains(response, self.email)
         self.assertContains(response, self.first_name)
         self.assertContains(response, self.last_name)
+
 
 class ProfileTest(TestCase):
     def setUp(self):
@@ -219,12 +224,12 @@ class ProfileTest(TestCase):
             'name': self.name,
             'age': self.age,
             'address': self.address,
-            'city' : self.city,
-            'state' : self.state,
-            'zip' : self.zip,
-            'school' : self.school,
-            'grade' : self.grade,
-            'student_id' : self.student_id
+            'city': self.city,
+            'state': self.state,
+            'zip': self.zip,
+            'school': self.school,
+            'grade': self.grade,
+            'student_id': self.student_id
         }, follow=True)
         # verify success of form submission
         self.assertEqual(response.status_code, 200)
@@ -239,7 +244,7 @@ class ProfileTest(TestCase):
         # check user is shown "You are not logged in" message
         self.assertContains(response, 'You are not logged in')
         # attempt to access settings page
-        response = self.client.get('/accounts/'+ str(userPrimaryKey) +'/profile/', follow=True)
+        response = self.client.get('/accounts/' + str(userPrimaryKey) + '/profile/', follow=True)
         # verify that user is unable to view profile and is met with the appropriate message
         self.assertContains(response, self.err_msg)
 
@@ -316,3 +321,47 @@ class PasswordResetTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # verify password_reset_complete.html is being used
         self.assertTemplateUsed(response, template_name='registration/password_reset_complete.html')
+=======
+class PermissionsTest(TestCase):
+
+    def test_admin_permissions(self):
+        # create admin user
+        password = 'admin'
+        my_admin = User.objects.create_superuser('admin', 'myemail@test.com', password)
+
+        # Login to correct user
+        self.client.login(username=my_admin.username, password=password)
+
+        # Open page and ensure that admin has access to add a location
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Map Configuration Panel")
+
+    def test_staff_permissions(self):
+        permission = Permission.objects.get(name='Can add google maps response')
+
+        # create staff user
+        password = 'staff'
+        my_staff = User.objects.create_user('staff', 'myemail@test.com', password)
+
+        # You'll need to log him in before you can send requests through the client
+        self.client.login(username=my_staff.username, password=password)
+        my_staff.user_permissions.add(permission)
+
+        # Open page and ensure that staff also has access to add a location
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Map Configuration Panel")
+
+    def test_parent_permissions(self):
+        # create parent user
+        password = 'parent'
+        my_parent = User.objects.create_user('parent', 'myemail@test.com', password)
+
+        # You'll need to log him in before you can send requests through the client
+        self.client.login(username=my_parent.username, password=password)
+
+        # Open page and ensure that staff also has access to add a location
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Map Configuration Panel")

@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from .forms import StudentForm
 
 class SignUpTest(TestCase):
     def setUp(self):
@@ -170,16 +171,26 @@ class ProfileTest(TestCase):
         self.password = '>pve_hm*N*&x<qbP8u'
 
         # information for add student page
-        self.name = 'Billy'
+        self.first_name = 'Billy'
+        self.last_name = 'Manson'
         self.age = 11
         self.address = '1234 Test Street'
         self.city = 'Testingburg'
         self.state = 'Alaska'
         self.zip = '12345'
         self.school = 'Catonsville High'
-        self.grade = '8'
+        self.grade = 8
         self.student_id = 'AB04576'
-
+        self.district_choice = '2nd Avenue and Francis Avenue'
+        self.allergic_celiac = 'Yes'
+        self.allergic_shellfish = 'No'
+        self.allergic_lactose = 'Yes'
+        self.preference_halal = 'Yes'
+        self.preference_kosher = 'No'
+        self.preference_vegetarian = 'No'
+        self.meal_breakfast = 'No'
+        self.meal_lunch = 'Yes'
+        self.meal_dinner = 'No'
         self.err_msg = "You are either not logged in or do not have access to this profile."
 
     def test_profile_page(self):
@@ -214,8 +225,10 @@ class ProfileTest(TestCase):
         # verify correct template was used
         self.assertTemplateUsed(response, template_name='registration/add_student.html')
         # enter data into form
+
         response = self.client.post('/accounts/' + str(response.context['user'].pk) + '/add_student/', data={
-            'name': self.name,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
             'age': self.age,
             'address': self.address,
             'city' : self.city,
@@ -223,11 +236,28 @@ class ProfileTest(TestCase):
             'zip' : self.zip,
             'school' : self.school,
             'grade' : self.grade,
-            'student_id' : self.student_id
+            'student_id' : self.student_id,
+            'district_choice' : self.district_choice,
+            'allergic_celiac' : self.allergic_celiac,
+            'allergic_shellfish' : self.allergic_shellfish,
+            'allergic_lactose' : self.allergic_lactose,
+            'preference_halal' : self.preference_halal,
+            'preference_kosher' : self.preference_kosher,
+            'preference_vegetarian' : self.preference_vegetarian,
+            'meal_breakfast' :self.meal_breakfast,
+            'meal_lunch' :self.meal_lunch,
+            'meal_dinner' : self.meal_dinner,
         }, follow=True)
+
         # verify success of form submission
         self.assertEqual(response.status_code, 200)
         userPrimaryKey = response.context['user'].pk
+        self.assertContains(response, self.age)
+        self.assertContains(response, self.state)
+        self.assertContains(response, self.student_id)
+        self.assertContains(response, self.allergic_lactose)
+        self.assertContains(response, self.meal_dinner)
+
 
         ### log out of user's current session and attempt to access same page based on primary key value
         response = self.client.get("/accounts/logout/", follow=True)
@@ -247,3 +277,4 @@ class ProfileTest(TestCase):
         response = self.client.get('/accounts/300/profile/', follow=True)
         # verify that user is met with a 404 site status code
         self.assertEqual(response.status_code, 404)
+

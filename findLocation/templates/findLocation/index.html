@@ -35,6 +35,7 @@
         <h3 class="text-dark mb-4">Find Your Location</h3>
         <div class="row">
             <div class="col">
+                {% if perms.findLocation.add_googlemapsresponse%}
                 <div class="card shadow mb-3">
                     <div class="card-header py-3">
                         <p class="text-primary m-0 font-weight-bold">Map Configuration Panel</p>
@@ -68,6 +69,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
                 <div class="card shadow mb-3">
                     <div class="card-header py-3">
                         <p class="text-primary m-0 font-weight-bold">Set Your Location</p>
@@ -126,7 +128,7 @@
         </div>
     </div>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <style>
+<style>
         body{
             height: 100%;
             width: 100%;
@@ -171,7 +173,7 @@
             position: relative;
             top: -14px; right: 0; bottom: 0; left: 0;
         }
-    </style>
+</style>
 {% else %}
     You must be logged in to use this page!
 {% endif %}

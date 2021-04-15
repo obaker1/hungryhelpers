@@ -30,19 +30,21 @@ Features:
 		3. Details about each test can be found inside the /findLocation/tests.py file.
 - Account management:
 	- Description:
-		Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one. Allows users to edit personal settings such as their username, email, first name, and last name. Users may also edit their profile to add students (children) as well as indicate the names and contact information of trusted caretakers. Student profile information includes name, age, address, city, state, zip, school, grade, and student id. 
+		Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one. Allows users to edit personal settings such as their username, email, first name, and last name. Users may also edit their profile to add, edit, or delete students (children) as well as indicate the names and contact information of trusted caretakers. Student profile information includes first & last names, age, address, city, state, zip, school, grade, student id, district choice, dietary restrictions and preferences. 
 	- URLs: 
 		- http://127.0.0.1:8000/accounts/login/
 		- http://127.0.0.1:8000/accounts/signup/
 		- http://127.0.0.1:8000/accounts/logout/ 
 		- http://127.0.0.1:8000/accounts/<int:pk>/create_profile/
 		- http://127.0.0.1:8000/accounts/<int:pk>/profile/ 
-		- http://127.0.0.1:8000/accounts/<int:pk>/edit_profile/ 
+		- http://127.0.0.1:8000/accounts/<int:pk>/edit_profile/
+		- http://127.0.0.1:8000/accounts/<int:pk>/add_student/
+		- http://127.0.0.1:8000/accounts/<int:pk>/edit_student/
+		- http://127.0.0.1:8000/accounts/<int:pk>/delete_student/
 		- http://127.0.0.1:8000/accounts/settings/ 
 	- Test suite execution instructions:
 		1. Using a command line interpreter, navigate to the root directory of the project
-		2. If django-localflavor is not installed, run 'pip install django-localflavor'
-		3. Run 'python manage.py test accounts'
+		2. Run 'python manage.py test accounts'
 		3. Details about each test can be found inside the /accounts/tests.py file.
 - Student Database:
 	  - Stores all students data information such as id, first name, last name, age, school location, school district, address, city, state, zip, and grade 

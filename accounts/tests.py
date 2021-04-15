@@ -321,7 +321,7 @@ class PasswordResetTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # verify password_reset_complete.html is being used
         self.assertTemplateUsed(response, template_name='registration/password_reset_complete.html')
-=======
+
 class PermissionsTest(TestCase):
 
     def test_admin_permissions(self):

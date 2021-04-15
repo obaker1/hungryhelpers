@@ -3,9 +3,8 @@
 {% load static %}
 
 
-
 {% if user.is_authenticated and user.id == user.profile.id %}
-
+    {{ student.students.id }}
     <div class="container-fluid">
         <h3 class="text-dark mb-4">{{ user.username }}'s Profile</h3>
         <div class="row">
@@ -29,17 +28,54 @@
                 {% for student in profile.students.all %}
                     <div class="card shadow mb-3">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">{{ student.name }}</p>
+                            <a class="btn btn-primary btn-sm" href="{% url 'delete_student' student.pk %}" role="button" style="float: right; margin: 2px;">Delete</a>
+                            <a class="btn btn-primary btn-sm" href="{% url 'edit_student' student.pk %}" role="button" style="float: right; margin: 2px;">Edit</a>
+                            <h5><p class="text-primary m-0 font-weight-bold">{{ student.first_name }} {{ student.last_name }}</p></h5>
                         </div>
                         <div class="card-body">
-                            <b> Age: </b> {{ student.age }} <br>
-                            <b> Address: </b> {{ student.address }} <br>
-                            <b> City: </b> {{ student.city }} <br>
-                            <b> State: </b> {{ student.state }} <br>
-                            <b> Zip: </b> {{ student.zip }} <br>
-                            <b> School: </b> {{ student.school }} <br>
-                            <b> Grade: </b> {{ student.grade }} <br>
-                            <b> Student ID: </b> {{ student.student_id }} <br>
+                             <div class="row">
+                                 <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <div class="text-secondary m-0 font-weight-bold">General Information</div>
+                                        </div>
+                                        <div class="card-body">
+                                            <!--<b> Primary Key: </b> {{ student.pk }} <br>-->
+                                            <!--<b> Parent Primary Key: </b> {{ student.user_account.pk }} <br>-->
+                                            <b> Age: </b> {{ student.age }} <br>
+                                            <b> Address: </b> {{ student.address }} <br>
+                                            <b> City: </b> {{ student.city }} <br>
+                                            <b> State: </b> {{ student.state }} <br>
+                                            <b> Zip: </b> {{ student.zip }} <br>
+                                            <b> School: </b> {{ student.school }} <br>
+                                            <b> Grade: </b> {{ student.grade }} <br>
+                                            <b> Student ID: </b> {{ student.student_id }} <br>
+                                            <b> District Choice:</b> {{ student.district_choice }} <br>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <div class="text-secondary m-0 font-weight-bold">Dietary Restrictions and Preferences</div>
+                                        </div>
+                                        <div class="card-body">
+                                            <b> Allergies:</b> <br>
+                                            &emsp;<b> Celiac: </b> {{ student.allergic_celiac }} <br>
+                                            &emsp;<b> Shellfish: </b> {{ student.allergic_shellfish }} <br>
+                                            &emsp;<b> Lactose: </b> {{ student.allergic_lactose }} <br>
+                                            <b> Food Preferences:</b> <br>
+                                            &emsp;<b> Halal: </b> {{ student.preference_halal }} <br>
+                                            &emsp;<b> Kosher: </b> {{ student.preference_kosher }} <br>
+                                            &emsp;<b> Vegetarian: </b> {{ student.preference_vegetarian  }} <br>
+                                            <b> Meal Type:</b> <br>
+                                            &emsp;<b> Breakfast: </b> {{ student.meal_breakfast }} <br>
+                                            &emsp;<b> Lunch: </b> {{ student.meal_lunch }} <br>
+                                            &emsp;<b> Dinner: </b> {{ student.meal_dinner }} <br>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
@@ -51,50 +87,12 @@
                 {% endif %}
             </div>
         </div>
+        <br><br><br><br><br><br><br><br><br><br>
     </div>
 {% else %}
     <div class="container-fluid">
         <h3> You are either not logged in or do not have access to this profile. </h3>
     </div>
 {% endif %}
-
-
-
-
-
-
-
-
-<!--<h1>User Profile...</h1>
-
-<br/>
-
-<div class="card mb-3">
-    <div class="row no-gutters">
-        <div class="col-md-10">
-            <div class="card-body">
-                <h5 class="card_title">
-                    {{ page_user.user.first_name}}
-                    {{ page_user.user.last_name}}
-                </h5>
-                <p class="small text-muted">
-                    {% if page_user.website_url %}
-                    <a href="{{ page_user.website_url }}">Website</a>
-                    {% endif %}
-
-                </p>
-
-                <h5 class="card_title">
-                    {% if page_user.bio %}
-                        {{ page_user.bio }}
-                    {% endif %}
-                </h5>
-
-            </div>
-
-
-        </div>
-    </div>
-</div>-->
 
 {% endblock %}

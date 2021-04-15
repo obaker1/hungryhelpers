@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-
+from django.urls import reverse
+from django.contrib.auth.models import Permission
 
 class SignUpTest(TestCase):
     def setUp(self):
@@ -361,26 +362,46 @@ class PasswordResetTest(TestCase):
 
     def setUp(self):
         # valid credentials
-        self.username = 'test'
-        self.password = '>pve_hm*N*&x<qbP8u'
+        self.credentials = {
+            'username': 'test',
+            'password': '>pve_hm*N*&x<qbP8u'}
 
+        # valid credentials
+        self.username = 'test'
+        self.email = 'myemail@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+        self.new_password = '>pve_hm*N*&x<qbP8sss'
         # information for forgot password
         self.email = 'tester@tset.com'
 
+        # create user
+        self.the_user = User.objects.create_user(self.username, self.email, self.password)
+
+
+
+
     def test_password_change_form(self):
+        # Login user
+        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.get('/accounts/password_change/', follow=True)
+        self.assertTemplateUsed(response, template_name='registration/password_change_form.html')
+
+
         # access password change page
         response = self.client.post('/accounts/password_change/', data={
-            'password1': self.password,
-            'password2': self.password
+            'old_password': self.password,
+            'new_password1' : self.new_password,
+            'new_password2': self.new_password,
         }, follow=True)
         # verify site status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # verify password_change.html is being used
-        self.assertTemplateUsed(response, template_name='registration/password_change_form.html')
+        self.assertTemplateUsed(response, template_name='registration/password_change_done.html')
 
     def test_password_change_done(self):
+        response = self.client.post('/accounts/login/', self.credentials, follow=True)
         # access password change done page
-        response = self.client.get('/accounts/password_change/done/')
+        response = self.client.get('/accounts/password_change/done/', follow=True)
         # verify site status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # verify password_change_done.html is being used

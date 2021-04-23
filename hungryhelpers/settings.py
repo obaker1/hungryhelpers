@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'notifications',
     'notifs',
+    'mealPlan',
 ]
 
 # For development-use only

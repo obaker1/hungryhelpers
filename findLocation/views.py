@@ -7,10 +7,9 @@ from django.conf import settings
 from django.urls import reverse
 
 from findLocation.models import GoogleMapsResponse
+from findLocation.models import Origin
 import json
 import requests
-
-ORIGIN = '1000 Hilltop Cir, Baltimore, MD 21250, USA'
 
 def findlocation(request):
     locationList = []
@@ -26,27 +25,27 @@ def findlocation(request):
     addressAppended = '|'.join(addressList) if addressList else "None"
     filterAppended = '|'.join(filter) if filter else "None"
     googlemaps = GoogleMapsResponse.objects.all().order_by('distance', 'address')
+    origin = Origin.objects.first() # get origin from database
     context = {
         'api_key': settings.GOOGLE_MAPS_API_KEY,
-        'origin': ORIGIN,
+        'origin': origin.origin,
         'googlemapsresult': googlemaps,
         'locationList': locationAppended,
         'addressList': addressAppended,
         'filter': filterAppended
     }
+
     return render(request, 'findLocation/index.html', context)
 
 # add custom origin from user
 def addOrigin(request):
-    global ORIGIN;
     origin_text = request.POST['origin'];
-    if (origin_text != ''):
-        ORIGIN = origin_text;
+    Origin.objects.filter().update(origin=origin_text)
 
     for destination in GoogleMapsResponse.objects.all()[:10]:
         params = {
             'key': settings.GOOGLE_MAPS_API_KEY,
-            'origins': ORIGIN,
+            'origins': origin_text,
             'destinations': destination.address
         }
         url = 'https://maps.googleapis.com/maps/api/distancematrix/json?callback=initMap&libraries=&v=weekly&units=imperial'
@@ -87,9 +86,10 @@ def addLocation(request):
     bus = "F"
     if (bus_text == 'y'):
         bus = "T"
+    origin = Origin.objects.first() # get origin from database
     params = {
         'key': settings.GOOGLE_MAPS_API_KEY,
-        'origins': ORIGIN,
+        'origins': origin.origin,
         'destinations': destination_text
     }
     url = 'https://maps.googleapis.com/maps/api/distancematrix/json?callback=initMap&libraries=&v=weekly&units=imperial'
@@ -98,15 +98,29 @@ def addLocation(request):
         result = json.loads(response.text)
     except json.decoder.JSONDecodeError:
         result = "String could not be converted to JSON"
-
     # if response is empty
     if(result.get('status') != 'OK' or result['rows'][0]['elements'][0].get('status') != 'OK'):
         return HttpResponseRedirect(reverse('findlocation'))
-
     results = result['rows'][0]['elements'];
     addressList = result['destination_addresses']
     location = destination_text
 
+    # get latitude and longitude of location
+    GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
+    params = {
+        'key': settings.GOOGLE_MAPS_API_KEY,
+        'address': destination_text,
+        'sensor': 'false',
+    }
+    # Do the request and get the response data
+    req = requests.get(GOOGLE_MAPS_API_URL, params=params)
+    res = req.json()
+    # Use the first result
+    result = res['results'][0]
+    lat = result['geometry']['location']['lat']
+    lng = result['geometry']['location']['lng']
+
+    # runs once to add/update/remove a location
     for i in range(len(addressList)):
         address = addressList[i]
         distanceString = results[i]['distance']['text']
@@ -115,11 +129,11 @@ def addLocation(request):
         time = results[i]['duration']['text']
         if not GoogleMapsResponse.objects.filter(address=address).exists():
             if (remove != 'r'):
-                newResponse = GoogleMapsResponse(location=location, distance=distance, time=time, school=school, bus=bus, address=address, timeframe=timeframe)
+                newResponse = GoogleMapsResponse(location=location, distance=distance, time=time, school=school, bus=bus, address=address, timeframe=timeframe, latitude=lat, longitude=lng)
                 newResponse.save()
         else:
             if (remove == 'r'):
                 GoogleMapsResponse.objects.filter(address=address).delete()
             else:
-                GoogleMapsResponse.objects.filter(address=address).update(location=location, school=school, bus=bus, timeframe=timeframe)
+                GoogleMapsResponse.objects.filter(address=address).update(location=location, school=school, bus=bus, timeframe=timeframe, latitude=lat, longitude=lng)
     return HttpResponseRedirect(reverse('findlocation'))

@@ -14,3 +14,5 @@ class GoogleMapsResponse(models.Model):
 
 class Origin(models.Model):
     origin = models.TextField(default=0)
+    latitude = models.FloatField(default=0)
+    longitude = models.FloatField(default=0)

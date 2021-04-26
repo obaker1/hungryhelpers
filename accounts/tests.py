@@ -179,11 +179,12 @@ class ProfileTest(TestCase):
         self.city = 'Testingburg'
         self.state = 'AK'
         self.zip = '12345'
+        self.district = 'Baltimore County'
         self.school = 'Catonsville High'
         self.grade = 8
         self.student_id = 'AB04576'
-        self.district_choice = '2nd Avenue and Francis Avenue'
-        self.district_choice_new = 'Kimble Road and Langrehr Road'
+        self.pickup_location = '2nd Avenue and Francis Avenue'
+        self.pickup_location_new = 'Kimble Road and Langrehr Road'
         self.allergic_celiac = 'Yes'
         self.allergic_shellfish = 'No'
         self.allergic_lactose = 'Yes'
@@ -196,7 +197,7 @@ class ProfileTest(TestCase):
         self.err_msg = "You are either not logged in or do not have access to this profile."
 
     def test_profile_page(self):
-        """ sign up and log into account"""
+        """ sign up and log into account """
         # access and create account on signup page
         response = self.client.post('/accounts/signup/', data={
             'username': self.username,
@@ -211,24 +212,21 @@ class ProfileTest(TestCase):
         # verify site status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # verify redirection was successfully made to home
-        self.assertTemplateUsed(response, template_name='registration/create_profile.html')
-        # click button that creates profile for user (done automatically in active testing)
-        response = self.client.post('/accounts/create_profile/', follow=True)
         self.assertTemplateUsed(response, template_name='home.html')
 
         """ using the user id, access settings page and relevant data """
-        # access settings page
-        response = self.client.get('/accounts/' + str(response.context['user'].pk) + '/profile/', follow=True)
+        # access profile page
+        response = self.client.get('/accounts/profile/', follow=True)
         # verify correct template was used
         self.assertTemplateUsed(response, template_name='registration/profile.html')
 
         # access page that allows caretaker to add student
-        response = self.client.get('/accounts/' + str(response.context['user'].pk) + '/add_student/', follow=True)
+        response = self.client.get('/accounts/add_student/', follow=True)
         # verify correct template was used
         self.assertTemplateUsed(response, template_name='registration/add_student.html')
         # enter data into form
 
-        response = self.client.post('/accounts/' + str(response.context['user'].pk) + '/add_student/', data={
+        response = self.client.post('/accounts/add_student/', data={
             'first_name': self.first_name,
             'last_name': self.last_name,
             'age': self.age,
@@ -236,10 +234,11 @@ class ProfileTest(TestCase):
             'city' : self.city,
             'state' : self.state,
             'zip' : self.zip,
+            'district' : self.district,
             'school' : self.school,
             'grade' : self.grade,
             'student_id' : self.student_id,
-            'district_choice' : self.district_choice,
+            'pickup_location' : self.pickup_location,
             'allergic_celiac' : self.allergic_celiac,
             'allergic_shellfish' : self.allergic_shellfish,
             'allergic_lactose' : self.allergic_lactose,
@@ -257,12 +256,11 @@ class ProfileTest(TestCase):
         # After successful submission, user should be taken back to profile page
         self.assertTemplateUsed(response, template_name='registration/profile.html')
 
-        userPrimaryKey = response.context['user'].pk
         self.assertContains(response, self.age)
         self.assertContains(response, self.state)
         self.assertContains(response, self.student_id)
         self.assertContains(response, self.meal_dinner)
-        self.assertContains(response, self.district_choice)
+        self.assertContains(response, self.pickup_location)
         self.assertContains(response, self.meal_dinner)
 
         """ Access the edit_student page for the newly created student profile"""
@@ -281,10 +279,11 @@ class ProfileTest(TestCase):
             'city' : self.city,
             'state' : self.state,
             'zip' : self.zip,
+            'district' : self.district,
             'school' : self.school,
             'grade' : self.grade,
             'student_id' : self.student_id,
-            'district_choice' : self.district_choice_new,
+            'pickup_location' : self.pickup_location_new,
             'allergic_celiac' : self.allergic_celiac,
             'allergic_shellfish' : self.allergic_shellfish,
             'allergic_lactose' : self.allergic_lactose,
@@ -297,19 +296,17 @@ class ProfileTest(TestCase):
         }, follow=True)
         self.assertEqual(response.status_code, 200)
         # verify correct template was used
-        # After successful submission, user should be taken 'directly' to profile page
-        # however due to how deep the form is into the pk set, the parent pk could not be obtained.
-        # as a solution, an intermediate page is loaded that takes the user back to the profile page immediately
-        self.assertTemplateUsed(response, template_name='registration/intermediate.html')
+        # After successful submission, user should be taken back to profile page
+        self.assertTemplateUsed(response, template_name='registration/profile.html')
 
         # returns to profile page to check changes
-        response = self.client.get('/accounts/' + str(userPrimaryKey) + '/profile/', follow=True)
+        response = self.client.get('/accounts/profile/', follow=True)
         self.assertContains(response, self.age)
         self.assertContains(response, self.state)
         self.assertContains(response, self.student_id)
         self.assertContains(response, self.meal_dinner)
-        self.assertNotContains(response, self.district_choice)
-        self.assertContains(response, self.district_choice_new)
+        self.assertNotContains(response, self.pickup_location)
+        self.assertContains(response, self.pickup_location_new)
         self.assertContains(response, self.meal_dinner)
 
         """ delete the student and check that student information is no longer existent on profile page """
@@ -323,14 +320,14 @@ class ProfileTest(TestCase):
         response = self.client.post('/accounts/1/delete_student/', follow=True)
         # verify site status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
-        # verify correct template was used
-        self.assertTemplateUsed(response, template_name='registration/intermediate.html')
+        # After successful deletion, user should be taken back to profile page verify
+        self.assertTemplateUsed(response, template_name='registration/profile.html')
 
         # returns to profile page to check changes
-        response = self.client.get('/accounts/' + str(userPrimaryKey) + '/profile/', follow=True)
+        response = self.client.get('/accounts/profile/', follow=True)
         self.assertNotContains(response, self.age)
         self.assertNotContains(response, self.state)
-        self.assertNotContains(response, self.district_choice_new)
+        self.assertNotContains(response, self.pickup_location_new)
         self.assertNotContains(response, self.first_name)
         self.assertNotContains(response, self.last_name)
         self.assertNotContains(response, self.age)
@@ -338,7 +335,7 @@ class ProfileTest(TestCase):
         self.assertNotContains(response, self.city)
         self.assertNotContains(response, self.student_id)
 
-        """ log out of user's current session and attempt to access same page based on primary key value """
+        """ log out of user's current session and attempt to access website pages """
         response = self.client.get("/accounts/logout/", follow=True)
         # check site status code (HTTP 200 OK)
         self.assertEquals(response.status_code, 200)
@@ -346,14 +343,13 @@ class ProfileTest(TestCase):
         self.assertFalse(response.context['user'].is_active)
         # check user is shown "You are not logged in" message
         self.assertContains(response, 'You are not logged in')
-        # attempt to access settings page
-        response = self.client.get('/accounts/'+ str(userPrimaryKey) +'/profile/', follow=True)
-        # verify that user is unable to view profile and is met with the appropriate message
-        self.assertContains(response, self.err_msg)
+        # attempt to access profile page
+        response = self.client.get('/accounts/profile/', follow=True)
+        # verify that the user was redirected to login page
+        self.assertTemplateUsed(response, template_name='registration/login.html')
 
-        """ attempt to load a profile page that has never existed """
-        # attempt to access settings page
-        response = self.client.get('/accounts/300/profile/', follow=True)
+        """ attempt to access edit page for student profile while logged out """
+        response = self.client.get('/accounts/1/edit_profile/', follow=True)
         # verify that user is met with a 404 site status code
         self.assertEqual(response.status_code, 404)
 
@@ -396,7 +392,7 @@ class PasswordResetTest(TestCase):
         # verify site status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # verify password_change.html is being used
-        self.assertTemplateUsed(response, template_name='registration/password_change.html')
+        self.assertTemplateUsed(response, template_name='registration/password_change_done.html')
 
     def test_password_change_done(self):
         response = self.client.post('/accounts/login/', self.credentials, follow=True)

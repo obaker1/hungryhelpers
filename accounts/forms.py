@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import Profile, Student
 from localflavor.us.us_states import STATE_CHOICES
+from .static_info import AGE_CHOICES, GRADE_CHOICES, DISTRICTS, SCHOOLS
 
 class EditSettingsForm(UserChangeForm):
     # Custom form requests only relevant information provided by the form.as_p packaged form
@@ -43,18 +44,8 @@ class EditProfileForm(forms.ModelForm):
 class StudentForm(forms.ModelForm):
 
     class Meta:
-        AGE_CHOICES = [(i, i) for i in range(11, 19)]
-        GRADE_CHOICES = [(i, i) for i in range(6, 13)]
-        SCHOOL_DISTRICTS = [
-            ("Arbutus Middle", "Arbutus Middle"),
-            ("Catonsville High", "Catonsville High"),
-            ("Catonsville Middle", "Catonsville Middle"),
-            ("Chesapeake High", "Chesapeake High"),
-            ("Deep Creek Middle", "Deep Creek Middle"),
-        ]
-
         model = Student
-        fields = ('first_name', 'last_name', 'age', 'address', 'city', 'state', 'zip', 'school', 'grade', 'student_id', 'district_choice',
+        fields = ('first_name', 'last_name', 'age', 'address', 'city', 'state', 'zip', 'district', 'school', 'grade', 'student_id', 'pickup_location',
                   'allergic_celiac', 'allergic_shellfish', 'allergic_lactose', 'preference_halal', 'preference_kosher', 'preference_vegetarian', 'meal_breakfast', 'meal_lunch', 'meal_dinner')
 
         widgets = {
@@ -65,10 +56,11 @@ class StudentForm(forms.ModelForm):
             'city': forms.TextInput(attrs={'class': 'form-control'}),
             'state': forms.Select(attrs={'class': 'form-control'}, choices=STATE_CHOICES),
             'zip': forms.TextInput(attrs={'class': 'form-control'}),
-            'school': forms.Select(attrs={'class': 'form-control'}, choices=SCHOOL_DISTRICTS),
+            'district': forms.Select(attrs={'class': 'form-control'}, choices=DISTRICTS),
+            'school': forms.Select(attrs={'class': 'form-control'}, choices=SCHOOLS),
             'grade': forms.Select(attrs={'class': 'form-control'}, choices=GRADE_CHOICES),
             'student_id': forms.TextInput(attrs={'class': 'form-control'}),
-            'district_choice': forms.TextInput(attrs={'class': 'form-control'}),
+            'pickup_location': forms.TextInput(attrs={'class': 'form-control'}),
 
             'allergic_celiac': forms.TextInput(),
             'allergic_shellfish': forms.TextInput(),
@@ -81,5 +73,17 @@ class StudentForm(forms.ModelForm):
             'meal_breakfast': forms.TextInput(),
             'meal_lunch': forms.TextInput(),
             'meal_dinner': forms.TextInput(),
-
         }
+
+class ChangePasswordForm(UserChangeForm):
+    old_password = forms.CharField(widget=forms.PasswordInput())
+    new_password1 = forms.CharField(widget=forms.PasswordInput())
+    new_password2 = forms.CharField(widget=forms.PasswordInput())
+
+    class Meta:
+        model = User
+        fields = (
+            'old_password',
+            'new_password1',
+            'new_password2',
+            )

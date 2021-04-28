@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+    <h1>Submit a Meal Plan</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.post }}
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+    <br>
+
+    <h1>Current Meal Plan</h1>
+    <h2> {{ text }}</h2>
+    <br>
+
+    <h1>All Meal Plans</h1>
+    {% for post in posts %}
+        <h2> {{ post.post }}</h2>
+        <p>Submitted by {{ post.user.get_full_name }} on {{ post.date }}</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

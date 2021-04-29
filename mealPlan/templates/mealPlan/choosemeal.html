@@ -34,9 +34,9 @@
                     </div>
                     <div class="card-body py-3">
                         {% for i in students %}
-                            <bold style="font-size:20px;">{{i.0}}</bold>
+                            <bold style="font-size:20px;">{{i.0.0}}</bold>
                             <div class="row">
-                            {% for j in i %}
+                            {% for j in i.1 %}
                                <div class="card text-white bg-danger mb-1 text-center" style="max-width: 13rem; max-height: 3.5rem; font-size:15px;">
                                     <div class="card-body">
                                         <p class="card-text"> {{ j }} </p>

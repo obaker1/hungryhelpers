@@ -2,24 +2,25 @@ from django.shortcuts import render
 from accounts.models import Student
 
 
-def staffPage(request):
+def choosemeal(request):
     theMeal= ["Chicken, Rice, and Vegetables", "No", "Yes", "Yes" , "Yes", "Yes", "No", "No", "No", "Yes"]
     students = Student.objects.all()
     conflicts = []
     for i in students:
-        newConflict = [i.first_name]
+        newConflict = [[i.first_name],[]]
+
         if i.allergic_celiac == "Yes" and theMeal[1] == "No":
-            newConflict.append("Celiac allergy Conflict")
+            newConflict[1].append("Celiac allergy Conflict")
         if i.allergic_shellfish == "Yes" and theMeal[2] == "No":
-            newConflict.append("Shellfish allergy Conflict")
+            newConflict[1].append("Shellfish allergy Conflict")
         if i.allergic_lactose == "Yes" and theMeal[3] == "No":
-            newConflict.append("Lactose allergy Conflict")
+            newConflict[1].append("Lactose allergy Conflict")
         if i.preference_halal == "Yes" and theMeal[5] == "No":
-            newConflict.append("Halal Conflict")
+            newConflict[1].append("Halal Conflict")
         if i.preference_kosher== "Yes" and theMeal[5] == "No":
-            newConflict.append("Kosher Conflict")
+            newConflict[1].append("Kosher Conflict")
         if i.preference_vegetarian == "Yes" and theMeal[6] == "No":
-            newConflict.append("Vegetarian Conflict")
+            newConflict[1].append("Vegetarian Conflict")
         if len(newConflict) > 1:
             conflicts.append(newConflict)
     print(conflicts)

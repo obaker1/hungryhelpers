@@ -25,5 +25,6 @@ urlpatterns = [
     #path('hungry_helpers_bootstrap/', include('hungry_helpers_bootstrap.urls')),
     #path('forms/', include('forms.urls')),
     path('notifs/', include('notifs.urls')),
+    path('mealPlan/', include('mealPlan.urls')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
 ]

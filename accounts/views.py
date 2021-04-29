@@ -19,19 +19,21 @@ class SignUpView(generic.CreateView):
     template_name = 'registration/signup.html'
 
     def form_valid(self, form):
-        def form_valid(self, form):
-            # save the new user first
-            form.save()
-            # get the username and password
-            username = self.request.POST['username']
-            password = self.request.POST['password1']
-            # authenticates user then logs in
-            user = authenticate(username=username, password=password)
-            login(self.request, user)
-            # automatically creates profile upon registration
-            profile = Profile(user=user, address='', city='', state='', zip='', district='')
-            profile.save()
-            return HttpResponseRedirect(reverse_lazy('home'))
+        # save the new user first
+        form.save()
+        # get the username and password
+        username = self.request.POST['username']
+        first_name = self.request.POST['first_name']
+        last_name = self.request.POST['last_name']
+        email = self.request.POST['email']
+        password = self.request.POST['password1']
+        # authenticates user then logs in
+        user = authenticate(username=username, first_name=first_name, last_name=last_name, email=email,password=password)
+        login(self.request, user)
+        # automatically creates profile upon registration
+        profile = Profile(user=user, address='', city='', state='', zip='', district='')
+        profile.save()
+        return HttpResponseRedirect(reverse_lazy('home'))
 
 class EditSettingsView(LoginRequiredMixin, generic.UpdateView):
     # if user attempts to access settings page without logging in,

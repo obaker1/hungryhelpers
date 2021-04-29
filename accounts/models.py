@@ -7,10 +7,10 @@ from .static_info import AGE_CHOICES, GRADE_CHOICES, DISTRICTS, SCHOOLS
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     #caretaker_names = models.TextField(null=True, blank=True)
-    email = models.CharField(max_length = 225, null = True, blank = False)
+    #email = models.CharField(max_length = 225, null = True, blank = False)
     first_name = models.CharField(max_length=255, null=True, blank=False)
     last_name = models.CharField(max_length=255, null=True, blank=False)
-    phone_number = models.IntegerField(max_length = 10, null = True, blank = False)
+    phone_number = models.IntegerField()
     address = models.CharField(max_length=255, null=True, blank=False)
     city = models.CharField(max_length=255, null=True, blank=False)
     state = models.CharField(max_length=2, choices=STATE_CHOICES, null=True, blank=False)

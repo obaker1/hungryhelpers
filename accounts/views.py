@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import DetailView, CreateView, DeleteView, UpdateView
-from .forms import EditSettingsForm, CreateProfileForm, EditProfileForm, StudentForm
+from .forms import EditSettingsForm, CreateProfileForm, EditProfileForm, StudentForm, CreateAccountForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Profile, Student
 from django.contrib.auth import (get_user_model)
@@ -14,38 +14,24 @@ UserModel = get_user_model()
 
 class SignUpView(generic.CreateView):
     # Utilizes the built-in UserCreationForm
-    form_class = UserCreationForm
+    form_class = CreateAccountForm
     # Redirects user to login page upon successful registration
     template_name = 'registration/signup.html'
 
     def form_valid(self, form):
-        # save the new user first
-        form.save()
-        # get the user's information
-        email = self.request.POST['email']
-        username = self.request.POST['username']
-        password = self.request.POST['password1']
-        first_name = self.request.POST['firstName']
-        last_name = self.request.POST['lastName']
-        phone_number = self.request.POST['phone']
-        address = self.request.POST['address']
-        city = self.request.POST['city']
-        state = self.request.POST['state']
-        zip = self.request.POST['zip']
-        district = self.request.POST['district']
-        school = self.request.POST['school']
-        student_name = self.request.POST['studentName']
-        age = self.request.POST['age']
-        grade = self.request.POST['grade']
-        student_id = self.request.POST['studentID']
-
-        # authenticates user then logs in
-        user = authenticate(email = email, username=username, password=password, first_name=first_name, last_name=last_name, phone_number=phone_number, address=address, city=city, state=state, zip=zip, district=district, school=school)
-        login(self.request, user)
-        # automatically creates profile upon registration
-        profile = Profile(user=user)
-        profile.save()
-        return HttpResponseRedirect(reverse_lazy('home'))
+        def form_valid(self, form):
+            # save the new user first
+            form.save()
+            # get the username and password
+            username = self.request.POST['username']
+            password = self.request.POST['password1']
+            # authenticates user then logs in
+            user = authenticate(username=username, password=password)
+            login(self.request, user)
+            # automatically creates profile upon registration
+            profile = Profile(user=user, address='', city='', state='', zip='', district='')
+            profile.save()
+            return HttpResponseRedirect(reverse_lazy('home'))
 
 class EditSettingsView(LoginRequiredMixin, generic.UpdateView):
     # if user attempts to access settings page without logging in,

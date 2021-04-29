@@ -6,6 +6,18 @@ from .models import Profile, Student
 from localflavor.us.us_states import STATE_CHOICES
 from .static_info import AGE_CHOICES, GRADE_CHOICES, DISTRICTS, SCHOOLS
 
+class CreateAccountForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'password1',
+            'password2',
+            )
+
 class EditSettingsForm(UserChangeForm):
     # Custom form requests only relevant information provided by the form.as_p packaged form
     username = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))

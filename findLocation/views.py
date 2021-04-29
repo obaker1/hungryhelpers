@@ -13,45 +13,15 @@ import requests
 import math
 
 def findlocation(request):
-    locationList = [''] * 10
-    addressList = [''] * 10
-    filter = [''] * 20
-    distList = [] # contains the distances between origin and destinations by latitude and longitude
-    sortDist = [] # contains the calculated time between origin and destinations
-    shortenedList = [''] * 10
-    origin = Origin.objects.first() # get origin from database
-    # find 10 closest places from origin
-    for destinations in GoogleMapsResponse.objects.all():
-        dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
-        distList.append(dist)
-        sortDist.append(destinations.time)
-    distList, sortDist = (list(t) for t in zip(*sorted(zip(distList, sortDist)))) # sort distList by distance and sort sortDist the same way
-    distList = distList[:10]
-    sortDist = sortDist[:10]
-    sortDist, distList = (list(t) for t in zip(*sorted(zip(sortDist, distList))))  # sort sortDist by time and sort distList the same way
-    # set 10 closest places to variables that will be added onto the map
-    for destinations in GoogleMapsResponse.objects.all():
-        dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
-        if (dist in distList):
-            idx = distList.index(dist)
-            locationList[idx] = destinations.location
-            addressList[idx] = destinations.address
-            filter[idx*2] = destinations.school
-            filter[idx*2 + 1] = destinations.bus
-            shortenedList[idx] = destinations.location + ': ' + str(destinations.distance) + ' miles in ' + destinations.time + ' (' + destinations.timeframe + ')'
-
-    locationAppended = '|'.join(locationList) if locationList else "None"
-    addressAppended = '|'.join(addressList) if addressList else "None"
-    filterAppended = '|'.join(filter) if filter else "None"
+    result = getLocations(10)
     context = {
         'api_key': settings.GOOGLE_MAPS_API_KEY,
-        'origin': origin.origin,
-        'googlemapsresult': shortenedList,
-        'locationList': locationAppended,
-        'addressList': addressAppended,
-        'filter': filterAppended
+        'origin': result[0].origin,
+        'googlemapsresult': result[1], # shortenedList
+        'locationList': result[2], #locationAppended
+        'addressList': result[3], #addressAppended
+        'filter': result[4], #filterAppended
     }
-
     return render(request, 'findLocation/index.html', context)
 
 # add custom origin from user
@@ -179,3 +149,49 @@ def addLocation(request):
             else:
                 GoogleMapsResponse.objects.filter(address=address).update(location=location, school=school, bus=bus, timeframe=timeframe, latitude=lat, longitude=lng)
     return HttpResponseRedirect(reverse('findlocation'))
+
+def addMore(request):
+    result = getLocations(20)
+    context = {
+        'api_key': settings.GOOGLE_MAPS_API_KEY,
+        'origin': result[0].origin,
+        'googlemapsresult': result[1], # shortenedList
+        'locationList': result[2], #locationAppended
+        'addressList': result[3], #addressAppended
+        'filter': result[4], #filterAppended,
+    }
+    return render(request, 'findLocation/index.html', context)
+
+def getLocations(num):
+    locationList = [''] * 10
+    addressList = [''] * 10
+    filter = [''] * 20
+    distList = [] # contains the distances between origin and destinations by latitude and longitude
+    sortDist = [] # contains the calculated time between origin and destinations
+    shortenedList = [''] * 10
+    origin = Origin.objects.first() # get origin from database
+    # find 10 closest places from origin
+    for destinations in GoogleMapsResponse.objects.all():
+        dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
+        distList.append(dist)
+        sortDist.append(destinations.time)
+    distList, sortDist = (list(t) for t in zip(*sorted(zip(distList, sortDist)))) # sort distList by distance and sort sortDist the same way
+    distList = distList[num-10:num]
+    sortDist = sortDist[num-10:num]
+    sortDist, distList = (list(t) for t in zip(*sorted(zip(sortDist, distList))))  # sort sortDist by time and sort distList the same way
+    # set 10 closest places to variables that will be added onto the map
+    for destinations in GoogleMapsResponse.objects.all():
+        dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
+        if (dist in distList):
+            idx = distList.index(dist)
+            locationList[idx] = destinations.location
+            addressList[idx] = destinations.address
+            filter[idx*2] = destinations.school
+            filter[idx*2 + 1] = destinations.bus
+            shortenedList[idx] = destinations.location + ': ' + str(destinations.distance) + ' miles in ' + destinations.time + ' (' + destinations.timeframe + ')'
+
+    locationAppended = '|'.join(locationList) if locationList else "None"
+    addressAppended = '|'.join(addressList) if addressList else "None"
+    filterAppended = '|'.join(filter) if filter else "None"
+
+    return origin, shortenedList, locationAppended, addressAppended, filterAppended

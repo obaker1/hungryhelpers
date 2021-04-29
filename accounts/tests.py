@@ -72,6 +72,38 @@ class LogInTest(TestCase):
         # check that the user is shown appropriate message
         self.assertTrue('Please enter a correct username and password' in str(response.content))
 
+class DashboardPageContentTest(TestCase):
+    def setUp(self):
+        # valid credentials
+        self.credentials = {
+            'username': 'test',
+            'password': '>pve_hm*N*&x<qbP8u'
+        }
+        self.aboutUsMsg = "Since the COVID-19 pandemic, the distribution of subsidized meals has become an increasing"
+        self.dashboardMsg = "Set up your pick up or delivery method for your meal plans"
+        User.objects.create_user(**self.credentials)
+
+    def test_dashboard_page_while_logged_off(self):
+        # Go to homepage to load dashboard
+        response = self.client.get('')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify home.html is being used
+        self.assertTemplateUsed(response, template_name='home.html')
+        # verify correct message is displayed to anonymous user
+        self.assertContains(response, self.aboutUsMsg)
+
+    def test_dashboard_page_while_logged_in(self):
+        # send login data
+        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        # check site redirection destination returns status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # check that the user successfully logged in
+        self.assertTrue(response.context['user'].is_active)
+        # check that the user has been redirected to home
+        self.assertTemplateUsed(response, template_name='home.html')
+        # verify correct message is displayed to logged in user
+        self.assertContains(response, self.dashboardMsg)
 
 class LogOutTest(TestCase):
     def setUp(self):

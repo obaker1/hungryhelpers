@@ -1,6 +1,12 @@
 from django.shortcuts import render
 from accounts.models import Student
+from findLocation.models import GoogleMapsResponse
 
+
+def staffPage(request):
+    googlemaps = GoogleMapsResponse.objects.all()
+    context={'googlemapsresult': googlemaps}
+    return render(request, 'mealPlan/staffpage.html', context)
 
 def choosemeal(request):
     theMeal= ["Chicken, Rice, and Vegetables", "No", "Yes", "Yes" , "Yes", "Yes", "No", "No", "No", "Yes"]

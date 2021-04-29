@@ -21,14 +21,29 @@ class SignUpView(generic.CreateView):
     def form_valid(self, form):
         # save the new user first
         form.save()
-        # get the username and password
+        # get the user's information
+        email = self.request.POST['email']
         username = self.request.POST['username']
         password = self.request.POST['password1']
+        first_name = self.request.POST['firstName']
+        last_name = self.request.POST['lastName']
+        phone_number = self.request.POST['phone']
+        address = self.request.POST['address']
+        city = self.request.POST['city']
+        state = self.request.POST['state']
+        zip = self.request.POST['zip']
+        district = self.request.POST['district']
+        school = self.request.POST['school']
+        student_name = self.request.POST['studentName']
+        age = self.request.POST['age']
+        grade = self.request.POST['grade']
+        student_id = self.request.POST['studentID']
+
         # authenticates user then logs in
-        user = authenticate(username=username, password=password)
+        user = authenticate(email = email, username=username, password=password, first_name=first_name, last_name=last_name, phone_number=phone_number, address=address, city=city, state=state, zip=zip, district=district, school=school)
         login(self.request, user)
         # automatically creates profile upon registration
-        profile = Profile(user=user, address='', city='', state='', zip='', district='')
+        profile = Profile(user=user)
         profile.save()
         return HttpResponseRedirect(reverse_lazy('home'))
 

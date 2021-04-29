@@ -7,5 +7,9 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now=True)
 
+    # attributes to add: allergies, preferences
+    # user and location from other models
+    # perspective of staff adding a new meal to the database
+
     #def __str__(self):
     #    return self.post

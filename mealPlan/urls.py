@@ -1,15 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-#import notifications.urls
 from django.conf.urls import url
-from mealPlan.views import mealPlanView
+#from mealPlan.views import mealPlanView
 
 urlpatterns = [
-    #path('admin/', admin.site.urls),
-    path('', mealPlanView.as_view(), name='index'),
-    #path('message', views.message, name='message'),
-    #path('inbox/', views.inbox, name='inbox'),
-    #url('^inbox/notifications/', include(notifications.urls, namespace='notifications')),
-
+    #path('', mealPlanView.as_view(), name='index'),
+    path('', views.meal_plan, name='meal_plan'),
+    path('ticket_add/', views.ticket_add, name='ticket_add'),
 ]

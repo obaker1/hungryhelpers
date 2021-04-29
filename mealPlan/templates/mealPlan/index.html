@@ -2,9 +2,55 @@
 {% block content %}
 {% load static %}
 
-<div class="container">
+{% if user.is_authenticated %}
+<div class="container-fluid">
+<div class="card shadow mb-3">
+    <div class="card-header py-3">
+        <p class="text-primary m-0 font-weight-bold">Submit a Ticket</p>
+    </div>
+    <div class="card-body">
+        <form action="{% url 'ticket_add' %}" method="post">
+            {% csrf_token %}
+            {{ form.post }}
+            <br>
+            <button type="submit" class="btn btn-primary btn-block text-white btn-user">Submit</button>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-3">
+    <div class="card-header py-3">
+        <p class="text-primary m-0 font-weight-bold">Current Meal Tickets</p>
+    </div>
+    <div class="card-body">
+        <ol>
+            {% for post in cur_posts %}
+            <li> {{ post.post }}</li>
+            <p>Submitted by {{ post.user.get_full_name }} on {{ post.date }}</p>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+
+
+<div class="card shadow mb-3">
+    <div class="card-header py-3">
+        <p class="text-primary m-0 font-weight-bold">All Meal Tickets</p>
+    </div>
+    <div class="card-body">
+        <ol>
+            {% for post in posts %}
+            <li> {{ post.post }}</li>
+            <p>Submitted by {{ post.user.get_full_name }} on {{ post.date }}</p>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+</div>
+<!--
+<div class="container-fluid">
     <h1>Submit a Meal Plan</h1>
-    <form method="post">
+    <form action="{% url 'ticket_add' %}" method="post">
         {% csrf_token %}
         {{ form.post }}
         <br>
@@ -12,15 +58,26 @@
     </form>
     <br>
 
-    <h1>Current Meal Plan</h1>
-    <h2> {{ text }}</h2>
+    <h1>Current Meal Plans</h1>
+    <ol>
+        {% for post in cur_posts %}
+        <li> {{ post.post }}</li>
+        <p>Submitted by {{ post.user.get_full_name }} on {{ post.date }}</p>
+        {% endfor %}
+    </ol>
     <br>
 
     <h1>All Meal Plans</h1>
+    <ol>
     {% for post in posts %}
-        <h2> {{ post.post }}</h2>
+        <li> {{ post.post }}</li>
         <p>Submitted by {{ post.user.get_full_name }} on {{ post.date }}</p>
     {% endfor %}
+    </ol>
 </div>
+-->
+{% else %}
+    You must be logged in to use this page!
+{% endif %}
 
 {% endblock %}

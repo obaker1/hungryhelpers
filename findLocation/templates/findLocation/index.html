@@ -94,7 +94,6 @@
                         <p class="text-primary m-0 font-weight-bold">Destinations</p>
                     </div>
                     <div class="card-body">
-                        <strong>Destinations:</strong>
                         <ol>
                             {% for locations in googlemapsresult %}
                                 <li><span>{{ locations.location }}: {{locations.distance}} miles in {{locations.time}} ({{locations.timeframe}})</span></li>

@@ -2,9 +2,6 @@
 {% block content %}
 {% load static %}
 
-
-
-
 {% if user.is_authenticated %}
     <div class="container-fluid">
         <h3 class="text-dark mb-4">User Settings</h3>
@@ -19,10 +16,10 @@
                             <form method="Post">
                                 {% csrf_token %}
                                 {{ form.as_p }}
-                                <button class="btn btn-secondary">Update Settings</button>
+                                <button class="btn btn-primary">Update Settings</button>
                             </form>
                             <hr>
-                            <form method="form" action={%url 'password_change' %}>
+                            <form method="form" action="{% url 'change_password' %}">
                                 <button class="btn btn-secondary">Change Password</button>
                             </form>
                             <hr>

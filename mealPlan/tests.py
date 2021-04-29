@@ -3,12 +3,13 @@ from django.urls import reverse
 import requests
 from django.conf import settings
 from django.contrib.auth.models import User
+from accounts.models import Student
 
 from findLocation.models import GoogleMapsResponse
 
 
 # Create your tests here.
-class PageLoadWithLocations(TestCase):
+class StaffPageLoadWithLocations(TestCase):
     def setUp(self):
         c = Client()
         destinationList = ['Elkridge, MD', 'Towson, MD', 'Columbia, MD']
@@ -34,3 +35,12 @@ class PageLoadWithLocations(TestCase):
             num = results.filter(location=location).exists
             self.assertTrue(num)
 
+class MealFilterPageLoad(TestCase):
+    # test findLocation page works
+    def test_page_load(self):
+        # access findLocation page
+        response = self.client.get('/mealPlan/choosemeal/')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify index.html is being used
+        self.assertTemplateUsed(response, template_name='mealPlan/choosemeal.html')

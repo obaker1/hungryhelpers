@@ -8,20 +8,23 @@
         <h3 class="text-dark mb-4">{{ user.username }}'s Profile</h3>
         <div class="row">
             <div class="col">
-                <h2>Caretaker Information:</h2>
+                <h2>Parent:</h2>
                 <div class="card shadow mb-3">
-                    <div class="card-header py-3">
-                        <p class="text-primary m-0 font-weight-bold">Name and Contact Information</p>
+                    <div class="card-header">
+                        <a class="btn btn-primary btn-sm" href="{% url 'edit_profile' %}" role="button" style="float: right; margin: 2px;">Edit</a>
+                        <p class="text-primary m-0 font-weight-bold">Name and Location Information</p>
                     </div>
                     <div class="card-body">
                         {% if user.profile.id %}
-                            {{ user.profile.caretaker_names|linebreaks }}  <br>
+                            <b> Name: </b> {{ user.profile.first_name }} {{ user.profile.last_name }} <br>
+                            <b> Address: </b> {{ user.profile.address }} <br>
+                            <b> City: </b> {{ user.profile.city }} <br>
+                            <b> State: </b> {{ user.profile.state }} <br>
+                            <b> Zip: </b> {{ user.profile.zip }} <br>
+                            <b> District: </b> {{ user.profile.district }} <br>
                         {% endif %}
                     </div>
                 </div>
-                <form method="form" action="{% url 'edit_profile' %}">
-                    <button class="btn btn-primary btn-block" type="submit">Edit Caretaker Names</button>
-                </form>
                 <br>
                 <h2>Students:</h2>
                 {% for student in profile.students.all %}
@@ -42,15 +45,9 @@
                                             <!--<b> Primary Key: </b> {{ student.pk }} <br>-->
                                             <!--<b> Parent Primary Key: </b> {{ student.user_account.pk }} <br>-->
                                             <b> Age: </b> {{ student.age }} <br>
-                                            <b> Address: </b> {{ student.address }} <br>
-                                            <b> City: </b> {{ student.city }} <br>
-                                            <b> State: </b> {{ student.state }} <br>
-                                            <b> Zip: </b> {{ student.zip }} <br>
-                                            <b> District: </b> {{ student.district }} <br>
-                                            <b> School: </b> {{ student.school }} <br>
                                             <b> Grade: </b> {{ student.grade }} <br>
+                                            <b> School: </b> {{ student.school }} <br>
                                             <b> Student ID: </b> {{ student.student_id }} <br>
-                                            <b> Pickup Location:</b> {{ student.pickup_location }} <br>
                                         </div>
                                     </div>
                                 </div>
@@ -68,10 +65,6 @@
                                             &emsp;<b> Halal: </b> {{ student.preference_halal }} <br>
                                             &emsp;<b> Kosher: </b> {{ student.preference_kosher }} <br>
                                             &emsp;<b> Vegetarian: </b> {{ student.preference_vegetarian  }} <br>
-                                            <b> Meal Type:</b> <br>
-                                            &emsp;<b> Breakfast: </b> {{ student.meal_breakfast }} <br>
-                                            &emsp;<b> Lunch: </b> {{ student.meal_lunch }} <br>
-                                            &emsp;<b> Dinner: </b> {{ student.meal_dinner }} <br>
                                         </div>
                                     </div>
                                 </div>

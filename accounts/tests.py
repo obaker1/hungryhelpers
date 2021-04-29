@@ -151,8 +151,6 @@ class EditSettingsTest(TestCase):
         response = self.client.post('/accounts/settings/', data={
             'username': self.username,
             'email': self.email,
-            'first_name': self.first_name,
-            'last_name' : self.last_name
         }, follow=True)
         # check that the user has been redirected to home after updating settings
         self.assertTemplateUsed(response, template_name='home.html')
@@ -161,8 +159,6 @@ class EditSettingsTest(TestCase):
         # verifies that the information has been successfully updated (username, email, fn, and ln)
         self.assertContains(response, self.username)
         self.assertContains(response, self.email)
-        self.assertContains(response, self.first_name)
-        self.assertContains(response, self.last_name)
 
 class ProfileTest(TestCase):
     def setUp(self):
@@ -171,29 +167,30 @@ class ProfileTest(TestCase):
         self.username = 'test'
         self.password = '>pve_hm*N*&x<qbP8u'
 
-        # information for add student page
-        self.first_name = 'Billy'
-        self.last_name = 'Manson'
-        self.age = 11
+        # information for edit parent page
+        self.parent_first_name = "Mr"
+        self.parent_last_name = "Parent"
         self.address = '1234 Test Street'
         self.city = 'Testingburg'
         self.state = 'AK'
         self.zip = '12345'
         self.district = 'Baltimore County'
+
+        # information for add student page
+        self.first_name = 'Billy'
+        self.last_name = 'Manson'
+        self.new_last_name = 'YummyPaint'
+        self.age = 11
         self.school = 'Catonsville High'
         self.grade = 8
         self.student_id = 'AB04576'
-        self.pickup_location = '2nd Avenue and Francis Avenue'
-        self.pickup_location_new = 'Kimble Road and Langrehr Road'
         self.allergic_celiac = 'Yes'
         self.allergic_shellfish = 'No'
         self.allergic_lactose = 'Yes'
         self.preference_halal = 'Yes'
         self.preference_kosher = 'No'
         self.preference_vegetarian = 'No'
-        self.meal_breakfast = 'No'
-        self.meal_lunch = 'Yes'
-        self.meal_dinner = 'No'
+
         self.err_msg = "You are either not logged in or do not have access to this profile."
 
     def test_profile_page(self):
@@ -214,12 +211,42 @@ class ProfileTest(TestCase):
         # verify redirection was successfully made to home
         self.assertTemplateUsed(response, template_name='home.html')
 
-        """ using the user id, access settings page and relevant data """
+        """ access profile page """
         # access profile page
         response = self.client.get('/accounts/profile/', follow=True)
         # verify correct template was used
         self.assertTemplateUsed(response, template_name='registration/profile.html')
 
+        """ access the edit profile page """
+        # access profile page
+        response = self.client.get('/accounts/edit_profile/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/edit_profile.html')
+
+        """ edit profile content """
+        # access profile page
+        response = self.client.post('/accounts/edit_profile/', data={
+            'first_name': self.parent_first_name,
+            'last_name': self.parent_last_name,
+            'address': self.address,
+            'city': self.city,
+            'state': self.state,
+            'zip': self.zip,
+            'district': self.district,
+        }, follow=True)
+        # verify success of form submission
+        self.assertEqual(response.status_code, 200)
+        # verify correct template was used
+        # After successful submission, user should be taken back to profile page
+        self.assertTemplateUsed(response, template_name='registration/profile.html')
+        self.assertContains(response, self.parent_first_name)
+        self.assertContains(response, self.parent_last_name)
+        self.assertContains(response, self.city)
+        self.assertContains(response, self.state)
+        self.assertContains(response, self.zip)
+        self.assertContains(response, self.district)
+
+        """ add a new student """
         # access page that allows caretaker to add student
         response = self.client.get('/accounts/add_student/', follow=True)
         # verify correct template was used
@@ -230,24 +257,15 @@ class ProfileTest(TestCase):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'age': self.age,
-            'address': self.address,
-            'city' : self.city,
-            'state' : self.state,
-            'zip' : self.zip,
-            'district' : self.district,
+            'grade': self.grade,
             'school' : self.school,
-            'grade' : self.grade,
             'student_id' : self.student_id,
-            'pickup_location' : self.pickup_location,
             'allergic_celiac' : self.allergic_celiac,
             'allergic_shellfish' : self.allergic_shellfish,
             'allergic_lactose' : self.allergic_lactose,
             'preference_halal' : self.preference_halal,
             'preference_kosher' : self.preference_kosher,
             'preference_vegetarian' : self.preference_vegetarian,
-            'meal_breakfast' :self.meal_breakfast,
-            'meal_lunch' :self.meal_lunch,
-            'meal_dinner' : self.meal_dinner,
         }, follow=True)
 
         # verify success of form submission
@@ -255,13 +273,11 @@ class ProfileTest(TestCase):
         # verify correct template was used
         # After successful submission, user should be taken back to profile page
         self.assertTemplateUsed(response, template_name='registration/profile.html')
-
-        self.assertContains(response, self.age)
-        self.assertContains(response, self.state)
+        # verify student information appears on page
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.last_name)
+        self.assertContains(response, self.school)
         self.assertContains(response, self.student_id)
-        self.assertContains(response, self.meal_dinner)
-        self.assertContains(response, self.pickup_location)
-        self.assertContains(response, self.meal_dinner)
 
         """ Access the edit_student page for the newly created student profile"""
         response = self.client.get("/accounts/1/edit_student", follow=True)
@@ -273,26 +289,17 @@ class ProfileTest(TestCase):
         """ Access the edit_student page for the newly created student profile and make edits"""
         response = self.client.post('/accounts/1/edit_student/', data={
             'first_name': self.first_name,
-            'last_name': self.last_name,
+            'last_name': self.new_last_name,
             'age': self.age,
-            'address': self.address,
-            'city' : self.city,
-            'state' : self.state,
-            'zip' : self.zip,
-            'district' : self.district,
             'school' : self.school,
             'grade' : self.grade,
             'student_id' : self.student_id,
-            'pickup_location' : self.pickup_location_new,
             'allergic_celiac' : self.allergic_celiac,
             'allergic_shellfish' : self.allergic_shellfish,
             'allergic_lactose' : self.allergic_lactose,
             'preference_halal' : self.preference_halal,
             'preference_kosher' : self.preference_kosher,
             'preference_vegetarian' : self.preference_vegetarian,
-            'meal_breakfast' :self.meal_breakfast,
-            'meal_lunch' :self.meal_lunch,
-            'meal_dinner' : self.meal_dinner,
         }, follow=True)
         self.assertEqual(response.status_code, 200)
         # verify correct template was used
@@ -301,13 +308,11 @@ class ProfileTest(TestCase):
 
         # returns to profile page to check changes
         response = self.client.get('/accounts/profile/', follow=True)
-        self.assertContains(response, self.age)
-        self.assertContains(response, self.state)
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        self.assertNotContains(response, self.last_name)
+        self.assertContains(response, self.school)
         self.assertContains(response, self.student_id)
-        self.assertContains(response, self.meal_dinner)
-        self.assertNotContains(response, self.pickup_location)
-        self.assertContains(response, self.pickup_location_new)
-        self.assertContains(response, self.meal_dinner)
 
         """ delete the student and check that student information is no longer existent on profile page """
         response = self.client.get("/accounts/1/delete_student", follow=True)
@@ -325,14 +330,9 @@ class ProfileTest(TestCase):
 
         # returns to profile page to check changes
         response = self.client.get('/accounts/profile/', follow=True)
-        self.assertNotContains(response, self.age)
-        self.assertNotContains(response, self.state)
-        self.assertNotContains(response, self.pickup_location_new)
         self.assertNotContains(response, self.first_name)
-        self.assertNotContains(response, self.last_name)
-        self.assertNotContains(response, self.age)
-        self.assertNotContains(response, self.address)
-        self.assertNotContains(response, self.city)
+        self.assertNotContains(response, self.new_last_name)
+        self.assertNotContains(response, self.school)
         self.assertNotContains(response, self.student_id)
 
         """ log out of user's current session and attempt to access website pages """

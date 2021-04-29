@@ -3,7 +3,7 @@
 {% load static %}
 
 
-{% if user.is_authenticated and user.id == user.profile.id %}
+{% if user.is_authenticated %}
     <div class="container-fluid">
         <h3 class="text-dark mb-4">Create Student Profile</h3>
         <div class="row">
@@ -13,7 +13,6 @@
                         <div class = "form-group">
                             <form method="Post">
                                 {% csrf_token %}
-
                                 {% for field in form %}
                                     {{ field.errors }}
                                     {% if field.id_for_label == "id_allergic_celiac" %}
@@ -69,7 +68,15 @@
             </div>
         </div>
     </div>
+{% else %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h3 class="text-dark mb-4"> You are either not logged in or do not have access to this page. </h3>
+            </div>
+        </div>
+    </div>
 {% endif %}
 
-
 {% endblock %}
+

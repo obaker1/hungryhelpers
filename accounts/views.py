@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import DetailView, CreateView, DeleteView, UpdateView
-from .forms import EditSettingsForm, CreateProfileForm, EditProfileForm, StudentForm
+from .forms import EditSettingsForm, CreateProfileForm, EditProfileForm, StudentForm, CreateAccountForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Profile, Student
 from django.contrib.auth import (get_user_model)
@@ -14,7 +14,7 @@ UserModel = get_user_model()
 
 class SignUpView(generic.CreateView):
     # Utilizes the built-in UserCreationForm
-    form_class = UserCreationForm
+    form_class = CreateAccountForm
     # Redirects user to login page upon successful registration
     template_name = 'registration/signup.html'
 
@@ -23,9 +23,12 @@ class SignUpView(generic.CreateView):
         form.save()
         # get the username and password
         username = self.request.POST['username']
+        first_name = self.request.POST['first_name']
+        last_name = self.request.POST['last_name']
+        email = self.request.POST['email']
         password = self.request.POST['password1']
         # authenticates user then logs in
-        user = authenticate(username=username, password=password)
+        user = authenticate(username=username, first_name=first_name, last_name=last_name, email=email,password=password)
         login(self.request, user)
         # automatically creates profile upon registration
         profile = Profile(user=user, address='', city='', state='', zip='', district='')

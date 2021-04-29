@@ -8,6 +8,7 @@ Software required:
 - requests 2.25.1 (install by running 'pip install requests')
 - django-cripsy-forms (install by running 'pip install django-crispy-forms')
 - django_notifications_hq (install by running 'pip install django_notifications_hq')
+- django-input_export (install by running 'pip install django-import-export')
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project

@@ -8,6 +8,9 @@ class SignUpTest(TestCase):
     def setUp(self):
         self.username = 'test'
         self.password = '>pve_hm*N*&x<qbP8u'
+        self.first_name = 'Bob'
+        self.last_name = 'Shanghai'
+        self.email = 'test@example.com'
 
     def test_signup_page(self):
         # access signup page
@@ -21,11 +24,14 @@ class SignUpTest(TestCase):
         # send signup data to page
         response = self.client.post('/accounts/signup/', data={
             'username': self.username,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
             'password1': self.password,
             'password2': self.password
-        })
-        # check that a page redirection occurred (HTTP 302)
-        self.assertEqual(response.status_code, 302)
+        }, follow=True)
+        # check that page successfully loaded: status code = 200
+        self.assertEqual(response.status_code, 200)
         # check if account was successfully made
         users = get_user_model().objects.all()
         self.assertEqual(users.count(), 1)
@@ -166,6 +172,7 @@ class ProfileTest(TestCase):
 
         self.username = 'test'
         self.password = '>pve_hm*N*&x<qbP8u'
+        self.email = 'test@example.com'
 
         # information for edit parent page
         self.parent_first_name = "Mr"
@@ -198,6 +205,9 @@ class ProfileTest(TestCase):
         # access and create account on signup page
         response = self.client.post('/accounts/signup/', data={
             'username': self.username,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
             'password1': self.password,
             'password2': self.password
         }, follow=True)

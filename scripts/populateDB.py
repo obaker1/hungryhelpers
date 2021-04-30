@@ -2,8 +2,9 @@ def run():
     from findLocation.models import GoogleMapsResponse, Origin
     from accounts.models import Profile
     from django.contrib.auth.models import User
-    import xlrd, os
-    LOCATION = 0; DISTANCE = 1; TIME = 2; BUS = 3; SCHOOL = 4; ADDRESS = 5; TIMEFRAME = 6; LATITUDE = 7; LONGITUDE = 8;
+    import os
+    from openpyxl import load_workbook
+    LOCATION = 1; DISTANCE = 2; TIME = 3; BUS = 4; SCHOOL = 5; ADDRESS = 6; TIMEFRAME = 7; LATITUDE = 8; LONGITUDE = 9;
     username = "admin"; email = "myemail@test.com"; password = "admin";
 
     print("Flushing all tables in db.sqlite3")
@@ -23,17 +24,14 @@ def run():
     print("Set origin for findLocation")
 
     file = "Locations.xlsx"
-    workbook = xlrd.open_workbook(file)
-    worksheet = workbook.sheet_by_index(0)
+    workbook = load_workbook(filename=file)
+    sheet = workbook.active
 
-    for row in range(worksheet.nrows):
-        data = []
-        for col in range(1, worksheet.ncols):
-           data.append(worksheet.cell_value(row, col))
-        #print(data)
+    for data in sheet.iter_rows(values_only=True):
         newDest = GoogleMapsResponse(location=data[LOCATION], distance=data[DISTANCE],
-                                     time=data[TIME], bus=data[BUS], school=data[SCHOOL],
-                                     address=data[ADDRESS], timeframe=data[TIMEFRAME],
-                                     latitude=data[LATITUDE], longitude=data[LONGITUDE])
+                                        time=data[TIME], bus=data[BUS], school=data[SCHOOL],
+                                        address=data[ADDRESS], timeframe=data[TIMEFRAME],
+                                        latitude=data[LATITUDE], longitude=data[LONGITUDE])
         newDest.save()
+
     print("Added all locations for findLocation")

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'notifications',
     'notifs',
     'import_export',
+    'mealPlan',
 ]
 
 # For development-use only

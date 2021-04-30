@@ -10,9 +10,52 @@
             <h3 class="text-dark mb-0">Dashboard</h3>
         </div>
         <hr>
-        <h6>
-            Placeholder
-        </h6>
+        <h2> Good evening, {{ user.profile.first_name }}! </h2>
+        <div class="row">
+            <div class="col">
+                <!--<h2>Parent:</h2>-->
+                <div class="card shadow mb-3">
+                    <div class="card-header">
+                        <p class="text-primary m-0 font-weight-bold h3" style="text-align:center">School Alert</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row ">
+                            <i class="fa fa-bullhorn fa-5x fa-fw"></i>
+                            <div class="col">
+                                <h4> BCPS summer school meals now scheduling available at no cost, to all children ages 2-18 curbsize pickup. <br>
+                                <b> Monday + Wednesday </b> <br>
+                                11:00 AM - 1:00PM</h4>
+                            </div>
+                        </div>
+                        <div style="display: inline-block; margin-left: 35%;" >
+                            <div class="row">
+                                <a href="#"><button style="width:155px; text-align:center;" type="button" class="btn btn-primary btn-block">Create Meal Plan</button></a>
+                                &emsp;
+                                <a href="#"><button style="width:155px; text-align:center;" type="button" class="btn btn-secondary btn-block">Dismiss</button></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow mb-3">
+                    <div class="card-header">
+                        <p class="text-primary m-0 font-weight-bold h3" style="text-align:center">Your Schedule</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row ">
+                            <i class="fa fa-calendar-plus fa-5x fa-fw"></i>
+                            <div class="col">
+                                <h4> Set up your pick up or delivery method for your meal plans </h4>
+                            </div>
+                        </div>
+                        <div style="display: inline-block; margin-left: 44%;" >
+                            <div class="row">
+                                <a href="#"><button style="width:155px; text-align:center;" type="button" class="btn btn-primary btn-block">View</button></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <hr>
     </div>
 {% else %}

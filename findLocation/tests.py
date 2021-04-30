@@ -3,9 +3,7 @@ from django.urls import reverse
 import requests
 from django.conf import settings
 from django.contrib.auth.models import User
-from .models import Origin
-from scripts import populateDB
-from .models import GoogleMapsResponse
+from .models import Origin, GoogleMapsResponse
 
 # Create your tests here.
 class PageLoad(TestCase):

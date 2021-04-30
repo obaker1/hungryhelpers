@@ -6,10 +6,10 @@ from findLocation.models import Origin
 @admin.register(GoogleMapsResponse)
 # Register your models here.
 class GoogleMapsResponseResource(ImportExportModelAdmin):
-    fields = ('id', 'location', 'distance', 'time', 'bus','school', 'address','timeframe', 'latitude', 'longitude')
+    fields = ('location', 'distance', 'time', 'bus','school', 'address','timeframe', 'latitude', 'longitude')
     pass
 
 @admin.register(Origin)
 class OriginResource(ImportExportModelAdmin):
-    fields = ('id', 'origin', 'latitude', 'longitude')
+    fields = ('origin', 'latitude', 'longitude')
     pass

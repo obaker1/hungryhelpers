@@ -1,13 +1,17 @@
 from django.contrib.sites import requests
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from urllib.parse import urlencode
 from django.conf import settings
 from django.urls import reverse
 
 from findLocation.models import GoogleMapsResponse
 from findLocation.models import Origin
+
+from findLocation.resources import GoogleMapsResponseResource
+from findLocation.resources import OriginResource
+
 import json
 import requests
 import math
@@ -149,6 +153,13 @@ def addLocation(request):
             else:
                 GoogleMapsResponse.objects.filter(address=address).update(location=location, school=school, bus=bus, timeframe=timeframe, latitude=lat, longitude=lng)
     return HttpResponseRedirect(reverse('findlocation'))
+
+def export(request):
+    response_resource = GoogleMapsResponseResource()
+    dataset = response_resource.export()
+    response = HttpResponse(dataset.xls, content_type = 'text/excel')
+    response['Content-Disposition'] = 'attachment; filename = GoogleMapsResponse.xls'
+    return response
 
 def addMore(request):
     result = getLocations(20)

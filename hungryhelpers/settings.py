@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'notifications',
     'notifs',
+    'import_export',
     'mealPlan',
 ]
 
@@ -143,3 +144,15 @@ STATICFILES_DIRS = (
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+IMPORT_EXPORT_USE_TRANSACTIONS = False
+
+IMPORT_EXPORT_SKIP_ADMIN_LOG = False
+
+# IMPORT_EXPORT_TMP_STORAGE_CLASS = import_export.tmp_storages.TempFolderStorage
+#
+# IMPORT_EXPORT_IMPORT_PERMISSION_CODE = None
+#
+# IMPORT_EXPORT_EXPORT_PERMISSION_CODE = None
+#
+# IMPORT_EXPORT_CHUNK_SIZE = 100

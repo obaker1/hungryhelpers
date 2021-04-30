@@ -17,7 +17,7 @@
                                 {{ form.as_p }}
                                 <br>
                                 <button class="btn btn-primary">&nbsp;Yes&nbsp;</button>
-                                <a class="btn btn-primary" href="{% url 'show_profile' user.profile.id %}" role="button" >&nbsp;&nbsp;No&nbsp;&nbsp;</a>
+                                <a class="btn btn-primary" href="{% url 'show_profile' %}" role="button" >&nbsp;&nbsp;No&nbsp;&nbsp;</a>
                             </form>
                         </div>
                     </div>
@@ -26,7 +26,14 @@
             </div>
         </div>
     </div>
+{% else %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h3 class="text-dark mb-4"> You are either not logged in or do not have access to this page. </h3>
+            </div>
+        </div>
+    </div>
 {% endif %}
-
 
 {% endblock %}

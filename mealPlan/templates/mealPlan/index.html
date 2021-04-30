@@ -3,15 +3,68 @@
 {% load static %}
 
 {% if user.is_authenticated %}
+
 <div class="container-fluid">
 <div class="card shadow mb-3">
     <div class="card-header py-3">
-        <p class="text-primary m-0 font-weight-bold">Submit a Ticket</p>
+        <p class="text-primary m-0 font-weight-bold">Create a New Meal</p>
     </div>
     <div class="card-body">
         <form action="{% url 'ticket_add' %}" method="post">
             {% csrf_token %}
-            {{ form.post }}
+            {{ form.content }}
+            <br>
+
+            <p class="text-primary m-0 font-weight-bold">Location</p>
+            <div>
+            <label for="locations">Choose a Location:</label>
+
+            <select name="locations" id="location" multiple>
+                <option value="baltimore">Baltimore</option>
+                <option value="columbia">Columbia</option>
+                <option value="towson">Towson</option>
+            </select>
+            </div>
+            <br>
+
+            <!--
+            {% for restriction in form.restrictions %}
+            <div class='chk-btn'>
+                {{ restriction }}
+            </div>
+            {% endfor %}
+            -->
+            <p class="text-primary m-0 font-weight-bold">Allergies</p>
+                <!--<form action="{% url 'ticket_add' %}" method="post">-->
+            <div id="allergies">
+                <!--{{ form.celiac }} {{ form.shellfish }} {{ form.lactose }}-->
+
+                <input type="checkbox" name="Celiac" id="1" class='chk-btn'>
+                <label for='1'>Celiac</label>
+
+                <input type="checkbox" name="Shellfish" id="2" class='chk-btn'>
+                <label for='2'>Shellfish</label>
+
+                <input type="checkbox" name="Lacotse" id="3" class='chk-btn'>
+                <label for='3'>Lacotse</label>
+
+            </div>
+            <br>
+            <p class="text-primary m-0 font-weight-bold">Preferences</p>
+                <!--<form action="{% url 'ticket_add' %}" method="post">-->
+            <div id="preferences">
+                <!--{{ form.halal }} {{ form.kosher }} {{ form.vegetarian }}-->
+
+                <input type="checkbox" name="Halal" id="4" class='chk-btn'>
+                <label for='4'>Halal</label>
+
+                <input type="checkbox" name="Kosher" id="5" class='chk-btn'>
+                <label for='5'>Kosher</label>
+
+                <input type="checkbox" name="Vegetarian" id="6" class='chk-btn'>
+                <label for='6'>Vegetarian</label>
+
+            </div>
             <br>
             <button type="submit" class="btn btn-primary btn-block text-white btn-user">Submit</button>
         </form>
@@ -20,62 +73,22 @@
 
 <div class="card shadow mb-3">
     <div class="card-header py-3">
-        <p class="text-primary m-0 font-weight-bold">Current Meal Tickets</p>
+        <p class="text-primary m-0 font-weight-bold">All Meals</p>
     </div>
     <div class="card-body">
         <ol>
-            {% for post in cur_posts %}
-            <li> {{ post.post }}</li>
-            <p>Submitted by {{ post.user.get_full_name }} on {{ post.date }}</p>
-            {% endfor %}
-        </ol>
-    </div>
-</div>
-
-
-<div class="card shadow mb-3">
-    <div class="card-header py-3">
-        <p class="text-primary m-0 font-weight-bold">All Meal Tickets</p>
-    </div>
-    <div class="card-body">
-        <ol>
-            {% for post in posts %}
-            <li> {{ post.post }}</li>
-            <p>Submitted by {{ post.user.get_full_name }} on {{ post.date }}</p>
+            {% for meal in meals %}
+            <li> {{ meal.content }}</li>
+            <p> Location: {{meal.location }}</p>
+            <p> Celiac: {{ meal.celiac }}, Shellfish: {{ meal.shellfish }}, Lactose: {{ meal.lactose }} </p>
+            <p> Halal: {{ meal.halal }}, Kosher {{ meal.kosher }}, Vegetarian: {{ meal.vegetarian }} </p>
+            <p>Submitted by {{ meal.user.get_full_name }} on {{ meal.date }}</p>
             {% endfor %}
         </ol>
     </div>
 </div>
 </div>
-<!--
-<div class="container-fluid">
-    <h1>Submit a Meal Plan</h1>
-    <form action="{% url 'ticket_add' %}" method="post">
-        {% csrf_token %}
-        {{ form.post }}
-        <br>
-        <button type="submit">Submit</button>
-    </form>
-    <br>
 
-    <h1>Current Meal Plans</h1>
-    <ol>
-        {% for post in cur_posts %}
-        <li> {{ post.post }}</li>
-        <p>Submitted by {{ post.user.get_full_name }} on {{ post.date }}</p>
-        {% endfor %}
-    </ol>
-    <br>
-
-    <h1>All Meal Plans</h1>
-    <ol>
-    {% for post in posts %}
-        <li> {{ post.post }}</li>
-        <p>Submitted by {{ post.user.get_full_name }} on {{ post.date }}</p>
-    {% endfor %}
-    </ol>
-</div>
--->
 {% else %}
     You must be logged in to use this page!
 {% endif %}

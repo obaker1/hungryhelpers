@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from mealPlan.forms import mealPlanForm
 from .models import Meal
+from findLocation.models import Origin
 
 # Create your tests here.
 
@@ -42,6 +43,9 @@ class TicketPostTest(TestCase):
 # Create your tests here.
 class StaffPageLoadWithLocations(TestCase):
     def setUp(self):
+        newOrigin = Origin(origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                           longitude=-76.7143524)
+        newOrigin.save()
         c = Client()
         destinationList = ['Elkridge, MD', 'Towson, MD', 'Columbia, MD']
         for i in destinationList:

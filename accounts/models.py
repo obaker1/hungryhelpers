@@ -15,7 +15,7 @@ class Profile(models.Model):
     state = models.CharField(max_length=2, choices=STATE_CHOICES, null=True, blank=False)
     zip = models.CharField(max_length=33, null=True, blank=False)
     district = models.CharField(max_length=255, choices=DISTRICTS, null=True, blank=False)
-    school = models.CharField(max_length=255, choices=SCHOOLS, blank=False)
+    school = models.CharField(max_length=255, null=True, choices=SCHOOLS, blank=False)
 
     def __str__(self):
         return str(self.user)

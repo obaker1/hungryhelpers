@@ -108,7 +108,7 @@ Features:
 		4. Enter a message to be sent to the other user and click send
 		5. In the second browser, refreshing the page and clicking on the bell icon will show the notifcation that has been sent
 		
--Meal Plans
+- Meal Plans
 	- Description:
 	  Allows meal plans information to be added and stored
 	- Notes before testing and demonstration:

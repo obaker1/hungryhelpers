@@ -9,16 +9,16 @@ Software required:
 - django-cripsy-forms (install by running 'pip install django-crispy-forms')
 - django_notifications_hq (install by running 'pip install django_notifications_hq')
 - django-input_export (install by running 'pip install django-import-export')
+- openpyxl (install by running 'pip install openpyxl')
+- django-extensions (install by running 'pip install django-extensions')
 
 Software execution instructions:
 1. Using a command line interpreter, navigate to the root directory of the project
-2. Delete the db.sqlite3 file (will be regenerated after running makemigrations later)
-3. Navigate into the 'hungryhelpers' folder (hungryhelpers/hungryhelpers) and make a new file named ".env"
-4. In ".env", enter "GOOGLE_MAPS_API_KEY=<b>API_KEY</b>", where <b>API_KEY</b> is the key given at the bottom of the group retrospective.
-5. Return to the root directory and run following commands: 'python manage.py makemigrations', 'python manage.py migrate', 'python manage.py runserver'
-6. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
-
-<b><u> NOTE:</u></b> When creating an account, please be sure to <b> enable pop-ups and redirects </b> on the browser that will be accessing the website for the best experience. Always use the most recently created browser tab in the event that a new tab was created.
+2. Navigate into the 'hungryhelpers' folder (hungryhelpers/hungryhelpers) and make a new file named ".env"
+3. In ".env", enter "GOOGLE_MAPS_API_KEY=<b>API_KEY</b>", where <b>API_KEY</b> is the key given at the bottom of the group retrospective.
+4. Return to the root directory and run the following command 'python manage.py runscript populateDB'
+5. Open an internet browser and navigate to 'http://127.0.0.1:8000/'
+6. Optional: Log in as an admin using 'admin' for the username and password.
 
 Features:
 - Find Location:
@@ -36,10 +36,9 @@ Features:
 		- http://127.0.0.1:8000/accounts/login/
 		- http://127.0.0.1:8000/accounts/signup/
 		- http://127.0.0.1:8000/accounts/logout/ 
-		- http://127.0.0.1:8000/accounts/<int:pk>/create_profile/
-		- http://127.0.0.1:8000/accounts/<int:pk>/profile/ 
-		- http://127.0.0.1:8000/accounts/<int:pk>/edit_profile/
-		- http://127.0.0.1:8000/accounts/<int:pk>/add_student/
+		- http://127.0.0.1:8000/accounts/profile/ 
+		- http://127.0.0.1:8000/accounts/edit_profile/
+		- http://127.0.0.1:8000/accounts/add_student/
 		- http://127.0.0.1:8000/accounts/<int:pk>/edit_student/
 		- http://127.0.0.1:8000/accounts/<int:pk>/delete_student/
 		- http://127.0.0.1:8000/accounts/settings/ 

@@ -484,14 +484,14 @@ class PasswordResetTest(TestCase):
         self.assertTemplateUsed(response, template_name='registration/password_reset_complete.html')
 
 class PermissionsTest(TestCase):
-
+    fixtures = ['dbcontent.json', ]
     def test_admin_permissions(self):
-        # create admin user
+        # login to admin user
+        username = 'admin'
         password = 'admin'
-        my_admin = User.objects.create_superuser('admin', 'myemail@test.com', password)
 
         # Login to correct user
-        self.client.login(username=my_admin.username, password=password)
+        self.client.login(username=username, password=password)
 
         # Open page and ensure that admin has access to add a location
         response = self.client.get(reverse('findlocation'))

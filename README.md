@@ -107,5 +107,22 @@ Features:
 		3. From the first browser, navigate to http://127.0.0.1:8000/notifs/ 
 		4. Enter a message to be sent to the other user and click send
 		5. In the second browser, refreshing the page and clicking on the bell icon will show the notifcation that has been sent
-
-
+		
+-Meal Plans
+	- Description:
+	  Allows meal plans information to be added and stored
+	- Notes before testing and demonstration:
+		1. Ensure makemigrations and migrate has been run
+	- URLs:
+	  http://127.0.0.1:8000/mealPlan/
+	  http://127.0.0.1:8000/mealPlan/ticket_add
+	  http://127.0.0.1:8000/staffPage/
+	  http://127.0.0.1:8000/choosemeal
+	- Test suite execution instructions:
+		1. Using a command line interpreter, navigate to the root directory of the project
+		2. Run 'python manage.py test mealPlan'
+		3. Details about each test can be found inside the /mealPlan/tests.py file.
+	- Manual demonstration:
+		1. From a browser, navigate to http://127.0.0.1:8000/ and create an account
+		2. Navigate to http://127.0.0.1:8000/mealPlan
+		3. Entering information and clicking "Submit" will update the list of meal plans

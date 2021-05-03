@@ -17,6 +17,31 @@ class PageLoad(TestCase):
         # verify index.html is being used
         self.assertTemplateUsed(response, template_name='findLocation/index.html')
 
+class NoDatabase(TestCase):
+    # test findLocation page works even when no database is loaded
+    def test_page_load(self):
+        # access findLocation page
+        response = self.client.get('/findLocation/')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify index.html is being used
+        self.assertTemplateUsed(response, template_name='findLocation/index.html')
+
+    # test adding origin page works
+    def test_adding_origin(self):
+        c = Client()
+        # put default origins and destinations
+        c.post('/findLocation/addOrigin/', {'origin': 'baltimore, MD'})
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+
+    # test adding destination page works
+    def test_adding_destination(self):
+        c = Client()
+        c.post('/findLocation/addLocation/', {'destination': 'Baltimore Avenue and 5th Avenue', 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', 'remove': 'a'})
+        response = self.client.get(reverse('findlocation'))
+        self.assertEqual(response.status_code, 200)
+
 class OriginIndexViewTest(TestCase):
     fixtures = ['dbcontent.json', ]
     # test adding origin

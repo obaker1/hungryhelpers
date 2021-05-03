@@ -17,10 +17,17 @@ import requests
 import math
 
 def findlocation(request):
-    result = getLocations(10)
+    result = [''] * 5
+    if (Origin.objects.all() and GoogleMapsResponse.objects.all()):
+        if(GoogleMapsResponse.objects.all().count() < 10):
+            result = getLocations(GoogleMapsResponse.objects.all().count())
+        else:
+            result = getLocations(10)
+    elif (Origin.objects.all()): # if only the origin exists in database
+        result[0] = Origin.objects.first().origin
     context = {
         'api_key': settings.GOOGLE_MAPS_API_KEY,
-        'origin': result[0].origin,
+        'origin': result[0],
         'googlemapsresult': result[1], # shortenedList
         'locationList': result[2], #locationAppended
         'addressList': result[3], #addressAppended
@@ -45,7 +52,11 @@ def addOrigin(request):
     result = res['results'][0]
     lat = result['geometry']['location']['lat']
     lng = result['geometry']['location']['lng']
-    Origin.objects.filter().update(origin=origin_text, latitude=lat, longitude=lng)
+    if (not Origin.objects.all()): # create new origin if not existing
+        newOrigin = Origin(origin=origin_text, latitude=lat, longitude=lng)
+        newOrigin.save()
+    else:
+        Origin.objects.filter().update(origin=origin_text, latitude=lat, longitude=lng)
     origin = Origin.objects.first() # get origin from database
 
     distList = []
@@ -174,12 +185,12 @@ def addMore(request):
     return render(request, 'findLocation/index.html', context)
 
 def getLocations(num):
-    locationList = [''] * 10
-    addressList = [''] * 10
-    filter = [''] * 20
+    locationList = [''] * num
+    addressList = [''] * num
+    filter = [''] * num * 2
     distList = [] # contains the distances between origin and destinations by latitude and longitude
     sortDist = [] # contains the calculated time between origin and destinations
-    shortenedList = [''] * 10
+    shortenedList = [''] * num
     origin = Origin.objects.first() # get origin from database
     # find 10 closest places from origin
     for destinations in GoogleMapsResponse.objects.all():
@@ -205,4 +216,4 @@ def getLocations(num):
     addressAppended = '|'.join(addressList) if addressList else "None"
     filterAppended = '|'.join(filter) if filter else "None"
 
-    return origin, shortenedList, locationAppended, addressAppended, filterAppended
+    return origin.origin, shortenedList, locationAppended, addressAppended, filterAppended

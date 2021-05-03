@@ -93,22 +93,23 @@
                     <div class="card-header py-3">
                         <p class="text-primary m-0 font-weight-bold">Destinations</p>
                     </div>
-                    <div class = "form-group">
-                        <form action="{% url 'addMore' %}" method="post"}>
-                            {% csrf_token %}
-                            <button class="btn btn-primary btn-block text-white btn-user">show 10 more locations</button>
-                        </form>
-                        <form action="{% url 'findlocation' %}" method="post"}>
-                            {% csrf_token %}
-                            <button class="btn btn-primary btn-block text-white btn-user">show first 10 locations</button>
-                        </form>
-                    </div>
                     <div class="card-body">
                         <ol>
                             {% for locations in googlemapsresult %}
                                 <li><span>{{ locations }}</span></li>
                             {% endfor %}
                         </ol>
+                    </div>
+                    <div class = "form-group">
+                        <form action="{% url 'addMore' %}" method="post"}>
+                            {% csrf_token %}
+                            <button class="btn btn-primary btn-block text-white btn-user">show 10 more locations</button>
+                        </form>
+                        <br>
+                        <form action="{% url 'findlocation' %}" method="post"}>
+                            {% csrf_token %}
+                            <button class="btn btn-primary btn-block text-white btn-user">show first 10 locations</button>
+                        </form>
                     </div>
                 </div>
 

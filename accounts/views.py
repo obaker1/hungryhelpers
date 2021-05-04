@@ -210,7 +210,7 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
         context['req_student'] = Student.objects.get(id=self.kwargs['pk'])
 
         origin = Origin.objects.get(id=self.request.user.id)
-        result = getLocations(10, origin)
+        result = getLocations(10, originObj=origin)
         context['api_key'] = settings.GOOGLE_MAPS_API_KEY
         context['origin'] = result[0].origin
         context['googlemapsresult'] = result[1]

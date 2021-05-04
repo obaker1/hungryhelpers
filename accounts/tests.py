@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.auth.models import Permission
+from findLocation.models import GoogleMapsResponse
+from openpyxl import load_workbook
 
 class SignUpTest(TestCase):
     def setUp(self):
@@ -201,18 +203,17 @@ class EditSettingsTest(TestCase):
 class ProfileTest(TestCase):
     def setUp(self):
         # valid credentials
-
         self.username = 'test'
         self.password = '>pve_hm*N*&x<qbP8u'
         self.email = 'test@example.com'
-
-        # information for edit parent page
         self.parent_first_name = "Mr"
         self.parent_last_name = "Parent"
-        self.address = '1234 Test Street'
-        self.city = 'Testingburg'
-        self.state = 'AK'
-        self.zip = '12345'
+
+        # information for edit parent page
+        self.address = '1000 Hilltop Cir'
+        self.city = 'Baltimore'
+        self.state = 'MD'
+        self.zip = '21250'
         self.district = 'Baltimore County'
 
         # information for add student page
@@ -230,15 +231,40 @@ class ProfileTest(TestCase):
         self.preference_kosher = 'No'
         self.preference_vegetarian = 'No'
 
+        # information for meal plan
+        self.pickup_type = 'School'
+        self.day = 'M/W'
+        self.time = '11:00am-11:15am'
+        self.meal_breakfast = "Yes"
+        self.meal_lunch = "No"
+        self.meal_dinner = "No"
+        self.pickup_location = "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)"
+        self.new_pickup_location = "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)"
+        self.complete = "Yes"
+
         self.err_msg = "You are either not logged in or do not have access to this profile."
+
+        LOCATION = 1; DISTANCE = 2; TIME = 3; BUS = 4; SCHOOL = 5; ADDRESS = 6; TIMEFRAME = 7; LATITUDE = 8; LONGITUDE = 9;
+        file = "Locations.xlsx"
+        workbook = load_workbook(filename=file)
+        sheet = workbook.active
+
+        for data in sheet.iter_rows(values_only=True):
+            newDest = GoogleMapsResponse(location=data[LOCATION], distance=data[DISTANCE],
+                                         time=data[TIME], bus=data[BUS], school=data[SCHOOL],
+                                         address=data[ADDRESS], timeframe=data[TIMEFRAME],
+                                         latitude=data[LATITUDE], longitude=data[LONGITUDE])
+            newDest.save()
+
+        #loc = GoogleMapsResponse(location="Arbutus Middle", distance=2.9, time="7 mins", school='F', bus='T', timeframe='M/W 11am-1pm', latitude=39.248289, longitude=-76.7057813)
 
     def test_profile_page(self):
         """ sign up and log into account """
         # access and create account on signup page
         response = self.client.post('/accounts/signup/', data={
             'username': self.username,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
+            'first_name': self.parent_first_name,
+            'last_name': self.parent_last_name,
             'email': self.email,
             'password1': self.password,
             'password2': self.password
@@ -259,6 +285,14 @@ class ProfileTest(TestCase):
         # verify correct template was used
         self.assertTemplateUsed(response, template_name='registration/profile.html')
 
+        """ access the meal plan page before updating location in profile """
+        # access meal plan page
+        response = self.client.get('/accounts/meal_plans/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/meal_plans.html')
+        # verify that user is shown "Create Meal Plan" button
+        self.assertContains(response, "Please update your profile with your location before using this feature!")
+
         """ access the edit profile page """
         # access profile page
         response = self.client.get('/accounts/edit_profile/', follow=True)
@@ -268,8 +302,6 @@ class ProfileTest(TestCase):
         """ edit profile content """
         # access profile page
         response = self.client.post('/accounts/edit_profile/', data={
-            'first_name': self.parent_first_name,
-            'last_name': self.parent_last_name,
             'address': self.address,
             'city': self.city,
             'state': self.state,
@@ -321,14 +353,14 @@ class ProfileTest(TestCase):
         self.assertContains(response, self.school)
         self.assertContains(response, self.student_id)
 
-        """ Access the edit_student page for the newly created student profile"""
+        """ access the edit_student page for the newly created student profile"""
         response = self.client.get("/accounts/1/edit_student", follow=True)
         # check site status code (HTTP 200 OK)
         self.assertEquals(response.status_code, 200)
         # verify correct template was used
         self.assertTemplateUsed(response, template_name='registration/edit_student.html')
 
-        """ Access the edit_student page for the newly created student profile and make edits"""
+        """ access the edit_student page for the newly created student profile and make edits"""
         response = self.client.post('/accounts/1/edit_student/', data={
             'first_name': self.first_name,
             'last_name': self.new_last_name,
@@ -356,6 +388,125 @@ class ProfileTest(TestCase):
         self.assertContains(response, self.school)
         self.assertContains(response, self.student_id)
 
+        """ access the meal plan page """
+        # access meal plan page
+        response = self.client.get('/accounts/meal_plans/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/meal_plans.html')
+        # verify an element is shown with the child's first and last name
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        # verify that user is shown "Create Meal Plan" button
+        self.assertContains(response, "Create Meal Plan")
+        self.assertNotContains(response, "Edit Meal Plan")
+
+        """ 'create' a meal plan for student """
+        # access meal plan page
+        response = self.client.get('/accounts/1/edit_meal_plan/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+        # verify meal plan is specific for the child
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        # verify certain information and fields are hidden until initial form is submitted
+        self.assertNotContains(response, "Current Pickup Location:")
+        self.assertNotContains(response, "Select Pickup Location")
+        self.assertNotContains(response, "Meal Plan is ready to be seen by staff")
+        # fill out meal plan form
+        response = self.client.post('/accounts/1/edit_meal_plan/', data={
+            'pickup_type': self.pickup_type,
+            'day': self.day,
+            'time': self.time,
+            'meal_breakfast' : self.meal_breakfast,
+            'meal_lunch': self.meal_lunch,
+            'meal_dinner': self.meal_dinner,
+        }, follow=True)
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+        # verify that previously hidden information and fields are now visible
+        self.assertContains(response, "Current Pickup Location:")
+        self.assertContains(response, "Select Pickup Location")
+        self.assertContains(response, "Meal Plan is ready to be seen by staff")
+        # verify that user is shown correct pickup locations relative to the location set in profile
+        self.assertContains(response, "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)")
+        self.assertContains(response, "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)")
+        self.assertContains(response, "1037 Maiden Choice Lane (Kendale Apartments): 2.0 miles in 5 mins (11:50am-12:30pm)")
+        # fill out the rest of the meal plan
+        response = self.client.post('/accounts/1/edit_meal_plan/', data={
+            'pickup_type': self.pickup_type,
+            'day': self.day,
+            'time': self.time,
+            'meal_breakfast' : self.meal_breakfast,
+            'meal_lunch': self.meal_lunch,
+            'meal_dinner': self.meal_dinner,
+            'pickup_location': self.pickup_location,
+            'complete': self.complete,
+        }, follow=True)
+        # verify that user was taken back to the same page
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+
+        """ access the meal plan page after creating a meal plan """
+        # access meal plan page
+        response = self.client.get('/accounts/meal_plans/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/meal_plans.html')
+        # verify an element is shown with the child's first and last name
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        # verify that user is shown "Edit Meal Plan" button instead of "Create Meal Plan"
+        self.assertNotContains(response, "Create Meal Plan")
+        self.assertContains(response, "Edit Meal Plan")
+        # verify that user is shown information concerning the meal plan
+        self.assertContains(response, self.pickup_type)
+        self.assertContains(response, self.time)
+        self.assertContains(response, self.pickup_location)
+        self.assertContains(response, "Complete and viewable by staff")
+
+        """ edit existing meal plan for same student """
+        # access meal plan page
+        response = self.client.get('/accounts/1/edit_meal_plan/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+        # verify meal plan is specific for the child and all fields are visible
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        self.assertContains(response, "Current Pickup Location:")
+        self.assertContains(response, "Select Pickup Location")
+        self.assertContains(response, "Meal Plan is ready to be seen by staff")
+        # verify that user is shown correct pickup locations relative to the location set in profile
+        self.assertContains(response, "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)")
+        self.assertContains(response, "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)")
+        self.assertContains(response, "1037 Maiden Choice Lane (Kendale Apartments): 2.0 miles in 5 mins (11:50am-12:30pm)")
+        # change pickup location
+        response = self.client.post('/accounts/1/edit_meal_plan/', data={
+            'pickup_type': self.pickup_type,
+            'day': self.day,
+            'time': self.time,
+            'meal_breakfast' : self.meal_breakfast,
+            'meal_lunch': self.meal_lunch,
+            'meal_dinner': self.meal_dinner,
+            'pickup_location': self.new_pickup_location,
+            'complete': "No",
+        }, follow=True)
+        # verify that user was taken back to the same page
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+
+        """ access the meal plan page after editing meal plan """
+        # access meal plan page
+        response = self.client.get('/accounts/meal_plans/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/meal_plans.html')
+        # verify an element is shown with the child's first and last name
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        # verify that user is shown "Edit Meal Plan" button instead of "Create Meal Plan"
+        self.assertNotContains(response, "Create Meal Plan")
+        self.assertContains(response, "Edit Meal Plan")
+        # verify that user is shown information concerning the meal plan
+        self.assertContains(response, self.pickup_type)
+        self.assertContains(response, self.time)
+        self.assertContains(response, self.new_pickup_location)
+        self.assertContains(response, "Incomplete")
+
         """ delete the student and check that student information is no longer existent on profile page """
         response = self.client.get("/accounts/1/delete_student", follow=True)
         # verify site status code (HTTP 200 OK)
@@ -367,7 +518,7 @@ class ProfileTest(TestCase):
         response = self.client.post('/accounts/1/delete_student/', follow=True)
         # verify site status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
-        # After successful deletion, user should be taken back to profile page verify
+        # After successful deletion, user should be taken back to profile page
         self.assertTemplateUsed(response, template_name='registration/profile.html')
 
         # returns to profile page to check changes

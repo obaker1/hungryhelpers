@@ -173,14 +173,17 @@ def addMore(request):
     }
     return render(request, 'findLocation/index.html', context)
 
-def getLocations(num):
+def getLocations(num, originObj=None):
     locationList = [''] * 10
     addressList = [''] * 10
     filter = [''] * 20
     distList = [] # contains the distances between origin and destinations by latitude and longitude
     sortDist = [] # contains the calculated time between origin and destinations
     shortenedList = [''] * 10
-    origin = Origin.objects.first() # get origin from database
+    if originObj != None:
+        origin = originObj
+    else:
+        origin = Origin.objects.first() # get origin from database
     # find 10 closest places from origin
     for destinations in GoogleMapsResponse.objects.all():
         dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))

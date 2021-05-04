@@ -18,9 +18,14 @@ function initMap() {
   // calls geocoder to get the exact location and uses it to pin the correct location on the map
   const geocoder = new google.maps.Geocoder();
   deleteMarkers(markersArray);
-  const showGeocodedAddressOnMap = function (asDestination, school, bus, location) { //add markers on map
-    const icon = asDestination ? "D" : "O";
+  const showGeocodedAddressOnMap = function (asDestination, school, bus, location, j) { //add markers on map
     return function (results, status) {
+        if (asDestination) {
+            icon = j.toString();
+        }
+        else {
+            icon = "O";
+        }
         if (status === "OK") { // makes sure that the google maps geoencoder loaded correctly
             map.fitBounds(bounds.extend(results[0].geometry.location));
             var marker;
@@ -51,8 +56,8 @@ function initMap() {
     };
     if (origin != 0) { // if origin exists in database
       geocoder.geocode(
-        { address: origin },
-        showGeocodedAddressOnMap(false, false, false, []));
+        { address: origin[j] },
+        showGeocodedAddressOnMap(false, false, false, [], 0));
     }
     for (let j = 0; j < destination.length; j++) {
       school = false;
@@ -65,7 +70,7 @@ function initMap() {
       }
       geocoder.geocode(
         { address: destination[j] },
-        showGeocodedAddressOnMap(true, school, bus, LOCATION_LIST[j]));
+        showGeocodedAddressOnMap(true, school, bus, LOCATION_LIST[j], j+1));
     }
 }
 

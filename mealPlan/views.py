@@ -12,14 +12,10 @@ from findLocation.models import GoogleMapsResponse
 
 def meal_plan(request):
     form = mealPlanForm()
-    # get all content from Post objects
+    # get all content from Meal objects
     meals = Meal.objects.all()
-    # filter to only content for user that is currently logged in
-    #cur_posts = Post.objects.filter(user=request.user)
-    # get all location objects
 
     args = {'form': form, 'meals': meals}
-    #args = {'form': form, 'posts': posts, 'cur_posts': cur_posts}
 
     return render(request, 'mealPlan/index.html', args)
 
@@ -28,28 +24,32 @@ def ticket_add(request):
     # create post object using content from form and save
     meal_text = request.POST['content']
 
-    #celiac = request.POST['celiac']
-    #shellfish = request.POST['shellfish']
-    #lactose = request.POST['lactose']
+    restrictions = {}
+    restrictions['celiac'] = request.POST.get('Celiac', False)
+    restrictions['shellfish'] = request.POST.get('Shellfish', False)
+    restrictions['lactose'] = request.POST.get('Lactose', False)
 
-    #halal = request.POST['halal']
-    #kosher = request.POST['kosher']
-    #vegetarian = request.POST['vegetarian']
+    restrictions['halal'] = request.POST.get('Halal', False)
+    restrictions['kosher'] = request.POST.get('Kosher', False)
+    restrictions['vegetarian'] = request.POST.get('Vegetarian', False)
 
-    #meal_restrictions = request.POST['restrictions']
+    for restriction in restrictions:
+        if restrictions[restriction] == 'on':
+            restrictions[restriction] = True
 
-    #new_meal = Meal(content=meal_text, user=request.user, celiac=celiac, shellfish=shellfish, lactose=lactose, halal=halal, kosher=kosher, vegetarian=vegetarian)
-    new_meal = Meal(content=meal_text, user=request.user)
+    new_meal = Meal(content=meal_text, user=request.user, celiac=restrictions['celiac'],
+                    shellfish=restrictions['shellfish'], lactose=restrictions['lactose'], halal=restrictions['halal'],
+                    kosher=restrictions['kosher'], vegetarian=restrictions['vegetarian'])
+
     new_meal.save()
-    #new_meal.restrictions.set(meal_restrictions)
     return HttpResponseRedirect(reverse('meal_plan'))
-    #return HttpResponseRedirect(reverse(mealPlanView.template_name))
 
 
 def staffPage(request):
     googlemaps = GoogleMapsResponse.objects.all()
     context={'googlemapsresult': googlemaps}
     return render(request, 'mealPlan/staffpage.html', context)
+
 
 def choosemeal(request):
     theMeal= ["Chicken, Rice, and Vegetables", "No", "Yes", "Yes" , "Yes", "Yes", "No", "No", "No", "Yes"]

@@ -14,14 +14,19 @@ def run():
     print("Running migrate...")
     os.system("python manage.py migrate")
 
-    my_admin = User.objects.create_superuser(username, email, password)
-    profile = Profile(user=my_admin, address='', city='', state='', zip='', district='')
+    User.objects.create_superuser(username, email, password)
+    admin = User.objects.get(username=username)
+    admin.first_name, admin.last_name = 'admin', 'user'
+    admin.save()
+    profile = Profile(user=admin, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250', district='Baltimore County')
     profile.save()
     print("Created superuser account (username: " + username + ", password: " + password + ")")
-
-    newOrigin = Origin(origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213, longitude=-76.7143524)
-    newOrigin.save()
+    origin = Origin(user=admin, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213, longitude=-76.7143524)
+    origin.save()
     print("Set origin for findLocation")
+    #newOrigin = Origin(origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213, longitude=-76.7143524)
+    #newOrigin.save()
+
 
     file = "Locations.xlsx"
     workbook = load_workbook(filename=file)
@@ -35,3 +40,5 @@ def run():
         newDest.save()
 
     print("Added all locations for findLocation")
+    print("Launching webserver...")
+    os.system("python manage.py runserver")

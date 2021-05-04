@@ -194,7 +194,7 @@ def addMore(request):
     }
     return render(request, 'findLocation/index.html', context)
 
-def getLocations(num, more = False):
+def getLocations(num, more = False, originObj=None):
     temp = 10
     if (num > 10 and more): # if asking for more locations
         temp = num
@@ -205,7 +205,12 @@ def getLocations(num, more = False):
     distList = [] # contains the distances between origin and destinations by latitude and longitude
     sortDist = [] # contains the calculated time between origin and destinations
     shortenedList = [''] * num
-    origin = Origin.objects.first() # get origin from database
+    
+    if originObj != None:
+        origin = originObj
+    else:
+        origin = Origin.objects.first() # get origin from database
+        
     # find 10 closest places from origin
     for destinations in GoogleMapsResponse.objects.all():
         dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))

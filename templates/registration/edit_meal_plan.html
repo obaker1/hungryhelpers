@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load update_variable %}
+
+
+{% if user.is_authenticated and user.profile.address != '' %}
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'findLocation/index.js'%}"></script>
+
+    {{ api_key|json_script:"api_key" }}
+    <script async type="text/javascript">
+        var origin = "{{origin}}";
+        var addressString = "{{addressList}}";
+        var locationString = "{{locationList}}";
+        var filterString = "{{filter}}";
+        var addressList = []
+        if( addressString != "None"){
+            addressList = addressString.split("|");
+        }
+        var locationList = []
+        if( locationString != "None"){
+            locationList = locationString.split("|");
+        }
+        if( filterString != "None"){
+            filterString = filterString.split("|");
+        }
+        setParameters(origin, addressList, filterString, locationList);
+        const api_key = JSON.parse(document.getElementById('api_key').textContent);
+        const google_api_script = document.createElement('script');
+        google_api_script.setAttribute('src','https://maps.googleapis.com/maps/api/js?key=' + api_key + '&callback=initMap&libraries=&v=weekly');
+        document.head.appendChild(google_api_script);
+    </script>
+
+    <div class="container-fluid">
+        <h3 class="text-dark mb-4">Edit Meal Plan</h3>
+        <div class="row">
+            <div class="col">
+                <div class="card shadow mb-3">
+                    <div class="card-header">
+                        <p class="text-primary m-0 font-weight-bold">Meal plan for {{ req_student.first_name }} {{ req_student.last_name }}:</p>
+                    </div>
+                    <div class="card-body">
+                        <div class = "form-group">
+                            <form method="Post" id="sectionForm" >
+                                {% csrf_token %}
+                                {% for field in form %}
+                                    {{ field.errors }}
+									{% if field.id_for_label == "id_meal_breakfast" %}
+                                        <b>Meal Type:&nbsp;</b>
+                                        <input type="hidden" name="meal_breakfast" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="meal_breakfast" id="id_meal_breakfast" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="meal_breakfast" id="id_meal_breakfast" value="Yes">
+                                        {% endif %}
+                                        <label for="id_meal_breakfast">Breakfast</label>&nbsp;&nbsp;
+                                    {% elif field.id_for_label == "id_meal_lunch" %}
+                                        <input type="hidden" name="meal_lunch" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="meal_lunch" id="id_meal_lunch" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="meal_lunch" id="id_meal_lunch" value="Yes">
+                                        {% endif %}
+                                        <label for="id_meal_lunch">Lunch</label>&nbsp;&nbsp;
+                                    {% elif field.id_for_label == "id_meal_dinner" %}
+                                        <input type="hidden" name="meal_dinner" value="No" />
+                                        {% if field.value == "Yes" %}
+                                            <input type="checkbox" name="meal_dinner" id="id_meal_dinner" value="Yes" checked>
+                                        {% else %}
+                                            <input type="checkbox" name="meal_dinner" id="id_meal_dinner" value="Yes">
+                                        {% endif %}
+                                        <label for="id_meal_dinner">Dinner</label>&nbsp;&nbsp; <br>
+                                    {% elif field.id_for_label == "id_pickup_location" %}
+                                        {% if form.pickup_type.value == "School" or form.pickup_type.value == "Bus Stop" %}
+                                            <hr>
+                                            <h4><b> Current Pickup Location:</b> {{ field.value }} </h4>
+                                            <hr>
+                                            <b>Select Pickup Location (relative to
+                                                {{ user.profile.address }},
+                                                {{ user.profile.city }},
+                                                {{ user.profile.state }}
+                                                {{ user.profile.zip }}): </b>
+                                            <ol>
+                                            {% for locations in googlemapsresult %}
+                                                <li>&nbsp;<span>
+                                                    {% if form.pickup_location.value in locations %}
+                                                        <input type="radio" id="id_pickup_location" name="pickup_location" value="{{ locations }}" required checked="checked">
+                                                    {% else %}
+                                                        <input type="radio" id="id_pickup_location" name="pickup_location" value="{{ locations }}" required>
+                                                    {% endif %}
+
+                                                    <label for="id_pickup_location">{{ locations }}</label><br>
+                                                </span></li>
+                                            {% endfor %}
+                                            </ol>
+                                            <!--<input type="text" name="pickup_location" class="form-control" maxlength="255" id="id_pickup_location" value="{{ field.value }}" required>-->
+                                        {% endif %}
+                                    {% elif field.id_for_label == "id_complete" %}
+                                        {% if form.pickup_type.value == "School" or form.pickup_type.value == "Bus Stop" %}
+                                            <hr>
+                                            <input type="hidden" name="complete" value="No" />
+                                            {% if field.value == "Yes" %}
+                                                <label class="container"> <b>Meal Plan is ready to be seen by staff &nbsp; </b>
+                                                    <input type="checkbox" name="complete" id="id_complete" value="Yes" checked>
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            {% else %}
+                                                <label class="container"> <b>Meal Plan is ready to be seen by staff &nbsp; </b>
+                                                    <input type="checkbox" name="complete" id="id_complete" value="Yes">
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% else %}
+                                        <b>{{ field.label_tag }}</b> {{ field }} <br>
+                                    {% endif %}
+                                {% endfor %}
+                                <br>
+                                <button class="btn btn-block btn-primary" >Save and Update Pickup Options</button>
+                                <a href="{% url 'meal_plans' %}" class="btn btn-block btn-secondary" >Return to Meal Plans</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% if form.pickup_type.value == "School" or form.pickup_type.value == "Bus Stop" %}
+                    <div class="card shadow mb-3">
+                        <div class="card-body">
+                            <br>
+                            <div id="map"></div>
+                        </div>
+                    </div>
+                {% endif %}
+                <br><br><br>
+            </div>
+        </div>
+    </div>
+{% elif user.is_authenticated and user.profile.address == '' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h3 class="text-dark mb-4"> Please update your profile with your location before using this feature!  </h3>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h3 class="text-dark mb-4"> You are either not logged in or do not have access to this page. </h3>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<script src="{% static 'hungryhelpers/assets/js/boxCheck.js' %}"></script>
+<style>
+    /* Customize the label (the container) */
+    .container {
+      display: block;
+      position: relative;
+      padding-left: 35px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* Hide the browser's default checkbox */
+    .container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    /* Create a custom checkbox */
+    .checkmark {
+      border: 1px solid #3D3D3D;
+      border-radius: 4px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 25px;
+      width: 25px;
+      background-color: #eee;
+    }
+
+    /* On mouse-over, add a grey background color */
+    .container:hover input ~ .checkmark {
+      background-color: #ccc;
+    }
+
+    /* When the checkbox is checked, add a blue background */
+    .container input:checked ~ .checkmark {
+      background-color: #00B800;
+    }
+
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    /* Show the checkmark when checked */
+    .container input:checked ~ .checkmark:after {
+      display: block;
+    }
+
+    /* Style the checkmark/indicator */
+    .container .checkmark:after {
+      left: 10px;
+      top: 6px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 3px 3px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+
+    div #map {
+        border-radius: 5px;
+        transform:scale(1);
+        border: 2px solid #e3e6f0;
+        resize: both;
+        width: 100%;
+        height: 600px;
+        margin: 0;
+        padding: 0;
+    }
+    #map {
+        position: relative;
+        top: -14px; right: 0; bottom: 0; left: 0;
+    }
+</style>
+
+{% endblock %}

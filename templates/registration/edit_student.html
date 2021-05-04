@@ -65,34 +65,10 @@
                                             <input type="checkbox" name="preference_vegetarian" id="id_preference_vegetarian" value="Yes">
                                         {% endif %}
                                         <label for="id_preference_vegetarian">Vegetarian</label>&nbsp;&nbsp; <br>
-                                    {% elif field.id_for_label == "id_meal_breakfast" %}
-                                        <b>Meal Type:&nbsp;</b>
-                                        <input type="hidden" name="meal_breakfast" value="No" />
-                                        {% if field.value == "Yes" %}
-                                            <input type="checkbox" name="meal_breakfast" id="id_meal_breakfast" value="Yes" checked>
-                                        {% else %}
-                                            <input type="checkbox" name="meal_breakfast" id="id_meal_breakfast" value="Yes">
-                                        {% endif %}
-                                        <label for="id_meal_breakfast">Breakfast</label>&nbsp;&nbsp;
-                                    {% elif field.id_for_label == "id_meal_lunch" %}
-                                        <input type="hidden" name="meal_lunch" value="No" />
-                                        {% if field.value == "Yes" %}
-                                            <input type="checkbox" name="meal_lunch" id="id_meal_lunch" value="Yes" checked>
-                                        {% else %}
-                                            <input type="checkbox" name="meal_lunch" id="id_meal_lunch" value="Yes">
-                                        {% endif %}
-                                        <label for="id_meal_lunch">Lunch</label>&nbsp;&nbsp;
-                                    {% elif field.id_for_label == "id_meal_dinner" %}
-                                        <input type="hidden" name="meal_dinner" value="No" />
-                                        {% if field.value == "Yes" %}
-                                            <input type="checkbox" name="meal_dinner" id="id_meal_dinner" value="Yes" checked>
-                                        {% else %}
-                                            <input type="checkbox" name="meal_dinner" id="id_meal_dinner" value="Yes">
-                                        {% endif %}
-                                        <label for="id_meal_dinner">Dinner</label>&nbsp;&nbsp; <br>
                                     {% else %}
                                         <b>{{ field.label_tag }}</b> {{ field }} <br>
                                     {% endif %}
+
                                 {% endfor %}
                                 <br>
                                 <button type="submit" class="btn btn-block btn-primary">Update</button>

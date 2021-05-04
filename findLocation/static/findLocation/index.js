@@ -18,9 +18,14 @@ function initMap() {
   // calls geocoder to get the exact location and uses it to pin the correct location on the map
   const geocoder = new google.maps.Geocoder();
   deleteMarkers(markersArray);
-  const showGeocodedAddressOnMap = function (asDestination, school, bus, location) { //add markers on map
-    const icon = asDestination ? "D" : "O";
+  const showGeocodedAddressOnMap = function (asDestination, school, bus, location, j) { //add markers on map
     return function (results, status) {
+        if (asDestination) {
+            icon = j.toString();
+        }
+        else {
+            icon = "O";
+        }
         if (status === "OK") { // makes sure that the google maps geoencoder loaded correctly
             map.fitBounds(bounds.extend(results[0].geometry.location));
             var marker;
@@ -49,12 +54,10 @@ function initMap() {
         }
         };
     };
-
-    // creates a marker for the origin and destinations
-    for( let j = 0; j< origin.length;j++){
+    if (origin != 0) { // if origin exists in database
       geocoder.geocode(
         { address: origin[j] },
-        showGeocodedAddressOnMap(false, false, false, []));
+        showGeocodedAddressOnMap(false, false, false, [], 0));
     }
     for (let j = 0; j < destination.length; j++) {
       school = false;
@@ -67,7 +70,7 @@ function initMap() {
       }
       geocoder.geocode(
         { address: destination[j] },
-        showGeocodedAddressOnMap(true, school, bus, LOCATION_LIST[j]));
+        showGeocodedAddressOnMap(true, school, bus, LOCATION_LIST[j], j+1));
     }
 }
 
@@ -115,8 +118,13 @@ var filter_markers = function() {
 
 // sets global variables for the origin and destinations
 function setParameters(origin, address, filter, location){
-    ORIGIN_LIST = [origin];
-    ADDRESS_LIST = address;
+    ORIGIN_LIST = origin;
+    if (address[0] == "") { //if no destinations in database
+        ADDRESS_LIST = 0;
+    }
+    else {
+        ADDRESS_LIST = address;
+    }
     LOCATION_FILTER = filter;
     LOCATION_LIST = location;
 }

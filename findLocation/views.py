@@ -17,10 +17,17 @@ import requests
 import math
 
 def findlocation(request):
-    result = getLocations(10)
+    result = [''] * 5
+    if (Origin.objects.all() and GoogleMapsResponse.objects.all()):
+        if(GoogleMapsResponse.objects.all().count() < 10):
+            result = getLocations(GoogleMapsResponse.objects.all().count())
+        else:
+            result = getLocations(10)
+    elif (Origin.objects.all()): # if only the origin exists in database
+        result[0] = Origin.objects.first().origin
     context = {
         'api_key': settings.GOOGLE_MAPS_API_KEY,
-        'origin': result[0].origin,
+        'origin': result[0],
         'googlemapsresult': result[1], # shortenedList
         'locationList': result[2], #locationAppended
         'addressList': result[3], #addressAppended
@@ -45,7 +52,11 @@ def addOrigin(request):
     result = res['results'][0]
     lat = result['geometry']['location']['lat']
     lng = result['geometry']['location']['lng']
-    Origin.objects.filter().update(origin=origin_text, latitude=lat, longitude=lng)
+    if (not Origin.objects.all()): # create new origin if not existing
+        newOrigin = Origin(origin=origin_text, latitude=lat, longitude=lng)
+        newOrigin.save()
+    else:
+        Origin.objects.filter().update(origin=origin_text, latitude=lat, longitude=lng)
     origin = Origin.objects.first() # get origin from database
 
     distList = []
@@ -102,6 +113,11 @@ def addLocation(request):
     bus = "F"
     if (bus_text == 'y'):
         bus = "T"
+    temp = False
+    if (not Origin.objects.first()): # create temporary origin if no origin exists
+        temp = True
+        newOrigin = Origin(origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213, longitude=-76.7143524)
+        newOrigin.save()
     origin = Origin.objects.first() # get origin from database
     params = {
         'key': settings.GOOGLE_MAPS_API_KEY,
@@ -136,36 +152,41 @@ def addLocation(request):
     lat = result['geometry']['location']['lat']
     lng = result['geometry']['location']['lng']
 
-    # runs once to add/update/remove a location
-    for i in range(len(addressList)):
-        address = addressList[i]
-        distanceString = results[i]['distance']['text']
-        distanceString = distanceString.replace(',','');
+    # add new destination to database
+    address = addressList[0]
+    if (temp):
+        distance = 0
+        time = 'N/A'
+    else:
+        distanceString = results[0]['distance']['text']
+        distanceString = distanceString.replace(',', '');
         distance = float(distanceString[:-3])
-        time = results[i]['duration']['text']
-        if not GoogleMapsResponse.objects.filter(address=address).exists():
-            if (remove != 'r'):
-                newResponse = GoogleMapsResponse(location=location, distance=distance, time=time, school=school, bus=bus, address=address, timeframe=timeframe, latitude=lat, longitude=lng)
-                newResponse.save()
+        time = results[0]['duration']['text']
+    if not GoogleMapsResponse.objects.filter(address=address).exists():
+        if (remove != 'r'):
+            newResponse = GoogleMapsResponse(location=location, distance=distance, time=time, school=school, bus=bus, address=address, timeframe=timeframe, latitude=lat, longitude=lng)
+            newResponse.save()
+    else:
+        if (remove == 'r'):
+            GoogleMapsResponse.objects.filter(address=address).delete()
         else:
-            if (remove == 'r'):
-                GoogleMapsResponse.objects.filter(address=address).delete()
-            else:
-                GoogleMapsResponse.objects.filter(address=address).update(location=location, school=school, bus=bus, timeframe=timeframe, latitude=lat, longitude=lng)
+            GoogleMapsResponse.objects.filter(address=address).update(location=location, school=school, bus=bus, timeframe=timeframe, latitude=lat, longitude=lng)
+    if (temp): # remove temporary origin
+        Origin.objects.all().delete()
     return HttpResponseRedirect(reverse('findlocation'))
 
-def export(request):
-    response_resource = GoogleMapsResponseResource()
-    dataset = response_resource.export()
-    response = HttpResponse(dataset.xls, content_type = 'text/excel')
-    response['Content-Disposition'] = 'attachment; filename = GoogleMapsResponse.xls'
-    return response
-
 def addMore(request):
-    result = getLocations(20)
+    result = [''] * 5
+    if (Origin.objects.all() and GoogleMapsResponse.objects.all()):
+        if (GoogleMapsResponse.objects.all().count() < 20):
+            result = getLocations(GoogleMapsResponse.objects.all().count(), True)
+        else:
+            result = getLocations(20, True)
+    elif (Origin.objects.all()): # if only the origin exists in database
+        result[0] = Origin.objects.first().origin
     context = {
         'api_key': settings.GOOGLE_MAPS_API_KEY,
-        'origin': result[0].origin,
+        'origin': result[0],
         'googlemapsresult': result[1], # shortenedList
         'locationList': result[2], #locationAppended
         'addressList': result[3], #addressAppended
@@ -173,25 +194,32 @@ def addMore(request):
     }
     return render(request, 'findLocation/index.html', context)
 
-def getLocations(num, originObj=None):
-    locationList = [''] * 10
-    addressList = [''] * 10
-    filter = [''] * 20
+def getLocations(num, more = False, originObj=None):
+    temp = 10
+    if (num > 10 and more): # if asking for more locations
+        temp = num
+        num = 10
+    locationList = [''] * num
+    addressList = [''] * num
+    filter = [''] * num * 2
     distList = [] # contains the distances between origin and destinations by latitude and longitude
     sortDist = [] # contains the calculated time between origin and destinations
-    shortenedList = [''] * 10
+    shortenedList = [''] * num
+    
     if originObj != None:
         origin = originObj
     else:
         origin = Origin.objects.first() # get origin from database
+        
     # find 10 closest places from origin
     for destinations in GoogleMapsResponse.objects.all():
         dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
         distList.append(dist)
         sortDist.append(destinations.time)
     distList, sortDist = (list(t) for t in zip(*sorted(zip(distList, sortDist)))) # sort distList by distance and sort sortDist the same way
-    distList = distList[num-10:num]
-    sortDist = sortDist[num-10:num]
+    if (temp >= 10):
+        distList = distList[temp-10:temp]
+        sortDist = sortDist[temp-10:temp]
     sortDist, distList = (list(t) for t in zip(*sorted(zip(sortDist, distList))))  # sort sortDist by time and sort distList the same way
     # set 10 closest places to variables that will be added onto the map
     for destinations in GoogleMapsResponse.objects.all():
@@ -208,4 +236,11 @@ def getLocations(num, originObj=None):
     addressAppended = '|'.join(addressList) if addressList else "None"
     filterAppended = '|'.join(filter) if filter else "None"
 
-    return origin, shortenedList, locationAppended, addressAppended, filterAppended
+    return origin.origin, shortenedList, locationAppended, addressAppended, filterAppended
+
+def export(request):
+    response_resource = GoogleMapsResponseResource()
+    dataset = response_resource.export()
+    response = HttpResponse(dataset.xls, content_type = 'text/excel')
+    response['Content-Disposition'] = 'attachment; filename = GoogleMapsResponse.xls'
+    return response

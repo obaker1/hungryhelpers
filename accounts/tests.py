@@ -94,7 +94,7 @@ class LogInTest(TestCase):
         # check that the user was unsuccessful when logging in
         self.assertFalse(response.context['user'].is_active)
         # check that the user is shown appropriate message
-        self.assertTrue('Please enter a correct username and password' in str(response.content))
+        self.assertTrue('Your username and password does not match. Please try again.' in str(response.content))
 
 class DashboardPageContentTest(TestCase):
     def setUp(self):

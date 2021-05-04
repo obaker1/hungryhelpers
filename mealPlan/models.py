@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from findLocation.models import GoogleMapsResponse
+
 
 # Create your models here.
 
@@ -7,7 +9,6 @@ from django.contrib.auth.models import User
 # perspective of staff adding a new meal to the database
 class Meal(models.Model):
     content = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now=True)
 
     celiac = models.BooleanField(default=False)
@@ -18,4 +19,5 @@ class Meal(models.Model):
     kosher = models.BooleanField(default=False)
     vegetarian = models.BooleanField(default=False)
 
-    location = models.CharField(max_length=500, default="none")
+    #location = models.CharField(max_length=500, default="none")
+    location = models.ForeignKey(GoogleMapsResponse, on_delete=models.CASCADE)

@@ -17,13 +17,17 @@
 
             <p class="text-primary m-0 font-weight-bold">Location</p>
             <div>
-
-
+<!---
+                <input type="hidden" id="location_key" name="location_key">
+                {% for place in googlemaps %}
+                <option>{{ place.pk }}</option>
+                {% endfor %}
+     --->
             <label for="locations">Choose a Location:</label>
                 <br>
-            <select name="locations" id="location" select>
+            <select name="locations" id="id_location" select>
                 {% for place in googlemaps %}
-                <option>{{ place.location }}</option>
+                <option value= {{ place.pk }}>{{ place.location }}</option>
                 {% endfor %}
             </select>
 
@@ -71,10 +75,9 @@
         <ol>
             {% for meal in meals %}
             <li> {{ meal.content }}</li>
-            <p> Location: {{meal.location }}</p>
+            <p> Location: {{meal.location.location }}</p>
             <p> Celiac: {{ meal.celiac }}, Shellfish: {{ meal.shellfish }}, Lactose: {{ meal.lactose }} </p>
             <p> Halal: {{ meal.halal }}, Kosher {{ meal.kosher }}, Vegetarian: {{ meal.vegetarian }} </p>
-            <p>Submitted by {{ meal.user.get_full_name }} on {{ meal.date }}</p>
             {% endfor %}
         </ol>
     </div>

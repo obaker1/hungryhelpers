@@ -34,12 +34,13 @@ def ticket_add(request):
         if restrictions[restriction] == 'on':
             restrictions[restriction] = True
 
-    location = request.POST.get("locations", "none")
+    location = int(request.POST.get("locations", "none"))
+    location2 = GoogleMapsResponse.objects.get(id=location)
 
-    new_meal = Meal(content=meal_text, user=request.user, celiac=restrictions['celiac'],
+    new_meal = Meal(content=meal_text, celiac=restrictions['celiac'],
                     shellfish=restrictions['shellfish'], lactose=restrictions['lactose'],
                     halal=restrictions['halal'], kosher=restrictions['kosher'],
-                    vegetarian=restrictions['vegetarian'], location=location)
+                    vegetarian=restrictions['vegetarian'], location=location2)
 
     new_meal.save()
     return HttpResponseRedirect(reverse('meal_plan'))

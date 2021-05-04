@@ -15,31 +15,31 @@ def meal_plan(request):
     # get all content from Meal objects
     meals = Meal.objects.all()
 
-    args = {'form': form, 'meals': meals}
+    googlemaps = GoogleMapsResponse.objects.all()
+
+    args = {'form': form, 'meals': meals, 'googlemaps': googlemaps}
 
     return render(request, 'mealPlan/index.html', args)
 
 
 def ticket_add(request):
-    # create post object using content from form and save
+    # create meal object using content from form and save
     meal_text = request.POST['content']
 
-    restrictions = {}
-    restrictions['celiac'] = request.POST.get('Celiac', False)
-    restrictions['shellfish'] = request.POST.get('Shellfish', False)
-    restrictions['lactose'] = request.POST.get('Lactose', False)
-
-    restrictions['halal'] = request.POST.get('Halal', False)
-    restrictions['kosher'] = request.POST.get('Kosher', False)
-    restrictions['vegetarian'] = request.POST.get('Vegetarian', False)
+    restrictions = {'celiac': request.POST.get('Celiac', False), 'shellfish': request.POST.get('Shellfish', False),
+                    'lactose': request.POST.get('Lactose', False), 'halal': request.POST.get('Halal', False),
+                    'kosher': request.POST.get('Kosher', False), 'vegetarian': request.POST.get('Vegetarian', False)}
 
     for restriction in restrictions:
         if restrictions[restriction] == 'on':
             restrictions[restriction] = True
 
+    location = request.POST.get("locations", "none")
+
     new_meal = Meal(content=meal_text, user=request.user, celiac=restrictions['celiac'],
-                    shellfish=restrictions['shellfish'], lactose=restrictions['lactose'], halal=restrictions['halal'],
-                    kosher=restrictions['kosher'], vegetarian=restrictions['vegetarian'])
+                    shellfish=restrictions['shellfish'], lactose=restrictions['lactose'],
+                    halal=restrictions['halal'], kosher=restrictions['kosher'],
+                    vegetarian=restrictions['vegetarian'], location=location)
 
     new_meal.save()
     return HttpResponseRedirect(reverse('meal_plan'))

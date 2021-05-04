@@ -17,27 +17,21 @@
 
             <p class="text-primary m-0 font-weight-bold">Location</p>
             <div>
-            <label for="locations">Choose a Location:</label>
 
-            <select name="locations" id="location" multiple>
-                <option value="baltimore">Baltimore</option>
-                <option value="columbia">Columbia</option>
-                <option value="towson">Towson</option>
+
+            <label for="locations">Choose a Location:</label>
+                <br>
+            <select name="locations" id="location" select>
+                {% for place in googlemaps %}
+                <option>{{ place.location }}</option>
+                {% endfor %}
             </select>
+
             </div>
             <br>
 
-            <!--
-            {% for restriction in form.restrictions %}
-            <div class='chk-btn'>
-                {{ restriction }}
-            </div>
-            {% endfor %}
-            -->
             <p class="text-primary m-0 font-weight-bold">Allergies</p>
-                <!--<form action="{% url 'ticket_add' %}" method="post">-->
             <div id="allergies">
-                <!--{{ form.celiac }} {{ form.shellfish }} {{ form.lactose }}-->
 
                 <input type="checkbox" name="Celiac" id="1" class='chk-btn'>
                 <label for='1'>Celiac</label>
@@ -51,9 +45,7 @@
             </div>
             <br>
             <p class="text-primary m-0 font-weight-bold">Preferences</p>
-                <!--<form action="{% url 'ticket_add' %}" method="post">-->
             <div id="preferences">
-                <!--{{ form.halal }} {{ form.kosher }} {{ form.vegetarian }}-->
 
                 <input type="checkbox" name="Halal" id="4" class='chk-btn'>
                 <label for='4'>Halal</label>

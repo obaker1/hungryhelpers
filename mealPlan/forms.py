@@ -1,21 +1,9 @@
 from django import forms
-from mealPlan.models import Meal#, Choices
-'''
-RESTRICTIONS =[
-    ("1", "Celiac"),
-    ("2", "Shellfish"),
-    ("3", "Lactose"),
-    ("4", "Halal"),
-    ("5", "Kosher"),
-    ("6", "Vegetarian")
-]
-'''
+from mealPlan.models import Meal
 
-#LOCATIONS = ["Baltimore", "Columbia", "Towson"]
 
 class mealPlanForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Meal Plan"}))
-    #restrictions = forms.BooleanField()
+    content = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': "New Meal Name"}))
 
     celiac = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-control'}))
     shellfish = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-control'}))
@@ -25,7 +13,7 @@ class mealPlanForm(forms.ModelForm):
     kosher = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-control'}))
     vegetarian = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-control'}))
 
-    #location = forms.CharField(widget=forms.SelectMultiple(attrs={'class': 'form-control'}, choices=LOCATIONS))
+    location = forms.CharField(widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Meal

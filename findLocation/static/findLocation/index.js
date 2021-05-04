@@ -56,7 +56,7 @@ function initMap() {
     };
     if (origin != 0) { // if origin exists in database
       geocoder.geocode(
-        { address: origin[j] },
+        { address: origin },
         showGeocodedAddressOnMap(false, false, false, [], 0));
     }
     for (let j = 0; j < destination.length; j++) {

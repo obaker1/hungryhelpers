@@ -211,8 +211,9 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
 
         origin = Origin.objects.get(id=self.request.user.id)
         result = getLocations(10, originObj=origin)
+        #print(result)
         context['api_key'] = settings.GOOGLE_MAPS_API_KEY
-        context['origin'] = result[0].origin
+        context['origin'] = result[0]
         context['googlemapsresult'] = result[1]
         context['locationList'] = result[2]
         context['addressList'] = result[3]

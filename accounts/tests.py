@@ -3,7 +3,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.auth.models import Permission
-from findLocation.models import GoogleMapsResponse
+from findLocation.models import Origin, GoogleMapsResponse
+from .models import Profile
 from openpyxl import load_workbook
 
 class SignUpTest(TestCase):
@@ -42,15 +43,27 @@ class SignUpTest(TestCase):
 class LogInTest(TestCase):
     def setUp(self):
         # valid credentials
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'}
+        self.username = 'test'
+        self.first_name = 'tester'
+        self.last_name = 'mctest'
+        self.email = 'tester@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
         # invalid credentials
         self.credentials2 = {
             'username': 'test',
             'password': '>pve_hm*N&x<qbP8u'
         }
-        User.objects.create_user(**self.credentials)
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
     def test_login_page(self):
         # access signup page
@@ -62,7 +75,10 @@ class LogInTest(TestCase):
 
     def test_login_success(self):
         # send login data
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # check site redirection destination returns status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # check that the user successfully logged in
@@ -83,13 +99,27 @@ class LogInTest(TestCase):
 class DashboardPageContentTest(TestCase):
     def setUp(self):
         # valid credentials
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'
-        }
+        self.username = 'test'
+        self.first_name = 'tester'
+        self.last_name = 'mctest'
+        self.email = 'tester@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
+
+
         self.aboutUsMsg = "Since the COVID-19 pandemic, the distribution of subsidized meals has become an increasing"
         self.dashboardMsg = "Set up your pick up or delivery method for your meal plans"
-        User.objects.create_user(**self.credentials)
+
 
     def test_dashboard_page_while_logged_off(self):
         # Go to homepage to load dashboard
@@ -103,7 +133,10 @@ class DashboardPageContentTest(TestCase):
 
     def test_dashboard_page_while_logged_in(self):
         # send login data
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # check site redirection destination returns status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # check that the user successfully logged in
@@ -115,10 +148,23 @@ class DashboardPageContentTest(TestCase):
 
 class LogOutTest(TestCase):
     def setUp(self):
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'}
-        User.objects.create_user(**self.credentials)
+        # valid credentials
+        self.username = 'test'
+        self.first_name = 'tester'
+        self.last_name = 'mctest'
+        self.email = 'tester@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
     def test_logout_page(self):
         # access logout page
@@ -135,7 +181,10 @@ class LogOutTest(TestCase):
 
     def test_logout(self):
         # send login data
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # check that a page redirection occurred (HTTP 302)
         self.assertEqual(response.status_code, 200)
         # check that the user successfully logged in
@@ -154,16 +203,22 @@ class LogOutTest(TestCase):
 class EditSettingsTest(TestCase):
     def setUp(self):
         # valid credentials
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'}
-        User.objects.create_user(**self.credentials)
-
-        # information for settings page
         self.username = 'test'
-        self.email = 'tester@tset.com'
-        self.first_name = 'testing'
+        self.first_name = 'tester'
         self.last_name = 'mctest'
+        self.email = 'tester@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
     def test_settings_page_while_logged_out(self):
         # access settings page
@@ -175,7 +230,10 @@ class EditSettingsTest(TestCase):
 
     def test_settings_page_while_logged_in(self):
         # send login data
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # check site redirection destination returns status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # check that the user successfully logged in
@@ -191,6 +249,8 @@ class EditSettingsTest(TestCase):
         response = self.client.post('/accounts/settings/', data={
             'username': self.username,
             'email': self.email,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
         }, follow=True)
         # check that the user has been redirected to home after updating settings
         self.assertTemplateUsed(response, template_name='home.html')
@@ -255,8 +315,6 @@ class ProfileTest(TestCase):
                                          address=data[ADDRESS], timeframe=data[TIMEFRAME],
                                          latitude=data[LATITUDE], longitude=data[LONGITUDE])
             newDest.save()
-
-        #loc = GoogleMapsResponse(location="Arbutus Middle", distance=2.9, time="7 mins", school='F', bus='T', timeframe='M/W 11am-1pm', latitude=39.248289, longitude=-76.7057813)
 
     def test_profile_page(self):
         """ sign up and log into account """
@@ -551,27 +609,31 @@ class PasswordResetTest(TestCase):
 
     def setUp(self):
         # valid credentials
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'}
-
         # valid credentials
         self.username = 'test'
-        self.email = 'myemail@test.com'
+        self.first_name = 'tester'
+        self.last_name = 'mctest'
+        self.email = 'tester@test.com'
         self.password = '>pve_hm*N*&x<qbP8u'
         self.new_password = '>pve_hm*N*&x<qbP8sss'
-        # information for forgot password
-        self.email = 'tester@tset.com'
 
-        # create user
-        self.the_user = User.objects.create_user(self.username, self.email, self.password)
-
-
-
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
     def test_password_change_form(self):
         # Login user
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         response = self.client.get('/accounts/password_change/', follow=True)
         self.assertTemplateUsed(response, template_name='registration/password_change_form.html')
 
@@ -588,7 +650,10 @@ class PasswordResetTest(TestCase):
         self.assertTemplateUsed(response, template_name='registration/password_change_done.html')
 
     def test_password_change_done(self):
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # access password change done page
         response = self.client.get('/accounts/password_change/done/', follow=True)
         # verify site status code (HTTP 200 OK)
@@ -635,7 +700,37 @@ class PasswordResetTest(TestCase):
         self.assertTemplateUsed(response, template_name='registration/password_reset_complete.html')
 
 class PermissionsTest(TestCase):
-    fixtures = ['dbcontent.json', ]
+    #fixtures = ['dbcontent.json', ]
+    def setUp(self):
+        # valid admin credentials
+        self.username = 'admin'
+        self.email = 'myemail@test.com'
+        self.password = 'admin'
+
+        # create user
+        User.objects.create_superuser(self.username, self.email, self.password)
+        admin = User.objects.get(username=self.username)
+        admin.first_name, admin.last_name = 'admin', 'user'
+        admin.save()
+        profile = Profile(user=admin, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=admin, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
+        LOCATION = 1; DISTANCE = 2; TIME = 3; BUS = 4; SCHOOL = 5; ADDRESS = 6; TIMEFRAME = 7; LATITUDE = 8; LONGITUDE = 9;
+        file = "Locations.xlsx"
+        workbook = load_workbook(filename=file)
+        sheet = workbook.active
+
+        for data in sheet.iter_rows(values_only=True):
+            newDest = GoogleMapsResponse(location=data[LOCATION], distance=data[DISTANCE],
+                                         time=data[TIME], bus=data[BUS], school=data[SCHOOL],
+                                         address=data[ADDRESS], timeframe=data[TIMEFRAME],
+                                         latitude=data[LATITUDE], longitude=data[LONGITUDE])
+            newDest.save()
+
+
     def test_admin_permissions(self):
         # login to admin user
         username = 'admin'
@@ -651,13 +746,26 @@ class PermissionsTest(TestCase):
 
     def test_staff_permissions(self):
         permission = Permission.objects.get(name='Can add google maps response')
+        self.username = 'staff'
+        self.first_name = 'staff'
+        self.last_name = 'staff'
+        self.email = 'tester@test.com'
+        self.password = 'staff'
 
         # create staff user
-        password = 'staff'
-        my_staff = User.objects.create_user('staff', 'myemail@test.com', password)
+        User.objects.create_user(self.username, self.email, self.password)
+        my_staff = User.objects.get(username=self.username)
+        my_staff.first_name, my_staff.last_name = self.first_name, self.last_name
+        my_staff.save()
+        profile = Profile(user=my_staff, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=my_staff, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
         # You'll need to log him in before you can send requests through the client
-        self.client.login(username=my_staff.username, password=password)
+        self.client.login(username=my_staff.username, password=self.password)
         my_staff.user_permissions.add(permission)
 
         # Open page and ensure that staff also has access to add a location
@@ -667,8 +775,19 @@ class PermissionsTest(TestCase):
 
     def test_parent_permissions(self):
         # create parent user
+        username = 'parent'
+        email = 'myemail@test.com'
         password = 'parent'
-        my_parent = User.objects.create_user('parent', 'myemail@test.com', password)
+
+        User.objects.create_user(username, email, password)
+        my_parent = User.objects.get(username=username)
+        my_parent.save()
+        profile = Profile(user=my_parent, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=my_parent, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
         # You'll need to log him in before you can send requests through the client
         self.client.login(username=my_parent.username, password=password)

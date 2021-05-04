@@ -54,9 +54,7 @@ function initMap() {
         }
         };
     };
-
-    // creates a marker for the origin and destinations
-    for( let j = 0; j< origin.length;j++){
+    if (origin != 0) { // if origin exists in database
       geocoder.geocode(
         { address: origin[j] },
         showGeocodedAddressOnMap(false, false, false, [], 0));
@@ -120,8 +118,13 @@ var filter_markers = function() {
 
 // sets global variables for the origin and destinations
 function setParameters(origin, address, filter, location){
-    ORIGIN_LIST = [origin];
-    ADDRESS_LIST = address;
+    ORIGIN_LIST = origin;
+    if (address[0] == "") { //if no destinations in database
+        ADDRESS_LIST = 0;
+    }
+    else {
+        ADDRESS_LIST = address;
+    }
     LOCATION_FILTER = filter;
     LOCATION_LIST = location;
 }

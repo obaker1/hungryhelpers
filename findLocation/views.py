@@ -238,7 +238,8 @@ def getLocations(num, more=False, originObj=None, destinationsObj=None):
             distList = distList[temp - 10:temp]
             sortDist = sortDist[temp - 10:temp]
         sortDist, distList = (list(t) for t in
-                              zip(*sorted(zip(sortDist, distList))))  # sort sortDist by time and sort distList the same way
+                              zip(*sorted(
+                                  zip(sortDist, distList))))  # sort sortDist by time and sort distList the same way
         # set 10 closest places to variables that will be added onto the map
         for destinations in destinationsObj:
             dist = math.sqrt(
@@ -269,7 +270,6 @@ def export(request):
 
 def filteringLocations(mealplanform, theStudent):
     deletearr = []
-
 
     pickup_type = mealplanform.pickup_type
     pickup_time = mealplanform.time.split('-')
@@ -306,13 +306,13 @@ def filteringLocations(mealplanform, theStudent):
                 deletemeals.append(filteredmeals.pk)
 
         for deleting in deletemeals:
-            goodmeals=goodmeals.exclude(pk=deleting)
+            goodmeals = goodmeals.exclude(pk=deleting)
 
         if goodmeals.count() == 0:
-            deletebool=True
+            deletebool = True
 
         # if location is not deleted my meals, filter locations by pickup date/time
-        if deletebool==False:
+        if deletebool == False:
             datetimeframe = destinations.timeframe.split(' ')
             if len(datetimeframe) == 1:
                 schooltime = datetimeframe[0].split('-')
@@ -327,18 +327,18 @@ def filteringLocations(mealplanform, theStudent):
 
             schooltime[0] = convertmilitarytime(schooltime[0])
             schooltime[1] = convertmilitarytime(schooltime[1])
-            if time(start_time[0], start_time[1]) < time(schooltime[0][0], schooltime[0][1]) and time(end_time[0], end_time[1]) > time(schooltime[1][0], schooltime[1][1]):
+            if time(start_time[0], start_time[1]) < time(schooltime[0][0], schooltime[0][1]) and time(end_time[0],
+                                                                                                      end_time[
+                                                                                                          1]) > time(
+                    schooltime[1][0], schooltime[1][1]):
                 deletebool = True
         if deletebool == True:
             deletearr.append(destinations.pk)
 
-    print(len(deletearr))
 
     for deleting in deletearr:
         newDestinations = newDestinations.exclude(pk=deleting)
 
-    for destinations in newDestinations:
-        print(destinations.location)
     return newDestinations
 
 

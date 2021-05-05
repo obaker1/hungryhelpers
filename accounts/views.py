@@ -230,7 +230,6 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form, **kwargs):
         self.object = form.save()
-        print("here2")
         return HttpResponseRedirect(self.request.path_info)
 
     def get_success_url(self):

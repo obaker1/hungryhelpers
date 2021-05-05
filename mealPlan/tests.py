@@ -5,10 +5,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from mealPlan.forms import mealPlanForm
 from .models import Meal
-from findLocation.models import Origin
+from findLocation.models import Origin, GoogleMapsResponse
 
 # Create your tests here.
-
 
 
 class PageLoad(TestCase):
@@ -17,27 +16,48 @@ class PageLoad(TestCase):
         response = self.client.get('/mealPlan/')
         self.assertEqual(response.status_code, 200)
 
+
 class TicketPostTest(TestCase):
     def setUp(self):
+        # create user
         self.credentials = {
             'username': 'test',
             'password': '>pve_hm*N*&x<qbP8u'}
         User.objects.create_user(**self.credentials)
 
-# second test non-functional due to error in posting {'content': "Ham Sandwich'}
-'''
-    def test_sending_ticket(self):
-        # create user
-        #self.user = User.objects.create_user(username='testuser', password='12345', first_name="John", last_name="Doe", email="email@email.com")
-        #self.client.login(username='testuser', password='12345')
+    def test_send_ticket(self):
+        # login
         self.client.post('/accounts/login/', self.credentials, follow=True)
         c = Client()
+
         # send a ticket through client
-        c.post('/mealPlan/ticket_add/', {'content': "Ham Sandwich"}, self.credentials)
+        c.post('/mealPlan/', self.credentials, context={'content': "Ham Sandwich"}, follow=True)
         response = self.client.get(reverse('meal_plan'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Ham Sandwich")
-'''
+
+        # check if meal was added
+        meal_added = Meal.objects.filter(content="Ham Sandwich")
+        for meal in meal_added:
+            self.assertEqual(meal.content, "Ham Sandwich")
+
+    def test_send_complex_ticket(self):
+        # login
+        self.client.post('/accounts/login/', self.credentials, follow=True)
+        c = Client()
+
+        # send a ticket with more fields through client
+        c.post('/mealPlan/', self.credentials, context={'content': "Carrot",
+                                                        'location': GoogleMapsResponse(location="Catonsville High"),
+                                                        "Vegetarian": True}, follow=True)
+        response = self.client.get(reverse('meal_plan'))
+        self.assertEqual(response.status_code, 200)
+
+        # check if meal has all attributes that were sent
+        meal_added = Meal.objects.filter(content="Carrot")
+        for meal in meal_added:
+            self.assertEqual(meal.content, "Carrot")
+            self.assertEqual(meal.location.location, "Catonsville High")
+            self.assertTrue(meal.vegetarian)
 
 
 # Create your tests here.
@@ -69,6 +89,7 @@ class StaffPageLoadWithLocations(TestCase):
         for location in destinationList:
             num = results.filter(location=location).exists
             self.assertTrue(num)
+
 
 class MealFilterPageLoad(TestCase):
     # test findLocation page works

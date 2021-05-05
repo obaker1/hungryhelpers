@@ -17,27 +17,25 @@
 
             <p class="text-primary m-0 font-weight-bold">Location</p>
             <div>
+<!---
+                <input type="hidden" id="location_key" name="location_key">
+                {% for place in googlemaps %}
+                <option>{{ place.pk }}</option>
+                {% endfor %}
+     --->
             <label for="locations">Choose a Location:</label>
-
-            <select name="locations" id="location" multiple>
-                <option value="baltimore">Baltimore</option>
-                <option value="columbia">Columbia</option>
-                <option value="towson">Towson</option>
+                <br>
+            <select name="locations" id="id_location" select>
+                {% for place in googlemaps %}
+                <option value= {{ place.pk }}>{{ place.location }}</option>
+                {% endfor %}
             </select>
+
             </div>
             <br>
 
-            <!--
-            {% for restriction in form.restrictions %}
-            <div class='chk-btn'>
-                {{ restriction }}
-            </div>
-            {% endfor %}
-            -->
             <p class="text-primary m-0 font-weight-bold">Allergies</p>
-                <!--<form action="{% url 'ticket_add' %}" method="post">-->
             <div id="allergies">
-                <!--{{ form.celiac }} {{ form.shellfish }} {{ form.lactose }}-->
 
                 <input type="checkbox" name="Celiac" id="1" class='chk-btn'>
                 <label for='1'>Celiac</label>
@@ -45,15 +43,13 @@
                 <input type="checkbox" name="Shellfish" id="2" class='chk-btn'>
                 <label for='2'>Shellfish</label>
 
-                <input type="checkbox" name="Lacotse" id="3" class='chk-btn'>
-                <label for='3'>Lacotse</label>
+                <input type="checkbox" name="Lactose" id="3" class='chk-btn'>
+                <label for='3'>Lactose</label>
 
             </div>
             <br>
             <p class="text-primary m-0 font-weight-bold">Preferences</p>
-                <!--<form action="{% url 'ticket_add' %}" method="post">-->
             <div id="preferences">
-                <!--{{ form.halal }} {{ form.kosher }} {{ form.vegetarian }}-->
 
                 <input type="checkbox" name="Halal" id="4" class='chk-btn'>
                 <label for='4'>Halal</label>
@@ -79,10 +75,9 @@
         <ol>
             {% for meal in meals %}
             <li> {{ meal.content }}</li>
-            <p> Location: {{meal.location }}</p>
+            <p> Location: {{meal.location.location }}</p>
             <p> Celiac: {{ meal.celiac }}, Shellfish: {{ meal.shellfish }}, Lactose: {{ meal.lactose }} </p>
             <p> Halal: {{ meal.halal }}, Kosher {{ meal.kosher }}, Vegetarian: {{ meal.vegetarian }} </p>
-            <p>Submitted by {{ meal.user.get_full_name }} on {{ meal.date }}</p>
             {% endfor %}
         </ol>
     </div>

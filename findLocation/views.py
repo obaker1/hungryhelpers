@@ -177,11 +177,14 @@ def addLocation(request):
 
 def addMore(request):
     result = [''] * 5
+    admin = False
+    if (request.user.has_perm('findLocation.add_googlemapsresponse')):
+        admin = True
     if (Origin.objects.all() and GoogleMapsResponse.objects.all()):
         if (GoogleMapsResponse.objects.all().count() < 20):
-            result = getLocations(GoogleMapsResponse.objects.all().count(), True)
+            result = getLocations(GoogleMapsResponse.objects.all().count(), True, None, admin)
         else:
-            result = getLocations(20, True)
+            result = getLocations(20, True, None, admin)
     elif (Origin.objects.all()): # if only the origin exists in database
         result[0] = Origin.objects.first().origin
     context = {
@@ -194,7 +197,7 @@ def addMore(request):
     }
     return render(request, 'findLocation/index.html', context)
 
-def getLocations(num, more = False, originObj=None):
+def getLocations(num, more = False, originObj=None, admin = False):
     temp = 10
     if (num > 10 and more): # if asking for more locations
         temp = num
@@ -204,7 +207,10 @@ def getLocations(num, more = False, originObj=None):
     filter = [''] * num * 2
     distList = [] # contains the distances between origin and destinations by latitude and longitude
     sortDist = [] # contains the calculated time between origin and destinations
-    shortenedList = [''] * num
+    if (not admin):
+        shortenedList = [''] * num
+    else:
+        shortenedList = [''] * GoogleMapsResponse.objects.all().count()
     
     if originObj != None:
         origin = originObj
@@ -222,6 +228,7 @@ def getLocations(num, more = False, originObj=None):
         sortDist = sortDist[temp-10:temp]
     sortDist, distList = (list(t) for t in zip(*sorted(zip(sortDist, distList))))  # sort sortDist by time and sort distList the same way
     # set 10 closest places to variables that will be added onto the map
+    i = 0
     for destinations in GoogleMapsResponse.objects.all():
         dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
         if (dist in distList):
@@ -230,7 +237,13 @@ def getLocations(num, more = False, originObj=None):
             addressList[idx] = destinations.address
             filter[idx*2] = destinations.school
             filter[idx*2 + 1] = destinations.bus
-            shortenedList[idx] = destinations.location + ': ' + str(destinations.distance) + ' miles in ' + destinations.time + ' (' + destinations.timeframe + ')'
+            if (not admin):
+                shortenedList[idx] = destinations.location + ': ' + str(destinations.distance) + ' miles in ' + destinations.time + ' (' + destinations.timeframe + ')'
+            else:
+                shortenedList[i] = destinations.location + ': ' + str(destinations.distance) + ' miles in ' + destinations.time + ' (' + destinations.timeframe + ')'
+        elif (admin):
+            shortenedList[i] = destinations.location + ': ' + str(destinations.distance) + ' miles in ' + destinations.time + ' (' + destinations.timeframe + ')'
+        i += 1
 
     locationAppended = '|'.join(locationList) if locationList else "None"
     addressAppended = '|'.join(addressList) if addressList else "None"

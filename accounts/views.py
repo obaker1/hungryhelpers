@@ -212,9 +212,10 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
 
         origin = Origin.objects.get(id=self.request.user.id)
         if mealplanform.pickup_type:
-            newDestinations = filteringLocations(mealplanform)
-            print(sum(1 for result in newDestinations))
+            newDestinations = filteringLocations(mealplanform, Student.objects.get(id=self.kwargs['pk']))
+            if newDestinations.count()==0: newDestinations=None
             result = getLocations(10, originObj=origin, destinationsObj=newDestinations)
+
         else:
             result = getLocations(10, originObj=origin)
 

@@ -7,11 +7,10 @@ from django.conf import settings
 from django.urls import reverse
 from datetime import time
 
-from findLocation.models import GoogleMapsResponse
-from findLocation.models import Origin
+from findLocation.models import GoogleMapsResponse, Origin
+from mealPlan.models import Meal
 
 from findLocation.resources import GoogleMapsResponseResource
-from findLocation.resources import OriginResource
 
 import json
 import requests
@@ -265,42 +264,78 @@ def export(request):
     return response
 
 
-def filteringLocations(mealplanform):
+def filteringLocations(mealplanform, theStudent):
     deletearr = []
+
 
     pickup_type = mealplanform.pickup_type
     pickup_time = mealplanform.time.split('-')
     start_time = convertmilitarytime(pickup_time[0].split(':'))
     end_time = convertmilitarytime(pickup_time[1].split(':'))
 
+    # filter locations by pickup type
     if pickup_type == "School":
         newDestinations = GoogleMapsResponse.objects.filter(school='T')
     else:
         newDestinations = GoogleMapsResponse.objects.filter(bus='T')
+
     for destinations in newDestinations:
         deletebool = False
-        datetimeframe = destinations.timeframe.split(' ')
-        if len(datetimeframe) == 1:
-            schooltime = datetimeframe[0].split('-')
-        else:
-            day = datetimeframe[0]
-            if day != mealplanform.day:
+
+        # filter locations by meals
+        goodmeals = Meal.objects.filter(location=destinations)
+        deletemeals = []
+        for filteredmeals in goodmeals:
+            mealdelete = False
+            if theStudent.allergic_celiac == "Yes" and filteredmeals.celiac == False:
+                mealdelete = True
+            if theStudent.allergic_shellfish == "Yes" and filteredmeals.shellfish == False:
+                mealdelete = True
+            if theStudent.allergic_lactose == "Yes" and filteredmeals.lactose == False:
+                mealdelete = True
+            if theStudent.preference_halal == "Yes" and filteredmeals.halal == False:
+                mealdelete = True
+            if theStudent.preference_kosher == "Yes" and filteredmeals.kosher == False:
+                mealdelete = True
+            if theStudent.preference_vegetarian == "Yes" and filteredmeals.vegetarian == False:
+                mealdelete = True
+            if mealdelete == True:
+                deletemeals.append(filteredmeals.pk)
+
+        for deleting in deletemeals:
+            goodmeals=goodmeals.exclude(pk=deleting)
+
+        if goodmeals.count() == 0:
+            deletebool=True
+
+        # if location is not deleted my meals, filter locations by pickup date/time
+        if deletebool==False:
+            datetimeframe = destinations.timeframe.split(' ')
+            if len(datetimeframe) == 1:
+                schooltime = datetimeframe[0].split('-')
+            else:
+                day = datetimeframe[0]
+                if day != mealplanform.day:
+                    deletebool = True
+                schooltime = datetimeframe[1].split('-')
+
+            schooltime[0] = schooltime[0].split(':')
+            schooltime[1] = schooltime[1].split(':')
+
+            schooltime[0] = convertmilitarytime(schooltime[0])
+            schooltime[1] = convertmilitarytime(schooltime[1])
+            if time(start_time[0], start_time[1]) < time(schooltime[0][0], schooltime[0][1]) and time(end_time[0], end_time[1]) > time(schooltime[1][0], schooltime[1][1]):
                 deletebool = True
-            schooltime = datetimeframe[1].split('-')
-
-        schooltime[0] = schooltime[0].split(':')
-        schooltime[1] = schooltime[1].split(':')
-
-        schooltime[0] = convertmilitarytime(schooltime[0])
-        schooltime[1] = convertmilitarytime(schooltime[1])
-        if time(start_time[0], start_time[1]) < time(schooltime[0][0], schooltime[0][1]) and time(end_time[0], end_time[1]) > time(schooltime[1][0], schooltime[1][1]):
-            deletebool = True
         if deletebool == True:
             deletearr.append(destinations.pk)
 
-    for deleting in deletearr:
-        newDestinations.filter(pk=deleting).delete()
+    print(len(deletearr))
 
+    for deleting in deletearr:
+        newDestinations = newDestinations.exclude(pk=deleting)
+
+    for destinations in newDestinations:
+        print(destinations.location)
     return newDestinations
 
 

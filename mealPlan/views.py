@@ -76,5 +76,4 @@ def choosemeal(request):
     print(conflicts)
     context={'theMeal': theMeal,
              'students': conflicts}
-    return render(request, 'mealPlan/choosemeal.html', context)
 

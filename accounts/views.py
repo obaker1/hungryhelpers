@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Profile, Student, MealPlan
 from django.contrib.auth import (get_user_model)
 from findLocation.models import Origin, GoogleMapsResponse
-from findLocation.views import getLocations
+from findLocation.views import getLocations, filteringLocations
 from django.conf import settings
 import json, math, requests
 
@@ -208,10 +208,16 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(EditMealPlanView, self).get_context_data(**kwargs)
         context['req_student'] = Student.objects.get(id=self.kwargs['pk'])
+        mealplanform = MealPlan.objects.get(id=self.kwargs['pk'])
 
         origin = Origin.objects.get(id=self.request.user.id)
-        result = getLocations(10, originObj=origin)
-        #print(result)
+        if mealplanform.pickup_type:
+            newDestinations = filteringLocations(mealplanform)
+            print(sum(1 for result in newDestinations))
+            result = getLocations(10, originObj=origin, destinationsObj=newDestinations)
+        else:
+            result = getLocations(10, originObj=origin)
+
         context['api_key'] = settings.GOOGLE_MAPS_API_KEY
         context['origin'] = result[0]
         context['googlemapsresult'] = result[1]

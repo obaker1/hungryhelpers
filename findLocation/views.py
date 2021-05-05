@@ -194,7 +194,7 @@ def addMore(request):
     }
     return render(request, 'findLocation/index.html', context)
 
-def getLocations(num, more = False, originObj=None):
+def getLocations(num, more = False, originObj=None, destinationsObj=None):
     temp = 10
     if (num > 10 and more): # if asking for more locations
         temp = num
@@ -210,9 +210,11 @@ def getLocations(num, more = False, originObj=None):
         origin = originObj
     else:
         origin = Origin.objects.first() # get origin from database
+    if destinationsObj == None:
+        destinationsObj = GoogleMapsResponse.objects.all()
         
     # find 10 closest places from origin
-    for destinations in GoogleMapsResponse.objects.all():
+    for destinations in destinationsObj:
         dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
         distList.append(dist)
         sortDist.append(destinations.time)
@@ -222,7 +224,7 @@ def getLocations(num, more = False, originObj=None):
         sortDist = sortDist[temp-10:temp]
     sortDist, distList = (list(t) for t in zip(*sorted(zip(sortDist, distList))))  # sort sortDist by time and sort distList the same way
     # set 10 closest places to variables that will be added onto the map
-    for destinations in GoogleMapsResponse.objects.all():
+    for destinations in destinationsObj:
         dist = math.sqrt(((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
         if (dist in distList):
             idx = distList.index(dist)
@@ -244,3 +246,23 @@ def export(request):
     response = HttpResponse(dataset.xls, content_type = 'text/excel')
     response['Content-Disposition'] = 'attachment; filename = GoogleMapsResponse.xls'
     return response
+
+def filteringLocations(mealplanform):
+
+    pickup_type = mealplanform.pickup_type
+    params=[]
+
+    params.append(mealplanform.day)
+    params.append(mealplanform.time)
+    print(params)
+    if pickup_type == "School":
+        newDestinations = GoogleMapsResponse.objects.raw('''
+            SELECT *
+            FROM findLocation_googlemapsresponse
+            where school = 'T',  ''')
+    else:
+        newDestinations = GoogleMapsResponse.objects.raw('''
+            SELECT *
+            FROM findLocation_googlemapsresponse
+            where bus = 'T',  ''')
+    return newDestinations

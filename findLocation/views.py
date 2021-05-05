@@ -209,6 +209,10 @@ def getLocations(num, more=False, originObj=None, destinationsObj=None):
     if (num > 10 and more):  # if asking for more locations
         temp = num
         num = 10
+    if destinationsObj == None:
+        destinationsObj = GoogleMapsResponse.objects.all()
+    if num > destinationsObj.count():
+        num = destinationsObj.count()
     locationList = [''] * num
     addressList = [''] * num
     filter = [''] * num * 2
@@ -220,34 +224,33 @@ def getLocations(num, more=False, originObj=None, destinationsObj=None):
         origin = originObj
     else:
         origin = Origin.objects.first()  # get origin from database
-    if destinationsObj == None:
-        destinationsObj = GoogleMapsResponse.objects.all()
 
-    # find 10 closest places from origin
-    for destinations in destinationsObj:
-        dist = math.sqrt(
-            ((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
-        distList.append(dist)
-        sortDist.append(destinations.time)
-    distList, sortDist = (list(t) for t in zip(*sorted(
-        zip(distList, sortDist))))  # sort distList by distance and sort sortDist the same way
-    if (temp >= 10):
-        distList = distList[temp - 10:temp]
-        sortDist = sortDist[temp - 10:temp]
-    sortDist, distList = (list(t) for t in
-                          zip(*sorted(zip(sortDist, distList))))  # sort sortDist by time and sort distList the same way
-    # set 10 closest places to variables that will be added onto the map
-    for destinations in destinationsObj:
-        dist = math.sqrt(
-            ((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
-        if (dist in distList):
-            idx = distList.index(dist)
-            locationList[idx] = destinations.location
-            addressList[idx] = destinations.address
-            filter[idx * 2] = destinations.school
-            filter[idx * 2 + 1] = destinations.bus
-            shortenedList[idx] = destinations.location + ': ' + str(
-                destinations.distance) + ' miles in ' + destinations.time + ' (' + destinations.timeframe + ')'
+    if destinationsObj:
+        # find 10 closest places from origin
+        for destinations in destinationsObj:
+            dist = math.sqrt(
+                ((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
+            distList.append(dist)
+            sortDist.append(destinations.time)
+        distList, sortDist = (list(t) for t in zip(*sorted(
+            zip(distList, sortDist))))  # sort distList by distance and sort sortDist the same way
+        if (temp >= 10):
+            distList = distList[temp - 10:temp]
+            sortDist = sortDist[temp - 10:temp]
+        sortDist, distList = (list(t) for t in
+                              zip(*sorted(zip(sortDist, distList))))  # sort sortDist by time and sort distList the same way
+        # set 10 closest places to variables that will be added onto the map
+        for destinations in destinationsObj:
+            dist = math.sqrt(
+                ((origin.latitude - destinations.latitude) ** 2) + ((origin.longitude - destinations.longitude) ** 2))
+            if (dist in distList):
+                idx = distList.index(dist)
+                locationList[idx] = destinations.location
+                addressList[idx] = destinations.address
+                filter[idx * 2] = destinations.school
+                filter[idx * 2 + 1] = destinations.bus
+                shortenedList[idx] = destinations.location + ': ' + str(
+                    destinations.distance) + ' miles in ' + destinations.time + ' (' + destinations.timeframe + ')'
 
     locationAppended = '|'.join(locationList) if locationList else "None"
     addressAppended = '|'.join(addressList) if addressList else "None"

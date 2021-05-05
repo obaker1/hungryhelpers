@@ -210,12 +210,12 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
         context['req_student'] = Student.objects.get(id=self.kwargs['pk'])
         mealplanform = MealPlan.objects.get(id=self.kwargs['pk'])
 
+
         origin = Origin.objects.get(id=self.request.user.id)
         if mealplanform.pickup_type:
             newDestinations = filteringLocations(mealplanform, Student.objects.get(id=self.kwargs['pk']))
-            if newDestinations.count()==0: newDestinations=None
+            # if newDestinations.count()==0: newDestinations=None
             result = getLocations(10, originObj=origin, destinationsObj=newDestinations)
-
         else:
             result = getLocations(10, originObj=origin)
 
@@ -230,6 +230,7 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form, **kwargs):
         self.object = form.save()
+        print("here2")
         return HttpResponseRedirect(self.request.path_info)
 
     def get_success_url(self):

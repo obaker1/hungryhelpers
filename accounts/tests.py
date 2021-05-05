@@ -796,3 +796,4 @@ class PermissionsTest(TestCase):
         response = self.client.get(reverse('findlocation'))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Map Configuration Panel")
+

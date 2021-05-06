@@ -8,12 +8,12 @@ from django.views.generic import DetailView, CreateView, DeleteView, UpdateView
 from .forms import EditSettingsForm, EditProfileForm, StudentForm, CreateAccountForm, MealPlanForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Profile, Student, MealPlan
+from mealPlan.models import Meal
 from django.contrib.auth import (get_user_model)
 from findLocation.models import Origin, GoogleMapsResponse
 from findLocation.views import getLocations, filteringLocations
 from django.conf import settings
 import json, math, requests
-
 
 UserModel = get_user_model()
 
@@ -209,19 +209,50 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
         context = super(EditMealPlanView, self).get_context_data(**kwargs)
         context['req_student'] = Student.objects.get(id=self.kwargs['pk'])
         mealplanform = MealPlan.objects.get(id=self.kwargs['pk'])
+        thestudent = Student.objects.get(id=self.kwargs['pk'])
 
 
         origin = Origin.objects.get(id=self.request.user.id)
         if mealplanform.pickup_type:
-            newDestinations = filteringLocations(mealplanform, Student.objects.get(id=self.kwargs['pk']))
-            # if newDestinations.count()==0: newDestinations=None
+            newDestinations = filteringLocations(mealplanform, thestudent)
+
             result = getLocations(10, originObj=origin, destinationsObj=newDestinations)
         else:
             result = getLocations(10, originObj=origin)
 
+        locationslist = result[2].split("|")
+        mapsresponsewithmeals=[]
+        counter=0
+        for locations in locationslist:
+            templist = []
+            templist.append([result[1][counter]]) # add location
+            locationkey = GoogleMapsResponse.objects.get(location=locations)
+            meals = Meal.objects.filter(location=locationkey)
+            meallist=[]
+            for meal in meals:
+                mealdelete=False
+                if thestudent.allergic_celiac == "Yes" and meal.celiac == False:
+                    mealdelete = True
+                if thestudent.allergic_shellfish == "Yes" and meal.shellfish == False:
+                    mealdelete = True
+                if thestudent.allergic_lactose == "Yes" and meal.lactose == False:
+                    mealdelete = True
+                if thestudent.preference_halal == "Yes" and meal.halal == False:
+                    mealdelete = True
+                if thestudent.preference_kosher == "Yes" and meal.kosher == False:
+                    mealdelete = True
+                if thestudent.preference_vegetarian == "Yes" and meal.vegetarian == False:
+                    mealdelete = True
+                if mealdelete == False:
+                    meallist.append(meal.content)
+            templist.append(meallist)
+            mapsresponsewithmeals.append(templist)
+            counter += 1
+        print(mapsresponsewithmeals)
+
         context['api_key'] = settings.GOOGLE_MAPS_API_KEY
         context['origin'] = result[0]
-        context['googlemapsresult'] = result[1]
+        context['googlemapsresult'] = mapsresponsewithmeals
         context['locationList'] = result[2]
         context['addressList'] = result[3]
         context['filter'] = result[4]

@@ -191,7 +191,7 @@ def addMore(request):
         admin = True
     if (Origin.objects.all() and GoogleMapsResponse.objects.all()):
         if (GoogleMapsResponse.objects.all().count() < 20):
-            result = getLocations(GoogleMapsResponse.objects.all().count(), True, None, admin)
+            result = getLocations(GoogleMapsResponse.objects.all().count(), True, None, None, admin)
         else:
             result = getLocations(20, True, None, None, admin)
     elif (Origin.objects.all()): # if only the origin exists in database
@@ -223,7 +223,7 @@ def getLocations(num, more=False, originObj=None, destinationsObj=None, admin = 
     if (not admin):
         shortenedList = [''] * num
     else:
-        shortenedList = [''] * destinationsObj.objects.all().count()
+        shortenedList = [''] * destinationsObj.count()
 
     if originObj != None:
         origin = originObj

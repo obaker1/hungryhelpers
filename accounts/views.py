@@ -248,7 +248,6 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
             templist.append(meallist)
             mapsresponsewithmeals.append(templist)
             counter += 1
-        print(mapsresponsewithmeals)
 
         context['api_key'] = settings.GOOGLE_MAPS_API_KEY
         context['origin'] = result[0]

@@ -65,8 +65,6 @@ class DestinationIndexViewTest(TestCase):
 
         User.objects.create_superuser(self.username, self.email, self.password)
         admin = User.objects.get(username=self.username)
-        admin.first_name, admin.last_name = 'admin', 'user'
-        admin.save()
         profile = Profile(user=admin, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
                           district='Baltimore County')
         profile.save()

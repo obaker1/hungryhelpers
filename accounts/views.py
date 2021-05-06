@@ -220,7 +220,10 @@ class EditMealPlanView(LoginRequiredMixin, UpdateView):
         else:
             result = getLocations(10, originObj=origin)
 
-        locationslist = result[2].split("|")
+        if len(result[1]) != 0:
+            locationslist = result[2].split("|")
+        else:
+            locationslist = []
         mapsresponsewithmeals=[]
         counter=0
         for locations in locationslist:

@@ -6,19 +6,9 @@ from django.contrib.auth.models import User
 from .models import Origin, GoogleMapsResponse
 from accounts.models import Profile
 from openpyxl import load_workbook
+from django.contrib.auth.models import Permission
 
 # Create your tests here.
-class PageLoad(TestCase):
-    #fixtures = ['dbcontent.json', ]
-    # test findLocation page works
-    def test_page_load(self):
-        # access findLocation page
-        response = self.client.get('/findLocation/')
-        # verify site status code (HTTP 200 OK)
-        self.assertEqual(response.status_code, 200)
-        # verify index.html is being used
-        self.assertTemplateUsed(response, template_name='findLocation/index.html')
-
 class NoDatabase(TestCase):
     # test findLocation page works even when no database is loaded
     def test_page_load(self):
@@ -28,21 +18,6 @@ class NoDatabase(TestCase):
         self.assertEqual(response.status_code, 200)
         # verify index.html is being used
         self.assertTemplateUsed(response, template_name='findLocation/index.html')
-
-    # test adding origin page works
-    def test_adding_origin(self):
-        c = Client()
-        # put default origins and destinations
-        c.post('/findLocation/addOrigin/', {'origin': 'baltimore, MD'})
-        response = self.client.get(reverse('findlocation'))
-        self.assertEqual(response.status_code, 200)
-
-    # test adding destination page works
-    def test_adding_destination(self):
-        c = Client()
-        c.post('/findLocation/addLocation/', {'destination': 'Baltimore Avenue and 5th Avenue', 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', 'remove': 'a'})
-        response = self.client.get(reverse('findlocation'))
-        self.assertEqual(response.status_code, 200)
 
 class OriginIndexViewTest(TestCase):
     #fixtures = ['dbcontent.json', ]
@@ -167,6 +142,41 @@ class TestMoreLocations(TestCase):
     def test_show_more_locations(self):
         """
         Make sure page loads for showing 10 more locations
+        """
+        response = self.client.get('/findLocation/addMore/')
+        # verify site status code (HTTP 200 OK)
+        self.assertEqual(response.status_code, 200)
+        # verify index.html is being used
+        self.assertTemplateUsed(response, template_name='findLocation/index.html')
+
+class staffPermissions(TestCase):
+    def setUp(self):
+        permission = Permission.objects.get(name='Can add google maps response')
+        self.username = 'staff'
+        self.first_name = 'staff'
+        self.last_name = 'staff'
+        self.email = 'tester@test.com'
+        self.password = 'staff'
+
+        # create staff user
+        User.objects.create_user(self.username, self.email, self.password)
+        my_staff = User.objects.get(username=self.username)
+        my_staff.first_name, my_staff.last_name = self.first_name, self.last_name
+        my_staff.save()
+        profile = Profile(user=my_staff, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=my_staff, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
+
+        # You'll need to log him in before you can send requests through the client
+        self.client.login(username=my_staff.username, password=self.password)
+        my_staff.user_permissions.add(permission)
+
+    def test_show_more_locations(self):
+        """
+        Make sure page loads for staff showing more locations
         """
         response = self.client.get('/findLocation/addMore/')
         # verify site status code (HTTP 200 OK)

@@ -38,7 +38,7 @@ function initMap() {
                 })
             }
            else { // creates marker for destination
-                var prop = {school: school, bus:bus, title: results[0].formatted_address};
+                var prop = {school: school, bus: bus, title: results[0].formatted_address};
                 marker = new google.maps.Marker({
                     map,
                     position: results[0].geometry.location,
@@ -104,7 +104,7 @@ var filter_markers = function() {
   // for each marker, check to see if all required options are set
   for (i = 0; i < markersArray.length; i++) {
     marker = markersArray[i];
-    if (marker.label == 'D') { // if the marker is a destination
+    if (marker.label != 'O') { // if the marker is a destination
         keep=true; // start the filter check assuming the marker will be displayed
         for (opt=0; opt<set_filters.length; opt++) {
           if (!marker.properties[set_filters[opt]]) { // if a property is not selected

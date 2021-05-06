@@ -2,7 +2,7 @@
 {% block content %}
 {% load static %}
 
-{% if user.is_authenticated %}
+{% if user.is_authenticated and perms.mealplan.add_meal%}
 
 <div class="container-fluid">
 <div class="card shadow mb-3">
@@ -85,7 +85,7 @@
 </div>
 
 {% else %}
-    You must be logged in to use this page!
+    You are either not logged in or do not have access to this page.
 {% endif %}
 
 {% endblock %}

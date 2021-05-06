@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from mealPlan.forms import mealPlanForm
 from .models import Meal
 from findLocation.models import Origin, GoogleMapsResponse
+from accounts.models import Profile
+
 
 # Create your tests here.
 
@@ -20,18 +22,28 @@ class PageLoad(TestCase):
 class TicketPostTest(TestCase):
     def setUp(self):
         # create user
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'}
-        User.objects.create_user(**self.credentials)
+        self.username = 'admin'
+        self.first_name = 'admin'
+        self.last_name = 'user'
+        self.email = 'tester@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
+        User.objects.create_superuser(self.username, self.email, self.password)
+        admin = User.objects.get(username=self.username)
+        admin = User.objects.get(username=self.username)
+        profile = Profile(user=admin, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
 
     def test_send_ticket(self):
         # login
-        self.client.post('/accounts/login/', self.credentials, follow=True)
+        # response = self.client.post('/accounts/login/', data={
+        #     'username': self.username,
+        #     'password': self.password,
+        # }, follow=True)
         c = Client()
 
         # send a ticket through client
-        c.post('/mealPlan/', self.credentials, context={'content': "Ham Sandwich"}, follow=True)
+        c.post('/mealPlan/', context={'content': "Ham Sandwich"}, follow=True)
         response = self.client.get(reverse('meal_plan'))
         self.assertEqual(response.status_code, 200)
 
@@ -42,12 +54,15 @@ class TicketPostTest(TestCase):
 
     def test_send_complex_ticket(self):
         # login
-        self.client.post('/accounts/login/', self.credentials, follow=True)
+
+        # response = self.client.post('/accounts/login/', data={
+        #     'username': self.username,
+        #     'password': self.password,
+        # }, follow=True)
         c = Client()
 
         # send a ticket with more fields through client
-        c.post('/mealPlan/', self.credentials, context={'content': "Carrot",
-                                                        'location': GoogleMapsResponse(location="Catonsville High"),
+        c.post('/mealPlan/', context={'content': "Carrot", 'location': GoogleMapsResponse(location="Catonsville High"),
                                                         "Vegetarian": True}, follow=True)
         response = self.client.get(reverse('meal_plan'))
         self.assertEqual(response.status_code, 200)
@@ -89,14 +104,3 @@ class StaffPageLoadWithLocations(TestCase):
         for location in destinationList:
             num = results.filter(location=location).exists
             self.assertTrue(num)
-
-
-class MealFilterPageLoad(TestCase):
-    # test findLocation page works
-    def test_page_load(self):
-        # access findLocation page
-        response = self.client.get('/mealPlan/choosemeal/')
-        # verify site status code (HTTP 200 OK)
-        self.assertEqual(response.status_code, 200)
-        # verify index.html is being used
-        self.assertTemplateUsed(response, template_name='mealPlan/choosemeal.html')

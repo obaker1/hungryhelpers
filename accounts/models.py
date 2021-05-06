@@ -52,7 +52,7 @@ class MealPlan(models.Model):
     meal_dinner = models.CharField(max_length=255, null=True, default="No")
 
     pickup_location = models.CharField(max_length=255, null=True, blank=True)
-    complete = models.CharField(max_length=255, null=True, default="No")
+    complete = models.CharField(max_length=255, null=True, default="No", blank=True)
 
     def __str__(self):
        return '%s' % (self.student_profile)

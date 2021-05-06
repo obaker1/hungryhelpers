@@ -74,37 +74,6 @@ class TicketPostTest(TestCase):
             self.assertEqual(meal.location.location, "Catonsville High")
             self.assertTrue(meal.vegetarian)
 
-
-# Create your tests here.
-# class StaffPageLoadWithLocations(TestCase):
-#     def setUp(self):
-#         newOrigin = Origin(origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
-#                            longitude=-76.7143524)
-#         newOrigin.save()
-#         c = Client()
-#         destinationList = ['Elkridge, MD', 'Towson, MD', 'Columbia, MD']
-#         for i in destinationList:
-#             c.post('/findLocation/addLocation/',
-#                    {'destination': i, 'school': 'y', 'bus': 'n', 'timeframe': 'M\W', "remove": 'a'})
-#
-#     # test findLocation page works
-#     def test_page_load(self):
-#         # access staffPage page
-#         response = self.client.get('/mealPlan/staffPage/')
-#         # verify site status code (HTTP 200 OK)
-#         self.assertEqual(response.status_code, 200)
-#         # verify index.html is being used
-#         self.assertTemplateUsed(response, template_name='mealPlan/staffpage.html')
-#
-#     def test_adding_locations(self):
-#         # access staffPage page
-#         response = self.client.get('/mealPlan/staffPage/')
-#         results = response.context['googlemapsresult']
-#         destinationList = ['Elkridge, MD', 'Towson, MD', 'Columbia, MD']
-#         for location in destinationList:
-#             num = results.filter(location=location).exists
-#             self.assertTrue(num)
-
 class StaffPageViewAndConfirmMealPlans(TestCase):
     def setUp(self):
         username = "admin"; email = "myemail@test.com"; password = "admin";

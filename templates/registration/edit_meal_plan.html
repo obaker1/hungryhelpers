@@ -81,22 +81,19 @@
                                                 {{ user.profile.city }},
                                                 {{ user.profile.state }}
                                                 {{ user.profile.zip }}): </b>
-                                                <ol>
-                                                {% for locations in googlemapsresult %}
+                                            <ol>
+                                            {% for locations in googlemapsresult %}
+                                                <li>&nbsp;<span>
+                                                    {% if form.pickup_location.value in locations.0.0 %}
+                                                        <input type="radio" id="id_pickup_location" name="pickup_location" value="{{ locations.0.0 }}" required checked="checked">
+                                                    {% else %}
+                                                        <input type="radio" id="id_pickup_location" name="pickup_location" value="{{ locations.0.0 }}" required>
+                                                    {% endif %}
 
-                                                    <li>&nbsp;<span>
-                                                        {% if form.pickup_location.value in locations %}
-
-                                                            <input type="radio" id="id_pickup_location" name="pickup_location" value="{{ locations.0.0 }}" required checked="checked">
-                                                        {% else %}
-                                                            <input type="radio" id="id_pickup_location" name="pickup_location" value="{{ locations.0.0 }}" required>
-                                                        {% endif %}
-
-                                                        <label for="id_pickup_location">{{ locations.0.0 }} : {% for meals in locations.1 %} {{meals}} | {%endfor%}</label><br>
-                                                    </span></li>
-                                                {% endfor %}</div>
-                                                </ol>
-
+                                                    <label for="id_pickup_location">{{ locations.0.0 }} : {% for meals in locations.1 %} {{meals}} | {%endfor%}</label><br>
+                                                </span></li>
+                                            {% endfor %}
+                                            </ol>
                                             <!--<input type="text" name="pickup_location" class="form-control" maxlength="255" id="id_pickup_location" value="{{ field.value }}" required>-->
                                         {% endif %}
                                     {% elif field.id_for_label == "id_complete" %}
@@ -158,40 +155,6 @@
 
 <script src="{% static 'hungryhelpers/assets/js/boxCheck.js' %}"></script>
 <style>
-    /* Collapsing styles */
-    .panel-title {
-      position: relative;
-    }
-
-    .panel-title::after {
-      content: "\f107";
-      color: #333;
-      top: -2px;
-      right: 0px;
-      position: absolute;
-      font-family: "FontAwesome"
-    }
-
-    .panel-title[aria-expanded="true"]::after {
-      content: "\f106";
-    }
-
-    /*
-     * Added 12-27-20 to showcase full title clickthrough
-     */
-
-    .panel-heading-full.panel-heading {
-      padding: 0;
-    }
-
-    .panel-heading-full .panel-title {
-      padding: 10px 15px;
-    }
-
-    .panel-heading-full .panel-title::after {
-      top: 10px;
-      right: 15px;
-    }
     /* Customize the label (the container) */
     .container {
       display: block;

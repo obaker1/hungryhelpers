@@ -103,12 +103,12 @@
                     <div class = "form-group">
                         <form action="{% url 'addMore' %}" method="post"}>
                             {% csrf_token %}
-                            <button class="btn btn-primary btn-block text-white btn-user">show 10 more locations</button>
+                            <button class="btn btn-primary btn-block text-white btn-user">{% if perms.findLocation.add_googlemapsresponse%} Show all locations {% else %} Show 10 more locations {% endif %}</button>
                         </form>
                         <br>
                         <form action="{% url 'findlocation' %}" method="post"}>
                             {% csrf_token %}
-                            <button class="btn btn-primary btn-block text-white btn-user">show first 10 locations</button>
+                            <button class="btn btn-primary btn-block text-white btn-user">Show first 10 locations</button>
                         </form>
                     </div>
                 </div>

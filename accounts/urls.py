@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import SignUpView, EditSettingsView, ShowProfileView, EditProfileView, AddStudentView, EditStudentView, DeleteStudentView, MealPlansView, EditMealPlanView
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
@@ -14,6 +15,7 @@ urlpatterns = [
     path('meal_plans/', MealPlansView.as_view(), name='meal_plans'),
     #path('create_meal_plan/', CreateMealPlanView.as_view(), name='create_meal_plan'),
     path('<int:pk>/edit_meal_plan/', EditMealPlanView.as_view(), name='edit_meal_plan'),
+    path('administration/', TemplateView.as_view(template_name="registration/administrator.html"), name='administration'),
 
     # Path when user wants to change password (Needs to be logged on)
     path('change_password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html'), name='change_password'),

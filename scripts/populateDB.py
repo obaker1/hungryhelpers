@@ -1,6 +1,7 @@
 def run():
     from findLocation.models import GoogleMapsResponse, Origin
     from accounts.models import Profile, Student, MealPlan
+    from mealPlan.models import Meal
     from django.contrib.auth.models import User
     import os
     from openpyxl import load_workbook
@@ -38,12 +39,13 @@ def run():
                     longitude=-76.7143524)
     origin.save()
     student = Student(user_account=profile, first_name="Billy", last_name="Bob", age=7, grade=8, school="Catonsville High", student_id="AB04576",
-                      allergic_celiac="No", allergic_shellfish="Yes", allergic_lactose="No",
+                      allergic_celiac="No", allergic_shellfish="No", allergic_lactose="No",
                       preference_halal="Yes", preference_kosher="Yes", preference_vegetarian="No")
     student.save()
     mealplan = MealPlan(student_profile=student, pickup_type='', time='', day='', meal_breakfast='', meal_lunch='',
                         meal_dinner='')
     mealplan.save()
+
     #print("Set origin for findLocation")
     #newOrigin = Origin(origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213, longitude=-76.7143524)
     #newOrigin.save()
@@ -61,5 +63,29 @@ def run():
         newDest.save()
 
     print("Added all locations for findLocation")
+
+    #new_meal = Meal(content="Chicken and Rice", celiac=True, shellfish=False, lactose=False, halal=True, kosher=True,
+    #                vegetarian=False, location=GoogleMapsResponse.objects.get(location="Westland Gardens Apartments"))
+    #new_meal.save()
+    new_meal = Meal(content="Tuna Salad", celiac=True, shellfish=False, lactose=True, halal=True, kosher=True,
+                    vegetarian=False, location=GoogleMapsResponse.objects.get(location="Alan Drive and Hooper Avenue"))
+    new_meal.save()
+    new_meal = Meal(content="Potato Salad", celiac=True, shellfish=False, lactose=True, halal=True, kosher=True,
+                    vegetarian=False, location=GoogleMapsResponse.objects.get(location="Westland Gardens Apartments"))
+    new_meal.save()
+    new_meal = Meal(content="Spaghetti with Meatballs", celiac=True, shellfish=False, lactose=True, halal=False, kosher=False,
+                    vegetarian=False, location=GoogleMapsResponse.objects.get(location="Catonsville High"))
+    new_meal.save()
+    new_meal = Meal(content="Cereal", celiac=False, shellfish=False, lactose=False, halal=False, kosher=True,
+                    vegetarian=False, location=GoogleMapsResponse.objects.get(location="1037 Maiden Choice Lane (Kendale Apartments)"))
+    new_meal.save()
+    new_meal = Meal(content="Regular Salad", celiac=False, shellfish=False, lactose=False, halal=True, kosher=True,
+                    vegetarian=True, location=GoogleMapsResponse.objects.get(location="1037 Maiden Choice Lane (Kendale Apartments)"))
+    new_meal.save()
+    new_meal = Meal(content="Grilled Cheese", celiac=True, shellfish=False, lactose=True, halal=True, kosher=True,
+                    vegetarian=False, location=GoogleMapsResponse.objects.get(location="Western School of Technology"))
+    new_meal.save()
+    print("Added sample meals")
+
     print("Launching webserver...")
     os.system("python manage.py runserver")

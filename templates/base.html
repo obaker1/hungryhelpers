@@ -36,7 +36,7 @@
                             <!--<li class="nav-item"><a class="nav-link" href="{% url 'findlocation' %}"><i class="fa fa-map"></i><span>Map</span></a></li>-->
                             <li class="nav-item"><a class="nav-link" href="{% url 'edit_settings' %}"><i class="fas fa-cog"></i><span>Settings</span></a></li>
                             {% if perms.mealplan.add_mealplan%}
-                            <li class="nav-item"><a class="nav-link" href="{% url 'meal_plan' %}"><i class="fas fa-plus"></i><span>Add Meals</span></a></li>
+                            <!--<li class="nav-item"><a class="nav-link" href="{% url 'meal_plan' %}"><i class="fas fa-plus"></i><span>Add Meals</span></a></li>-->
                             {% endif %}
                             <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-door-open"></i><span>Log Out</span></a></li>
                             {% if perms.findLocation.add_googlemapsresponse %}

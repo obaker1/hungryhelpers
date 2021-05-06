@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from findLocation.models import Origin, GoogleMapsResponse
+from mealPlan.models import Meal
 from .models import Profile
 from openpyxl import load_workbook
 
@@ -261,7 +262,9 @@ class EditSettingsTest(TestCase):
         self.assertContains(response, self.email)
 
 class ProfileTest(TestCase):
+
     def setUp(self):
+
         # valid credentials
         self.username = 'test'
         self.password = '>pve_hm*N*&x<qbP8u'
@@ -298,8 +301,9 @@ class ProfileTest(TestCase):
         self.meal_breakfast = "Yes"
         self.meal_lunch = "No"
         self.meal_dinner = "No"
-        self.pickup_location = "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)"
-        self.new_pickup_location = "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)"
+        self.pickup_location1 = "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)" # only bus pickup
+        self.pickup_location2 = "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)" # only school pickup
+        self.pickup_location3 = "Catonsville Middle: 4.6 miles in 12 mins (M/W 11am-1pm)"
         self.complete = "Yes"
 
         self.err_msg = "You are either not logged in or do not have access to this profile."
@@ -315,6 +319,22 @@ class ProfileTest(TestCase):
                                          address=data[ADDRESS], timeframe=data[TIMEFRAME],
                                          latitude=data[LATITUDE], longitude=data[LONGITUDE])
             newDest.save()
+        # create meals
+
+        new_meal = Meal(content="Chicken and Rice", celiac=True,
+                        shellfish=True, lactose=True,
+                        halal=True, kosher=True,
+                        vegetarian=False, location=GoogleMapsResponse.objects.get(location="Catonsville High"))
+        new_meal.save()
+        new_meal2 = Meal(content="Vegetables", celiac=True,
+                        shellfish=True, lactose=True,
+                        halal=True, kosher=True,
+                        vegetarian=False, location=GoogleMapsResponse.objects.get(location="Westland Gardens Apartments"))
+        new_meal2.save()
+        new_meal3 = Meal(content="Alfredo", celiac=False,
+                        shellfish=True, lactose=False,
+                        halal=True, kosher=True,
+                        vegetarian=False, location=GoogleMapsResponse.objects.get(location="Catonsville Middle"))
 
     def test_profile_page(self):
         """ sign up and log into account """
@@ -485,9 +505,9 @@ class ProfileTest(TestCase):
         self.assertContains(response, "Select Pickup Location")
         self.assertContains(response, "Meal Plan is ready to be seen by staff")
         # verify that user is shown correct pickup locations relative to the location set in profile
-        self.assertContains(response, "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)")
+        self.assertNotContains(response, "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)")
         self.assertContains(response, "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)")
-        self.assertContains(response, "1037 Maiden Choice Lane (Kendale Apartments): 2.0 miles in 5 mins (11:50am-12:30pm)")
+        self.assertNotContains(response, "Catonsville Middle: 4.6 miles in 12 mins (M/W 11am-1pm)")
         # fill out the rest of the meal plan
         response = self.client.post('/accounts/1/edit_meal_plan/', data={
             'pickup_type': self.pickup_type,
@@ -496,7 +516,7 @@ class ProfileTest(TestCase):
             'meal_breakfast' : self.meal_breakfast,
             'meal_lunch': self.meal_lunch,
             'meal_dinner': self.meal_dinner,
-            'pickup_location': self.pickup_location,
+            'pickup_location': self.pickup_location2,
             'complete': self.complete,
         }, follow=True)
         # verify that user was taken back to the same page
@@ -516,7 +536,7 @@ class ProfileTest(TestCase):
         # verify that user is shown information concerning the meal plan
         self.assertContains(response, self.pickup_type)
         self.assertContains(response, self.time)
-        self.assertContains(response, self.pickup_location)
+        self.assertContains(response, self.pickup_location2)
         self.assertContains(response, "Complete and viewable by staff")
 
         """ edit existing meal plan for same student """
@@ -531,9 +551,9 @@ class ProfileTest(TestCase):
         self.assertContains(response, "Select Pickup Location")
         self.assertContains(response, "Meal Plan is ready to be seen by staff")
         # verify that user is shown correct pickup locations relative to the location set in profile
-        self.assertContains(response, "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)")
+        self.assertNotContains(response, "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)")
         self.assertContains(response, "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)")
-        self.assertContains(response, "1037 Maiden Choice Lane (Kendale Apartments): 2.0 miles in 5 mins (11:50am-12:30pm)")
+        self.assertNotContains(response, "Catonsville Middle: 4.6 miles in 12 mins (M/W 11am-1pm)")
         # change pickup location
         response = self.client.post('/accounts/1/edit_meal_plan/', data={
             'pickup_type': self.pickup_type,
@@ -542,7 +562,7 @@ class ProfileTest(TestCase):
             'meal_breakfast' : self.meal_breakfast,
             'meal_lunch': self.meal_lunch,
             'meal_dinner': self.meal_dinner,
-            'pickup_location': self.new_pickup_location,
+            'pickup_location': self.pickup_location2,
             'complete': "No",
         }, follow=True)
         # verify that user was taken back to the same page
@@ -562,7 +582,7 @@ class ProfileTest(TestCase):
         # verify that user is shown information concerning the meal plan
         self.assertContains(response, self.pickup_type)
         self.assertContains(response, self.time)
-        self.assertContains(response, self.new_pickup_location)
+        self.assertContains(response, self.pickup_location2)
         self.assertContains(response, "Incomplete")
 
         """ delete the student and check that student information is no longer existent on profile page """
@@ -796,3 +816,4 @@ class PermissionsTest(TestCase):
         response = self.client.get(reverse('findlocation'))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Map Configuration Panel")
+

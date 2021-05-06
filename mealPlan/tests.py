@@ -178,4 +178,3 @@ class StaffPageViewAndConfirmMealPlans(TestCase):
         self.assertContains(response, "Meal Plan Update!")
         self.assertContains(response, "Billy Bob&#x27;s meal is ready for pick up at Westland Gardens Apartments!")
         self.assertContains(response, "Click here for more information about this meal plan!")
-

@@ -133,8 +133,11 @@ function attachSecretMessage(marker, secretMessage) { //add popups when marker i
    const infowindow = new google.maps.InfoWindow({
      content: secretMessage,
    });
-   marker.addListener("click", () => {
+   marker.addListener("mouseover", () => {
      infowindow.open(marker.get("map"), marker);
+   });
+   marker.addListener("mouseout", () => {
+     infowindow.close();
    });
 }
 

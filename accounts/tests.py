@@ -3,6 +3,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.auth.models import Permission
+from findLocation.models import Origin, GoogleMapsResponse
+from mealPlan.models import Meal
+from .models import Profile
+from openpyxl import load_workbook
 
 class SignUpTest(TestCase):
     def setUp(self):
@@ -40,15 +44,27 @@ class SignUpTest(TestCase):
 class LogInTest(TestCase):
     def setUp(self):
         # valid credentials
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'}
+        self.username = 'test'
+        self.first_name = 'tester'
+        self.last_name = 'mctest'
+        self.email = 'tester@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
         # invalid credentials
         self.credentials2 = {
             'username': 'test',
             'password': '>pve_hm*N&x<qbP8u'
         }
-        User.objects.create_user(**self.credentials)
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
     def test_login_page(self):
         # access signup page
@@ -60,7 +76,10 @@ class LogInTest(TestCase):
 
     def test_login_success(self):
         # send login data
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # check site redirection destination returns status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # check that the user successfully logged in
@@ -76,18 +95,32 @@ class LogInTest(TestCase):
         # check that the user was unsuccessful when logging in
         self.assertFalse(response.context['user'].is_active)
         # check that the user is shown appropriate message
-        self.assertTrue('Please enter a correct username and password' in str(response.content))
+        self.assertTrue('Your username and password does not match. Please try again.' in str(response.content))
 
 class DashboardPageContentTest(TestCase):
     def setUp(self):
         # valid credentials
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'
-        }
+        self.username = 'test'
+        self.first_name = 'tester'
+        self.last_name = 'mctest'
+        self.email = 'tester@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
+
+
         self.aboutUsMsg = "Since the COVID-19 pandemic, the distribution of subsidized meals has become an increasing"
         self.dashboardMsg = "Set up your pick up or delivery method for your meal plans"
-        User.objects.create_user(**self.credentials)
+
 
     def test_dashboard_page_while_logged_off(self):
         # Go to homepage to load dashboard
@@ -101,7 +134,10 @@ class DashboardPageContentTest(TestCase):
 
     def test_dashboard_page_while_logged_in(self):
         # send login data
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # check site redirection destination returns status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # check that the user successfully logged in
@@ -113,10 +149,23 @@ class DashboardPageContentTest(TestCase):
 
 class LogOutTest(TestCase):
     def setUp(self):
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'}
-        User.objects.create_user(**self.credentials)
+        # valid credentials
+        self.username = 'test'
+        self.first_name = 'tester'
+        self.last_name = 'mctest'
+        self.email = 'tester@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
     def test_logout_page(self):
         # access logout page
@@ -133,7 +182,10 @@ class LogOutTest(TestCase):
 
     def test_logout(self):
         # send login data
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # check that a page redirection occurred (HTTP 302)
         self.assertEqual(response.status_code, 200)
         # check that the user successfully logged in
@@ -152,16 +204,22 @@ class LogOutTest(TestCase):
 class EditSettingsTest(TestCase):
     def setUp(self):
         # valid credentials
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'}
-        User.objects.create_user(**self.credentials)
-
-        # information for settings page
         self.username = 'test'
-        self.email = 'tester@tset.com'
-        self.first_name = 'testing'
+        self.first_name = 'tester'
         self.last_name = 'mctest'
+        self.email = 'tester@test.com'
+        self.password = '>pve_hm*N*&x<qbP8u'
+
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
     def test_settings_page_while_logged_out(self):
         # access settings page
@@ -173,7 +231,10 @@ class EditSettingsTest(TestCase):
 
     def test_settings_page_while_logged_in(self):
         # send login data
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # check site redirection destination returns status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
         # check that the user successfully logged in
@@ -189,6 +250,8 @@ class EditSettingsTest(TestCase):
         response = self.client.post('/accounts/settings/', data={
             'username': self.username,
             'email': self.email,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
         }, follow=True)
         # check that the user has been redirected to home after updating settings
         self.assertTemplateUsed(response, template_name='home.html')
@@ -199,20 +262,21 @@ class EditSettingsTest(TestCase):
         self.assertContains(response, self.email)
 
 class ProfileTest(TestCase):
-    def setUp(self):
-        # valid credentials
 
+    def setUp(self):
+
+        # valid credentials
         self.username = 'test'
         self.password = '>pve_hm*N*&x<qbP8u'
         self.email = 'test@example.com'
-
-        # information for edit parent page
         self.parent_first_name = "Mr"
         self.parent_last_name = "Parent"
-        self.address = '1234 Test Street'
-        self.city = 'Testingburg'
-        self.state = 'AK'
-        self.zip = '12345'
+
+        # information for edit parent page
+        self.address = '1000 Hilltop Cir'
+        self.city = 'Baltimore'
+        self.state = 'MD'
+        self.zip = '21250'
         self.district = 'Baltimore County'
 
         # information for add student page
@@ -230,15 +294,55 @@ class ProfileTest(TestCase):
         self.preference_kosher = 'No'
         self.preference_vegetarian = 'No'
 
+        # information for meal plan
+        self.pickup_type = 'School'
+        self.day = 'M/W'
+        self.time = '11:00am-11:15am'
+        self.meal_breakfast = "Yes"
+        self.meal_lunch = "No"
+        self.meal_dinner = "No"
+        self.pickup_location1 = "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)" # only bus pickup
+        self.pickup_location2 = "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)" # only school pickup
+        self.pickup_location3 = "Catonsville Middle: 4.6 miles in 12 mins (M/W 11am-1pm)"
+        self.complete = "Yes"
+
         self.err_msg = "You are either not logged in or do not have access to this profile."
+
+        LOCATION = 1; DISTANCE = 2; TIME = 3; BUS = 4; SCHOOL = 5; ADDRESS = 6; TIMEFRAME = 7; LATITUDE = 8; LONGITUDE = 9;
+        file = "Locations.xlsx"
+        workbook = load_workbook(filename=file)
+        sheet = workbook.active
+
+        for data in sheet.iter_rows(values_only=True):
+            newDest = GoogleMapsResponse(location=data[LOCATION], distance=data[DISTANCE],
+                                         time=data[TIME], bus=data[BUS], school=data[SCHOOL],
+                                         address=data[ADDRESS], timeframe=data[TIMEFRAME],
+                                         latitude=data[LATITUDE], longitude=data[LONGITUDE])
+            newDest.save()
+        # create meals
+
+        new_meal = Meal(content="Chicken and Rice", celiac=True,
+                        shellfish=True, lactose=True,
+                        halal=True, kosher=True,
+                        vegetarian=False, location=GoogleMapsResponse.objects.get(location="Catonsville High"))
+        new_meal.save()
+        new_meal2 = Meal(content="Vegetables", celiac=True,
+                        shellfish=True, lactose=True,
+                        halal=True, kosher=True,
+                        vegetarian=False, location=GoogleMapsResponse.objects.get(location="Westland Gardens Apartments"))
+        new_meal2.save()
+        new_meal3 = Meal(content="Alfredo", celiac=False,
+                        shellfish=True, lactose=False,
+                        halal=True, kosher=True,
+                        vegetarian=False, location=GoogleMapsResponse.objects.get(location="Catonsville Middle"))
 
     def test_profile_page(self):
         """ sign up and log into account """
         # access and create account on signup page
         response = self.client.post('/accounts/signup/', data={
             'username': self.username,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
+            'first_name': self.parent_first_name,
+            'last_name': self.parent_last_name,
             'email': self.email,
             'password1': self.password,
             'password2': self.password
@@ -259,6 +363,14 @@ class ProfileTest(TestCase):
         # verify correct template was used
         self.assertTemplateUsed(response, template_name='registration/profile.html')
 
+        """ access the meal plan page before updating location in profile """
+        # access meal plan page
+        response = self.client.get('/accounts/meal_plans/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/meal_plans.html')
+        # verify that user is shown "Create Meal Plan" button
+        self.assertContains(response, "Please update your profile with your location before using this feature!")
+
         """ access the edit profile page """
         # access profile page
         response = self.client.get('/accounts/edit_profile/', follow=True)
@@ -268,8 +380,6 @@ class ProfileTest(TestCase):
         """ edit profile content """
         # access profile page
         response = self.client.post('/accounts/edit_profile/', data={
-            'first_name': self.parent_first_name,
-            'last_name': self.parent_last_name,
             'address': self.address,
             'city': self.city,
             'state': self.state,
@@ -321,14 +431,14 @@ class ProfileTest(TestCase):
         self.assertContains(response, self.school)
         self.assertContains(response, self.student_id)
 
-        """ Access the edit_student page for the newly created student profile"""
+        """ access the edit_student page for the newly created student profile"""
         response = self.client.get("/accounts/1/edit_student", follow=True)
         # check site status code (HTTP 200 OK)
         self.assertEquals(response.status_code, 200)
         # verify correct template was used
         self.assertTemplateUsed(response, template_name='registration/edit_student.html')
 
-        """ Access the edit_student page for the newly created student profile and make edits"""
+        """ access the edit_student page for the newly created student profile and make edits"""
         response = self.client.post('/accounts/1/edit_student/', data={
             'first_name': self.first_name,
             'last_name': self.new_last_name,
@@ -356,6 +466,125 @@ class ProfileTest(TestCase):
         self.assertContains(response, self.school)
         self.assertContains(response, self.student_id)
 
+        """ access the meal plan page """
+        # access meal plan page
+        response = self.client.get('/accounts/meal_plans/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/meal_plans.html')
+        # verify an element is shown with the child's first and last name
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        # verify that user is shown "Create Meal Plan" button
+        self.assertContains(response, "Create Meal Plan")
+        self.assertNotContains(response, "Edit Meal Plan")
+
+        """ 'create' a meal plan for student """
+        # access meal plan page
+        response = self.client.get('/accounts/1/edit_meal_plan/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+        # verify meal plan is specific for the child
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        # verify certain information and fields are hidden until initial form is submitted
+        self.assertNotContains(response, "Current Pickup Location:")
+        self.assertNotContains(response, "Select Pickup Location")
+        self.assertNotContains(response, "Meal Plan is ready to be seen by staff")
+        # fill out meal plan form
+        response = self.client.post('/accounts/1/edit_meal_plan/', data={
+            'pickup_type': self.pickup_type,
+            'day': self.day,
+            'time': self.time,
+            'meal_breakfast' : self.meal_breakfast,
+            'meal_lunch': self.meal_lunch,
+            'meal_dinner': self.meal_dinner,
+        }, follow=True)
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+        # verify that previously hidden information and fields are now visible
+        self.assertContains(response, "Current Pickup Location:")
+        self.assertContains(response, "Select Pickup Location")
+        self.assertContains(response, "Meal Plan is ready to be seen by staff")
+        # verify that user is shown correct pickup locations relative to the location set in profile
+        self.assertNotContains(response, "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)")
+        self.assertContains(response, "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)")
+        self.assertNotContains(response, "Catonsville Middle: 4.6 miles in 12 mins (M/W 11am-1pm)")
+        # fill out the rest of the meal plan
+        response = self.client.post('/accounts/1/edit_meal_plan/', data={
+            'pickup_type': self.pickup_type,
+            'day': self.day,
+            'time': self.time,
+            'meal_breakfast' : self.meal_breakfast,
+            'meal_lunch': self.meal_lunch,
+            'meal_dinner': self.meal_dinner,
+            'pickup_location': self.pickup_location2,
+            'complete': self.complete,
+        }, follow=True)
+        # verify that user was taken back to the same page
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+
+        """ access the meal plan page after creating a meal plan """
+        # access meal plan page
+        response = self.client.get('/accounts/meal_plans/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/meal_plans.html')
+        # verify an element is shown with the child's first and last name
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        # verify that user is shown "Edit Meal Plan" button instead of "Create Meal Plan"
+        self.assertNotContains(response, "Create Meal Plan")
+        self.assertContains(response, "Edit Meal Plan")
+        # verify that user is shown information concerning the meal plan
+        self.assertContains(response, self.pickup_type)
+        self.assertContains(response, self.time)
+        self.assertContains(response, self.pickup_location2)
+        self.assertContains(response, "Complete and viewable by staff")
+
+        """ edit existing meal plan for same student """
+        # access meal plan page
+        response = self.client.get('/accounts/1/edit_meal_plan/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+        # verify meal plan is specific for the child and all fields are visible
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        self.assertContains(response, "Current Pickup Location:")
+        self.assertContains(response, "Select Pickup Location")
+        self.assertContains(response, "Meal Plan is ready to be seen by staff")
+        # verify that user is shown correct pickup locations relative to the location set in profile
+        self.assertNotContains(response, "Westland Gardens Apartments: 2.0 miles in 5 mins (11:00am-12:30pm)")
+        self.assertContains(response, "Catonsville High: 1.5 miles in 5 mins (M/W 11am-1pm)")
+        self.assertNotContains(response, "Catonsville Middle: 4.6 miles in 12 mins (M/W 11am-1pm)")
+        # change pickup location
+        response = self.client.post('/accounts/1/edit_meal_plan/', data={
+            'pickup_type': self.pickup_type,
+            'day': self.day,
+            'time': self.time,
+            'meal_breakfast' : self.meal_breakfast,
+            'meal_lunch': self.meal_lunch,
+            'meal_dinner': self.meal_dinner,
+            'pickup_location': self.pickup_location2,
+            'complete': "No",
+        }, follow=True)
+        # verify that user was taken back to the same page
+        self.assertTemplateUsed(response, template_name='registration/edit_meal_plan.html')
+
+        """ access the meal plan page after editing meal plan """
+        # access meal plan page
+        response = self.client.get('/accounts/meal_plans/', follow=True)
+        # verify correct template was used
+        self.assertTemplateUsed(response, template_name='registration/meal_plans.html')
+        # verify an element is shown with the child's first and last name
+        self.assertContains(response, self.first_name)
+        self.assertContains(response, self.new_last_name)
+        # verify that user is shown "Edit Meal Plan" button instead of "Create Meal Plan"
+        self.assertNotContains(response, "Create Meal Plan")
+        self.assertContains(response, "Edit Meal Plan")
+        # verify that user is shown information concerning the meal plan
+        self.assertContains(response, self.pickup_type)
+        self.assertContains(response, self.time)
+        self.assertContains(response, self.pickup_location2)
+        self.assertContains(response, "Incomplete")
+
         """ delete the student and check that student information is no longer existent on profile page """
         response = self.client.get("/accounts/1/delete_student", follow=True)
         # verify site status code (HTTP 200 OK)
@@ -367,7 +596,7 @@ class ProfileTest(TestCase):
         response = self.client.post('/accounts/1/delete_student/', follow=True)
         # verify site status code (HTTP 200 OK)
         self.assertEqual(response.status_code, 200)
-        # After successful deletion, user should be taken back to profile page verify
+        # After successful deletion, user should be taken back to profile page
         self.assertTemplateUsed(response, template_name='registration/profile.html')
 
         # returns to profile page to check changes
@@ -400,27 +629,31 @@ class PasswordResetTest(TestCase):
 
     def setUp(self):
         # valid credentials
-        self.credentials = {
-            'username': 'test',
-            'password': '>pve_hm*N*&x<qbP8u'}
-
         # valid credentials
         self.username = 'test'
-        self.email = 'myemail@test.com'
+        self.first_name = 'tester'
+        self.last_name = 'mctest'
+        self.email = 'tester@test.com'
         self.password = '>pve_hm*N*&x<qbP8u'
         self.new_password = '>pve_hm*N*&x<qbP8sss'
-        # information for forgot password
-        self.email = 'tester@tset.com'
 
-        # create user
-        self.the_user = User.objects.create_user(self.username, self.email, self.password)
-
-
-
+        User.objects.create_user(self.username, self.email, self.password)
+        a_user = User.objects.get(username=self.username)
+        a_user.first_name, a_user.last_name = self.first_name, self.last_name
+        a_user.save()
+        profile = Profile(user=a_user, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=a_user, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
     def test_password_change_form(self):
         # Login user
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         response = self.client.get('/accounts/password_change/', follow=True)
         self.assertTemplateUsed(response, template_name='registration/password_change_form.html')
 
@@ -437,7 +670,10 @@ class PasswordResetTest(TestCase):
         self.assertTemplateUsed(response, template_name='registration/password_change_done.html')
 
     def test_password_change_done(self):
-        response = self.client.post('/accounts/login/', self.credentials, follow=True)
+        response = self.client.post('/accounts/login/', data={
+            'username': self.username,
+            'password': self.password,
+        }, follow=True)
         # access password change done page
         response = self.client.get('/accounts/password_change/done/', follow=True)
         # verify site status code (HTTP 200 OK)
@@ -484,7 +720,37 @@ class PasswordResetTest(TestCase):
         self.assertTemplateUsed(response, template_name='registration/password_reset_complete.html')
 
 class PermissionsTest(TestCase):
-    fixtures = ['dbcontent.json', ]
+    #fixtures = ['dbcontent.json', ]
+    def setUp(self):
+        # valid admin credentials
+        self.username = 'admin'
+        self.email = 'myemail@test.com'
+        self.password = 'admin'
+
+        # create user
+        User.objects.create_superuser(self.username, self.email, self.password)
+        admin = User.objects.get(username=self.username)
+        admin.first_name, admin.last_name = 'admin', 'user'
+        admin.save()
+        profile = Profile(user=admin, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=admin, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
+        LOCATION = 1; DISTANCE = 2; TIME = 3; BUS = 4; SCHOOL = 5; ADDRESS = 6; TIMEFRAME = 7; LATITUDE = 8; LONGITUDE = 9;
+        file = "Locations.xlsx"
+        workbook = load_workbook(filename=file)
+        sheet = workbook.active
+
+        for data in sheet.iter_rows(values_only=True):
+            newDest = GoogleMapsResponse(location=data[LOCATION], distance=data[DISTANCE],
+                                         time=data[TIME], bus=data[BUS], school=data[SCHOOL],
+                                         address=data[ADDRESS], timeframe=data[TIMEFRAME],
+                                         latitude=data[LATITUDE], longitude=data[LONGITUDE])
+            newDest.save()
+
+
     def test_admin_permissions(self):
         # login to admin user
         username = 'admin'
@@ -500,13 +766,26 @@ class PermissionsTest(TestCase):
 
     def test_staff_permissions(self):
         permission = Permission.objects.get(name='Can add google maps response')
+        self.username = 'staff'
+        self.first_name = 'staff'
+        self.last_name = 'staff'
+        self.email = 'tester@test.com'
+        self.password = 'staff'
 
         # create staff user
-        password = 'staff'
-        my_staff = User.objects.create_user('staff', 'myemail@test.com', password)
+        User.objects.create_user(self.username, self.email, self.password)
+        my_staff = User.objects.get(username=self.username)
+        my_staff.first_name, my_staff.last_name = self.first_name, self.last_name
+        my_staff.save()
+        profile = Profile(user=my_staff, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=my_staff, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
         # You'll need to log him in before you can send requests through the client
-        self.client.login(username=my_staff.username, password=password)
+        self.client.login(username=my_staff.username, password=self.password)
         my_staff.user_permissions.add(permission)
 
         # Open page and ensure that staff also has access to add a location
@@ -516,8 +795,19 @@ class PermissionsTest(TestCase):
 
     def test_parent_permissions(self):
         # create parent user
+        username = 'parent'
+        email = 'myemail@test.com'
         password = 'parent'
-        my_parent = User.objects.create_user('parent', 'myemail@test.com', password)
+
+        User.objects.create_user(username, email, password)
+        my_parent = User.objects.get(username=username)
+        my_parent.save()
+        profile = Profile(user=my_parent, address='1000 Hilltop Cir', city='Baltimore', state='MD', zip='21250',
+                          district='Baltimore County')
+        profile.save()
+        origin = Origin(user=my_parent, origin='1000 Hilltop Cir, Baltimore, MD 21250, USA', latitude=39.2537213,
+                        longitude=-76.7143524)
+        origin.save()
 
         # You'll need to log him in before you can send requests through the client
         self.client.login(username=my_parent.username, password=password)
@@ -526,3 +816,4 @@ class PermissionsTest(TestCase):
         response = self.client.get(reverse('findlocation'))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Map Configuration Panel")
+

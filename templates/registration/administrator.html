@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+{% if user.is_authenticated and perms.findLocation.add_googlemapsresponse %}
+    <div class="container-fluid">
+        <h3 class="text-dark mb-4">Administration Quick Access</h3>
+        <div class="row">
+            <div class="col">
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Location Tools</p>
+                    </div>
+                    <div class="card-body">
+                        <a href="{% url 'findlocation' %}" class="btn btn-block btn-primary">Add New Pickup Locations</a>
+                    </div>
+                </div>
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Meal Plan Tools</p>
+                    </div>
+                    <div class="card-body">
+                        <a href="{% url 'meal_plan' %}" class="btn btn-block btn-primary">Add New Food Options</a>
+                        <a href="{% url 'staffPage' %}" class="btn btn-block btn-primary">View and Confirm Parent Meal Plan Submissions</a>
+                    </div>
+                </div>
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Notification Tools</p>
+                    </div>
+                    <div class="card-body">
+                        <a href="{% url 'index' %}" class="btn btn-block btn-primary">Send Message to Specific User</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

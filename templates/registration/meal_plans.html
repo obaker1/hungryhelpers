@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load dict_get_value %}
+
+{% if user.is_authenticated and user.profile.address != '' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h2>Create/Edit a Meal Plan:</h2>
+
+                {% for student in profile.students.all %}
+                    {% with mealplan=mealplans|get_item:student.id %}
+                    {% if mealplan.pickup_type %}
+                        <div class="card shadow mb-3" style="border-radius: 30px">
+                            <div class="card-header" style="border-radius: 30px">
+                                <a class="btn btn-primary btn-sm" href="{% url 'edit_meal_plan' student.pk %}" role="button" style="float: right; margin: 2px; border-radius: 15px">Edit Meal Plan</a>
+                                <h4 style="margin:3px;"><p class="text-primary m-0 font-weight-bold">{{ student.first_name }} {{ student.last_name }}</p></h4>
+                            </div>
+                            <div class="card-body" style="border-radius: 30px">
+                                <b> Pickup Type: </b> {{ mealplan.pickup_type }} <br>
+                                <b> Time: </b> {{ mealplan.time }} <br>
+                                <b> Day: </b> {{ mealplan.day }} <br>
+                                <b> Meal Type: </b>
+                                {% if mealplan.meal_breakfast == "Yes" %}
+                                    Breakfast |
+                                {% endif %}
+                                {% if mealplan.meal_lunch == "Yes" %}
+                                    Lunch |
+                                {% endif %}
+                                {% if mealplan.meal_dinner == "Yes" %}
+                                    Dinner
+                                {% endif %}
+                                <br>
+                                <b> Pickup Location:</b> {{ mealplan.pickup_location }} <br>
+                                <b> Status: </b>
+                                {% if mealplan.complete == "Yes" %}
+                                    <b><p style="display:inline; color:forestgreen"> Complete and viewable by staff </p></b>
+                                {% else %}
+                                    <b><p style="display:inline; color:red"> Incomplete </p></b>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card shadow mb-3" style="border-radius: 30px">
+                            <div class="card-header" style="border-radius: 30px">
+                                <a class="btn btn-primary btn-sm" href="{% url 'edit_meal_plan' student.pk %}" role="button" style="float: right; margin: 2px; border-radius: 15px">Create Meal Plan</a>
+                                <h4 style="margin:3px;"><p class="text-primary m-0 font-weight-bold">{{ student.first_name }} {{ student.last_name }}</p></h4>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% elif user.is_authenticated and user.profile.address == '' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h3 class="text-dark mb-4"> Please update your profile with your location before using this feature!  </h3>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h3 class="text-dark mb-4"> You are either not logged in or do not have access to this page. </h3>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

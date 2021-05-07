@@ -18,9 +18,14 @@ function initMap() {
   // calls geocoder to get the exact location and uses it to pin the correct location on the map
   const geocoder = new google.maps.Geocoder();
   deleteMarkers(markersArray);
-  const showGeocodedAddressOnMap = function (asDestination, school, bus, location) { //add markers on map
-    const icon = asDestination ? "D" : "O";
+  const showGeocodedAddressOnMap = function (asDestination, school, bus, location, j) { //add markers on map
     return function (results, status) {
+        if (asDestination) {
+            icon = j.toString();
+        }
+        else {
+            icon = "O";
+        }
         if (status === "OK") { // makes sure that the google maps geoencoder loaded correctly
             map.fitBounds(bounds.extend(results[0].geometry.location));
             var marker;
@@ -33,7 +38,7 @@ function initMap() {
                 })
             }
            else { // creates marker for destination
-                var prop = {school: school, bus:bus, title: results[0].formatted_address};
+                var prop = {school: school, bus: bus, title: results[0].formatted_address};
                 marker = new google.maps.Marker({
                     map,
                     position: results[0].geometry.location,
@@ -49,12 +54,10 @@ function initMap() {
         }
         };
     };
-
-    // creates a marker for the origin and destinations
-    for( let j = 0; j< origin.length;j++){
+    if (origin != 0) { // if origin exists in database
       geocoder.geocode(
-        { address: origin[j] },
-        showGeocodedAddressOnMap(false, false, false, []));
+        { address: origin },
+        showGeocodedAddressOnMap(false, false, false, [], 0));
     }
     for (let j = 0; j < destination.length; j++) {
       school = false;
@@ -67,7 +70,7 @@ function initMap() {
       }
       geocoder.geocode(
         { address: destination[j] },
-        showGeocodedAddressOnMap(true, school, bus, LOCATION_LIST[j]));
+        showGeocodedAddressOnMap(true, school, bus, LOCATION_LIST[j], j+1));
     }
 }
 
@@ -101,7 +104,7 @@ var filter_markers = function() {
   // for each marker, check to see if all required options are set
   for (i = 0; i < markersArray.length; i++) {
     marker = markersArray[i];
-    if (marker.label == 'D') { // if the marker is a destination
+    if (marker.label != 'O') { // if the marker is a destination
         keep=true; // start the filter check assuming the marker will be displayed
         for (opt=0; opt<set_filters.length; opt++) {
           if (!marker.properties[set_filters[opt]]) { // if a property is not selected
@@ -115,8 +118,13 @@ var filter_markers = function() {
 
 // sets global variables for the origin and destinations
 function setParameters(origin, address, filter, location){
-    ORIGIN_LIST = [origin];
-    ADDRESS_LIST = address;
+    ORIGIN_LIST = origin;
+    if (address[0] == "") { //if no destinations in database
+        ADDRESS_LIST = 0;
+    }
+    else {
+        ADDRESS_LIST = address;
+    }
     LOCATION_FILTER = filter;
     LOCATION_LIST = location;
 }
@@ -125,8 +133,11 @@ function attachSecretMessage(marker, secretMessage) { //add popups when marker i
    const infowindow = new google.maps.InfoWindow({
      content: secretMessage,
    });
-   marker.addListener("click", () => {
+   marker.addListener("mouseover", () => {
      infowindow.open(marker.get("map"), marker);
+   });
+   marker.addListener("mouseout", () => {
+     infowindow.close();
    });
 }
 

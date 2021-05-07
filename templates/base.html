@@ -31,11 +31,17 @@
                         {% if user.profile.id %}
                             <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                             <li class="nav-item"><a class="nav-link" href="{% url 'show_profile' %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'meal_plans' %}"><i class="fas fa-utensils"></i><span>Meal Plans</span></a></li>
                             <li class="nav-item"><a class="nav-link" href="{% url 'inbox' %}"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="fa fa-ticket"></i><span>Meal Plans</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'findlocation' %}"><i class="fa fa-map"></i><span>Map</span></a></li>
+                            <!--<li class="nav-item"><a class="nav-link" href="{% url 'findlocation' %}"><i class="fa fa-map"></i><span>Map</span></a></li>-->
                             <li class="nav-item"><a class="nav-link" href="{% url 'edit_settings' %}"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                            {% if perms.mealplan.add_mealplan%}
+                            <!--<li class="nav-item"><a class="nav-link" href="{% url 'meal_plan' %}"><i class="fas fa-plus"></i><span>Add Meals</span></a></li>-->
+                            {% endif %}
                             <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-door-open"></i><span>Log Out</span></a></li>
+                            {% if perms.findLocation.add_googlemapsresponse %}
+                                <li class="nav-item"><a class="nav-link" href="{% url 'administration' %}"><i class="fas fa-unlock"></i><span>Administration</span></a></li>
+                            {% endif %}
                         {% else %}
                             <li class="nav-item"><a class="nav-link" href="{% url 'create_profile' %}"><i class="fas fa-user"></i><span>Profile</span></a></li>
                         {% endif %}
@@ -82,7 +88,7 @@
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
                                         <div class="dropdown-divider"></div>
                                         {% for notification in user.notifications.unread %}
-                                            <li class="dropdown-item"><a href="{% url 'inbox' %}"><span>Message from {{ notification.actor }}</span></a></li>
+                                            &nbsp;<a href="{% url 'inbox' %}"><span>New Message From Staff</span></a>
                                             <div class="dropdown-divider"></div>
                                         {% endfor %}
                                     </div>

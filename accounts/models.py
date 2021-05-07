@@ -1,15 +1,12 @@
 from django.db import models
+from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.urls import reverse
 from localflavor.us.us_states import STATE_CHOICES
-from .static_info import AGE_CHOICES, GRADE_CHOICES, DISTRICTS, SCHOOLS
+from .static_info import AGE_CHOICES, GRADE_CHOICES, DISTRICTS, SCHOOLS, PICKUP_CHOICES, TIMES, DAYS
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    #caretaker_names = models.TextField(null=True, blank=True)
-    email = models.CharField(max_length = 225, null = True, blank = False)
-    first_name = models.CharField(max_length=255, null=True, blank=False)
-    last_name = models.CharField(max_length=255, null=True, blank=False)
     address = models.CharField(max_length=255, null=True, blank=False)
     city = models.CharField(max_length=255, null=True, blank=False)
     state = models.CharField(max_length=2, choices=STATE_CHOICES, null=True, blank=False)
@@ -42,9 +39,20 @@ class Student(models.Model):
     preference_kosher = models.CharField(max_length=255, null=True, default="No")
     preference_vegetarian = models.CharField(max_length=255, null=True, default="No")
 
-    #meal_breakfast = models.CharField(max_length=255, null=True, default="No")
-    #meal_lunch = models.CharField(max_length=255, null=True, default="No")
-    #meal_dinner = models.CharField(max_length=255, null=True, default="No")
+    def __str__(self):
+        return '%s' % (str(self.first_name) + " " + str(self.last_name))
+
+class MealPlan(models.Model):
+    student_profile = models.ForeignKey(Student, related_name="mealplan", on_delete=models.CASCADE)
+    pickup_type = models.CharField(max_length=255, null=True, choices=PICKUP_CHOICES)
+    day = models.CharField(max_length=255, null=True, choices=DAYS)
+    time = models.CharField(max_length=255, null=True, choices=TIMES)
+    meal_breakfast = models.CharField(max_length=255, null=True, default="No")
+    meal_lunch = models.CharField(max_length=255, null=True, default="No")
+    meal_dinner = models.CharField(max_length=255, null=True, default="No")
+
+    pickup_location = models.CharField(max_length=255, null=True, blank=True)
+    complete = models.CharField(max_length=255, null=True, default="No", blank=True)
 
     def __str__(self):
-        return '%s' % (self.first_name)
+       return '%s' % (self.student_profile)

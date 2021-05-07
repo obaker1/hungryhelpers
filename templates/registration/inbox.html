@@ -12,9 +12,15 @@
                 <div class="card shadow mb-3">
                     <div class="card-body">
                         {% for notification in  user.notifications.unread %}
-                            <div> <b> Message from {{ notification.actor }}:</b><br>
+                            {% if notification.verb != "Message" %}
+                                <div> <b style="color:green;">Meal Plan Update!</b><br>
+                                    {{ notification.description }}
+                                    <a href="{% url 'edit_meal_plan' notification.verb %}">Click here for more information about this meal plan!</a>
+                                </div>
+                            {% else %}
+                                <div> <b style="color:blue;">Message from {{ notification.actor }}</b><br>
                                 {{ notification.description }}
-                            </div>
+                            {% endif %}
                             <div class="dropdown-divider"></div>
                         {% endfor %}
                     </div>

@@ -10,10 +10,29 @@
             <h3 class="text-dark mb-0">Dashboard</h3>
         </div>
         <hr>
-        <h2> Good evening, {{ user.profile.first_name }}! </h2>
+        <h2> Good evening, {{ user.first_name }}! </h2>
         <div class="row">
             <div class="col">
-                <!--<h2>Parent:</h2>-->
+                {% if user.profile.address == '' %}
+                    <div class="card shadow mb-3">
+                        <div class="card-header ">
+                            <p class="text-danger m-0 font-weight-bold h3" style="text-align:center">Complete Your Profile!</p>
+                        </div>
+                        <div class="card-body bg-warning">
+                            <div class="row ">
+                                <i class="fa fa-compass fa-5x fa-fw"></i>
+                                <div class="col">
+                                    <h4 style="color:grey;"> Be sure to update your profile with your address to locate pickup locations near you! <br></h4>
+                                </div>
+                            </div>
+                            <div style="display: inline-block; margin-left: 42%;" >
+                                <div class="row">
+                                    <a href="{% url 'edit_profile' %}" class="btn btn-block btn-danger" style="text-align:center;">Update Your Location!</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="card shadow mb-3">
                     <div class="card-header">
                         <p class="text-primary m-0 font-weight-bold h3" style="text-align:center">School Alert</p>

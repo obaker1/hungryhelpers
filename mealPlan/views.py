@@ -4,10 +4,11 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.views.generic import DetailView, TemplateView
-from mealPlan.forms import mealPlanForm
+from mealPlan.forms import mealPlanForm, confirmPlan
 from mealPlan.models import Meal
-from accounts.models import Student
+from accounts.models import Student, MealPlan
 from findLocation.models import GoogleMapsResponse
+from notifications.signals import notify
 
 
 def meal_plan(request):
@@ -45,9 +46,26 @@ def ticket_add(request):
     new_meal.save()
     return HttpResponseRedirect(reverse('meal_plan'))
 
+def sendConfirmNotif(request):
+    mealPk = request.POST.get("mealPk", 0)
+    print(mealPk)
+    if mealPk != "none":
+        sender = User.objects.get(username=request.user)
+        mealObj = MealPlan.objects.get(id=mealPk)
+        userPk = mealObj.student_profile.user_account.user.pk
+        studObj = mealObj.student_profile
+        receiver = User.objects.get(id=userPk)
+        locationInfo = mealObj.pickup_location
+        loc = locationInfo[:locationInfo.index(':')]
+        #print(mealPk)
+        notify.send(sender, recipient=receiver, verb=mealPk,
+                    description=str(studObj.first_name) + " " + str(studObj.last_name) + "'s meal is ready for pick up at " + str(loc) + "!")
+        return HttpResponseRedirect(reverse('staffPage'))
 
 def staffPage(request):
-    googlemaps = GoogleMapsResponse.objects.all()
-    context={'googlemapsresult': googlemaps}
+    form = confirmPlan()
+    mealplans = MealPlan.objects.all()
+    #googlemaps = GoogleMapsResponse.objects.all()
+    context={'mealplans': mealplans, 'form': form}
     return render(request, 'mealPlan/staffpage.html', context)
 

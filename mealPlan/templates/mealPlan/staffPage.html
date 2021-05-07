@@ -22,20 +22,28 @@
                                 <tr>
                                     <th scope="col">First</th>
                                     <th scope="col">Last</th>
-                                    <th scope="col">Meal Type</th>
+                                    <th scope="col">Pickup Location</th>
                                     <th scope="col">Confirmation Number</th>
                                     <th scope="col">Confirm</th>
                                 </tr>
                                 </thead>
                                 <tbody id="myTable">
-                                {% for locations in googlemapsresult %}
-                                <tr>
-                                    <td>{{ locations.location}}</td>
-                                    <td>{{locations.distance}}</td>
-                                    <td>{{locations.time}}</td>
-                                    <td>{{locations.timeframe}}</td>
-                                    <td><button type="button" class="btn btn-outline-success">Confirm</button></td>
-                                </tr>
+                                {% for mealplan in mealplans %}
+                                    {% if mealplan.complete == "Yes" %}
+                                        <tr>
+                                            <td>{{ mealplan.student_profile.user_account.user.first_name }}</td>
+                                            <td>{{ mealplan.student_profile.user_account.user.last_name }}</td>
+                                            <td>{{ mealplan.pickup_location }}</td>
+                                            <td>{{ mealplan.pk }}</td>
+                                            {% csrf_token %}
+                                            {{ form.content }}
+                                            <form method="POST" action="{% url 'send_confirm_notif' %}">
+                                                {% csrf_token %}
+                                                <td><button type="submit" name="mealPk" class="btn btn-outline-success" value="{{ mealplan.pk }}">Confirm</button></td>
+                                            </form>
+
+                                        </tr>
+                                    {% endif %}
                                 {% endfor %}
                                 </tbody>
                             </table>

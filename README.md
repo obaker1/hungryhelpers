@@ -31,7 +31,7 @@ Features:
 		2. Run 'python manage.py test findLocation'
 		3. Details about each test can be found inside the /findLocation/tests.py file.
 - Account management:
-	- Description: Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users can change password if they have an account. If users forgot their password, they will be emailed a link to be able to change their password. Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one. Allows users to edit personal settings such as their username, email, first name, and last name. Users may also edit their profile to add students (children) as well as indicate the names and contact information of trusted caretakers. Student profile information includes name, age, address, city, state, zip, school, grade, and student id. 
+	- Description: Enables users to create accounts, login, and logout. Usernames are unique to each user and passwords must be complex when creating an account (details about password requirements can be found on the signup page). Users can change password if they have an account. If users forgot their password, they will be emailed a link to be able to change their password. Users are shown a unique homepage if login is successful. Signed out users will be told that they are not logged in, and gives the user the option to log in with an existing account or create a new one. Allows users to edit personal settings such as their username, email, first name, and last name. Users may also edit their profile to add students (children) as well as update their location information. Student profile information includes name, age, school, grade, student id, and dietary/preference information. A meal plan can be created for each student to determine pickup type, day, time, and location. Meal plans can be sent and viewed by staff when the appropriate checkbox is selected.
 	- URLs: 
 		- http://127.0.0.1:8000/accounts/login/
 		- http://127.0.0.1:8000/accounts/signup/
@@ -41,6 +41,8 @@ Features:
 		- http://127.0.0.1:8000/accounts/add_student/
 		- http://127.0.0.1:8000/accounts/<int:pk>/edit_student/
 		- http://127.0.0.1:8000/accounts/<int:pk>/delete_student/
+		- http://127.0.0.1:8000/accounts/meal_plans/
+		- http://127.0.0.1:8000/accounts/<int:pk>/edit_meal_plan/
 		- http://127.0.0.1:8000/accounts/settings/ 
 		- http://127.0.0.1:8000/accounts/password_change/
 		- http://127.0.0.1:8000/accounts/password_change/done/
@@ -52,16 +54,6 @@ Features:
 		1. Using a command line interpreter, navigate to the root directory of the project
 		2. Run 'python manage.py test accounts'
 		3. Details about each test can be found inside the /accounts/tests.py file.
-- Student Database:
-	  - Stores all students data information such as id, first name, last name, age, school location, school district, address, city, state, zip, and grade 
-  - To see database, after cloning repo, navigate to the folder of where the project is saved on your local machine and open "db.sqlite3"
-- Dashboard
-	- Description:
-		The dashboard allows for convenient navigation between pages and presents the user the most important information from the notifications, map/scheduler pages, and ticket submission pages
-	- Testing:
-		1. To view dashboard, after cloning repo, navigate to the folder the project is saved in on your local machine using the file explorer
-		2. Open index.html in your browser of choice
-		3. Navigation will be possible to other pages by clicking on them, pages currently contain placeholder content
 - Parse Data:
 	- Description: Created a parser for a CSV file. Parses the student information with sample student data. 
 	- Testing:
@@ -82,19 +74,14 @@ Features:
 		1. Using a command line interpreter, navigate to the root directory of the project and cd into the hungryhelpers directory
 		2. Run 'python manage.py test accounts.tests.PermissionsTest'
 	- Creating Users:
-		1. Create a superuser using 'python manage.py createsuperuser' and add username and password
-		2. Run the program ('python manage.py runserver')
-		3. Login as admin and go to http://127.0.0.1:8000/admin/ 
+		1. Create a user using the regular signup procedure	
+		2. Log out and login as an admin and go to http://127.0.0.1:8000/admin/ 
+		3. Change the permissions of the new account using the interface in the admin page
 		4. Add Groups and add specific permissions (such as 'Can add google maps response')
 		5. You can then add certain groups to users and once they log in, their account should adjust accordingly
-
 - Notifications:
 	- Description:
 		Allows admin users to send notifcations to individual regular users
-	- Notes before testing and demonstration: 
-		1. Ensure that 'python manage.py migrate notifications' has been run
-		2. Rename 'templates/base.html' to something else and 'templates/base_notifs.html' to 'base.html'
-		3. Change both files back to their orignal names before executing other tests
 	- URLs: 
 		http://127.0.0.1:8000/notifs/ 
 	- Test suite execution instructions:
@@ -102,27 +89,28 @@ Features:
 		2. Run 'python manage.py test notifs'
 		3. Details about each test can be found inside the /notifs/tests.py file.
 	- Manual demonstration:
-		1. From a browser, navigate to http://127.0.0.1:8000/ and create an account
-		2. From a different browser, navigate to http://127.0.0.1:8000/ and create another account
-		3. From the first browser, navigate to http://127.0.0.1:8000/notifs/ 
+		1. From a browser, navigate to http://127.0.0.1:8000/ and log into the admin account (username: admin, password: admin)
+		2. From a different browser, navigate to http://127.0.0.1:8000/ and create a user account
+		3. From browser with the admin account logged in, navigate to http://127.0.0.1:8000/notifs/ 
 		4. Enter a message to be sent to the other user and click send
-		5. In the second browser, refreshing the page and clicking on the bell icon will show the notifcation that has been sent
+		5. In the second browser, refreshing the page and clicking on the bell icon will show the notification that has been sent
 		
 - Meal Plans
 	- Description:
-	  Allows meal plans information to be added and stored
-	- Notes before testing and demonstration:
-		1. Ensure makemigrations and migrate has been run
+	  Allows admin/staff to create new meal entries and associate them with existing pickup locations. 
 	- URLs:
 	  http://127.0.0.1:8000/mealPlan/
 	  http://127.0.0.1:8000/mealPlan/ticket_add
-	  http://127.0.0.1:8000/staffPage/
-	  http://127.0.0.1:8000/choosemeal
+	  http://127.0.0.1:8000/mealPlan/staffPage/
+	  http://127.0.0.1:8000/mealPlan/send_confirm_notif/
 	- Test suite execution instructions:
 		1. Using a command line interpreter, navigate to the root directory of the project
 		2. Run 'python manage.py test mealPlan'
 		3. Details about each test can be found inside the /mealPlan/tests.py file.
 	- Manual demonstration:
-		1. From a browser, navigate to http://127.0.0.1:8000/ and create an account
-		2. Navigate to http://127.0.0.1:8000/mealPlan
+		1. From a browser, navigate to http://127.0.0.1:8000/ and log into the admin account
+		2. Navigate to http://127.0.0.1:8000/mealPlan and fill out the provided field
 		3. Entering information and clicking "Submit" will update the list of meal plans
+		4. From another browser, create a regular user account, add a student, and create a meal plan for the student.
+		5. From the admin browser, navigate to http://127.0.0.1:8000/mealPlan/staffPage and select "Confirm" on the new entry.
+		6. From the user browser, check notifications to see the meal plan update and a link to the respective meal.

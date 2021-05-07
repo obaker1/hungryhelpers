@@ -1,5 +1,5 @@
 from django import forms
-from mealPlan.models import Meal
+from mealPlan.models import Meal, notifMsg
 
 
 class mealPlanForm(forms.ModelForm):
@@ -18,3 +18,10 @@ class mealPlanForm(forms.ModelForm):
     class Meta:
         model = Meal
         fields = ('content',)
+
+class confirmPlan(forms.ModelForm):
+    confirm = forms.IntegerField(widget=forms.CheckboxInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = notifMsg
+        fields = ('confirm',)

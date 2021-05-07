@@ -21,3 +21,6 @@ class Meal(models.Model):
 
     #location = models.CharField(max_length=500, default="none")
     location = models.ForeignKey(GoogleMapsResponse, on_delete=models.CASCADE)
+
+class notifMsg(models.Model):
+    confirm = models.IntegerField(default=0)
